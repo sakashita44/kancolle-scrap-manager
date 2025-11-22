@@ -140,3 +140,4 @@ vite.config.ts.timestamp-*
 
 # User-specific files
 copilot-instructions.md
+.claude/
