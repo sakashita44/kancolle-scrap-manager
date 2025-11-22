@@ -1,0 +1,24 @@
+{
+  "name": "kancolle-scrap-manager",
+  "version": "1.0.0",
+  "description": "* 艦これで複数の廃棄任務を並列で遂行する際に，廃棄すべき装備の必要最小限リスト(最適解)を算出し，無駄な廃棄を防ぐことを目的としたWebアプリケーション",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sakashita44/kancolle-scrap-manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sakashita44/kancolle-scrap-manager/issues"
+  },
+  "homepage": "https://github.com/sakashita44/kancolle-scrap-manager#readme"
+}
