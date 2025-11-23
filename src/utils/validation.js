@@ -248,6 +248,26 @@ export function validateMission(mission) {
           }
         }
       });
+
+      // targetIdの重複チェック
+      const targetIdSet = new Set();
+      const duplicateTargetIds = [];
+      mission.reqs.forEach((req) => {
+        if (req.targetId) {
+          if (targetIdSet.has(req.targetId)) {
+            if (!duplicateTargetIds.includes(req.targetId)) {
+              duplicateTargetIds.push(req.targetId);
+            }
+          } else {
+            targetIdSet.add(req.targetId);
+          }
+        }
+      });
+      if (duplicateTargetIds.length > 0) {
+        errors.push(
+          `reqs 内で targetId が重複しています: ${duplicateTargetIds.join(', ')}`
+        );
+      }
     }
   }
 
