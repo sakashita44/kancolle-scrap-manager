@@ -151,12 +151,16 @@
 
 #### 3.1 キー一覧
 
-| キー名                  | 内容                   | データ型   | 永続化         |
-| :---------------------- | :--------------------- | :--------- | :------------- |
-| `ksp_app_version`       | アプリバージョン       | String     | LocalStorage   |
-| `ksp_user_equipments`   | ユーザー定義装備リスト | JSON文字列 | LocalStorage   |
-| `ksp_user_missions`     | ユーザー定義任務リスト | JSON文字列 | LocalStorage   |
-| `ksp_selected_missions` | 選択中の任務IDリスト   | JSON文字列 | SessionStorage |
+| キー名                      | 内容                           | データ型   | 永続化         |
+| :-------------------------- | :----------------------------- | :--------- | :------------- |
+| `ksp_app_version`           | アプリバージョン               | String     | LocalStorage   |
+| `ksp_user_equipments`       | ユーザー定義装備リスト         | JSON文字列 | LocalStorage   |
+| `ksp_user_missions`         | ユーザー定義任務リスト         | JSON文字列 | LocalStorage   |
+| `ksp_about_shown`           | About表示済みフラグ            | Boolean    | LocalStorage   |
+| `ksp_selected_missions`     | 選択中の任務IDリスト           | JSON文字列 | SessionStorage |
+| `ksp_filter_period`         | 周期フィルタの選択状態         | String     | SessionStorage |
+| `ksp_filter_category`       | 装備カテゴリフィルタの選択状態 | String     | SessionStorage |
+| `ksp_mission_list_expanded` | 任務一覧の展開状態             | Boolean    | SessionStorage |
 
 #### 3.2 ksp_user_equipments
 

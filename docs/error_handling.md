@@ -29,6 +29,55 @@
 | 表示メッセージ | `⚠️ マスタデータの取得に失敗しました``GitHub Pagesおよびローカルファイルの両方でエラーが発生しました. ネットワーク接続を確認してください. ユーザー定義データのみで動作しています.``[再試行]ボタン`                                                 |
 | ユーザー操作   | [再試行]ボタン: マスタデータの再取得を試みるバナーの[×]ボタン: 警告を非表示にする(データ取得は行わない)                                                                                                                                           |
 
+##### 1.1.1 リトライ・タイムアウト実装詳細
+
+###### リトライロジック
+
+1. GitHub Pagesへの初回アクセス試行
+2. 失敗時、1秒待機
+3. 1回だけリトライ
+4. リトライ失敗時、ローカルフォールバック
+
+###### タイムアウト実装
+
+* `AbortController`を使用してタイムアウト制御
+* タイムアウト時間: 10秒
+* タイムアウト発生時はエラーとして扱い、リトライまたはフォールバック
+
+###### 実装例
+
+```javascript
+async function fetchWithTimeout(url, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout');
+    }
+    throw error;
+  }
+}
+
+async function fetchWithRetry(url, timeoutMs = 10000) {
+  try {
+    // 初回試行
+    return await fetchWithTimeout(url, timeoutMs);
+  } catch (error) {
+    console.warn('First attempt failed, retrying after 1 second...');
+    // 1秒待機
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    // リトライ
+    return await fetchWithTimeout(url, timeoutMs);
+  }
+}
+```
+
 #### 1.2 部分的な取得失敗
 
 | 項目           | 内容                                                                                                                  |
