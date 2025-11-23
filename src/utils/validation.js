@@ -178,18 +178,8 @@ export function validateMission(mission) {
 }
 
 /**
- * UUID v4形式かチェック
- * @param {string} uuid - UUID文字列
- * @returns {boolean} UUID v4形式の場合true
- */
-export function isValidUUIDv4(uuid) {
-  const uuidv4Regex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidv4Regex.test(uuid);
-}
-
-/**
  * ユーザー定義装備IDの妥当性チェック
+ * プレフィックスが正しく、ID部分が空でなければ有効
  * @param {string} equipmentId - 装備ID
  * @returns {boolean} 妥当な場合true
  */
@@ -197,12 +187,13 @@ export function isValidUserEquipmentId(equipmentId) {
   if (!equipmentId.startsWith(ID_PREFIX.USER_EQUIPMENT)) {
     return false;
   }
-  const uuid = equipmentId.substring(ID_PREFIX.USER_EQUIPMENT.length);
-  return isValidUUIDv4(uuid);
+  const idPart = equipmentId.substring(ID_PREFIX.USER_EQUIPMENT.length);
+  return idPart.length > 0;
 }
 
 /**
  * ユーザー定義任務IDの妥当性チェック
+ * プレフィックスが正しく、ID部分が空でなければ有効
  * @param {string} missionId - 任務ID
  * @returns {boolean} 妥当な場合true
  */
@@ -210,6 +201,6 @@ export function isValidUserMissionId(missionId) {
   if (!missionId.startsWith(ID_PREFIX.USER_MISSION)) {
     return false;
   }
-  const uuid = missionId.substring(ID_PREFIX.USER_MISSION.length);
-  return isValidUUIDv4(uuid);
+  const idPart = missionId.substring(ID_PREFIX.USER_MISSION.length);
+  return idPart.length > 0;
 }
