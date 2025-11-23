@@ -125,6 +125,13 @@ export function validateEquipment(equipment) {
         `id は "${ID_PREFIX.MASTER_EQUIPMENT}" または "${ID_PREFIX.USER_EQUIPMENT}" で始まる必要があります`
       );
     }
+
+    // ユーザー定義IDの場合、プレフィックス後が空でないことをチェック
+    if (equipment.id.startsWith(ID_PREFIX.USER_EQUIPMENT)) {
+      if (!isValidUserEquipmentId(equipment.id)) {
+        errors.push('ユーザー定義装備のIDはプレフィックス後に内容が必要です');
+      }
+    }
   }
 
   // 文字数制限チェック
@@ -181,6 +188,13 @@ export function validateMission(mission) {
       errors.push(
         `id は "${ID_PREFIX.MASTER_MISSION}" または "${ID_PREFIX.USER_MISSION}" で始まる必要があります`
       );
+    }
+
+    // ユーザー定義IDの場合、プレフィックス後が空でないことをチェック
+    if (mission.id.startsWith(ID_PREFIX.USER_MISSION)) {
+      if (!isValidUserMissionId(mission.id)) {
+        errors.push('ユーザー定義任務のIDはプレフィックス後に内容が必要です');
+      }
     }
   }
 
