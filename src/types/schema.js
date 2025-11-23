@@ -108,6 +108,9 @@ export const STORAGE_KEYS = {
   USER_MISSIONS: 'ksp_user_missions',
   SELECTED_MISSIONS: 'ksp_selected_missions',
   ABOUT_SHOWN: 'ksp_about_shown',
+  FILTER_PERIOD: 'ksp_filter_period',
+  FILTER_CATEGORY: 'ksp_filter_category',
+  MISSION_LIST_EXPANDED: 'ksp_mission_list_expanded',
 };
 
 export const LIMITS = {

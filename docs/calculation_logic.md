@@ -212,6 +212,20 @@ for (const [categoryTargetId, categoryCount] of categoryCountMap) {
 * 25mm単装機銃: 2個
 * 機銃(Category): 3個 ← (5 - 2 = 3)
 
+##### 例3: 複数の異なるItemが同じカテゴリに属する
+
+* 任務A: 機銃(Category) ×10
+* 任務B: 25mm単装機銃(Item, category="機銃") ×3
+* 任務C: 25mm三連装機銃(Item, category="機銃") ×4
+
+結果:
+
+* 25mm単装機銃: 3個
+* 25mm三連装機銃: 4個
+* 機銃(Category): 3個 ← (10 - 3 - 4 = 3)
+
+解説: カテゴリ要求数から、同じカテゴリに属する全てのItem要求の合計を差し引く
+
 ### フェーズ7: 廃棄リストの生成
 
 `itemCountMap`と`categoryCountMap`を結合し,廃棄リストを生成する.
