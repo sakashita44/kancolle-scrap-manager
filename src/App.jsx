@@ -1,9 +1,16 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useEquipments } from './hooks/useEquipments'
 import { useMissions } from './hooks/useMissions'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
 import Header from './components/Header'
+import StickyDashboard from './components/StickyDashboard'
+import ControlBar from './components/ControlBar'
+import MissionList from './components/MissionList'
+import FooterArea from './components/FooterArea'
+import Modal from './components/Modal'
+import EquipmentModal from './components/EquipmentModal'
+import MissionModal from './components/MissionModal'
 
 function App() {
   const { equipments, loading: equipmentsLoading, error: equipmentsError } = useEquipments()
@@ -12,66 +19,128 @@ function App() {
   const { scrapList, isCalculating } = useScrapCalculation(selectedMissionIds, missions, equipments)
 
   const [errors, setErrors] = useState([])
+  const [activeModal, setActiveModal] = useState(null)
+  const [filterText, setFilterText] = useState('')
+  const [filterCategory, setFilterCategory] = useState('ALL')
+
+  // カテゴリ一覧の生成
+  const uniqueCategories = useMemo(() =>
+    [...new Set(equipments.map(e => e.category))].sort()
+  , [equipments])
+
+  // フィルタリング
+  const filteredMissions = useMemo(() => {
+    return missions.filter(mission => {
+      const matchText = mission.name.includes(filterText)
+
+      let matchCategory = true
+      if (filterCategory !== 'ALL') {
+        matchCategory = mission.reqs.some(req => {
+          const eq = equipments.find(e => e.id === req.targetId)
+          return eq && eq.category === filterCategory
+        })
+      }
+      return matchText && matchCategory
+    })
+  }, [missions, equipments, filterText, filterCategory])
 
   const handleSettingsClick = () => {
     console.log('Settings clicked')
   }
 
+  const handleAddEquipment = (data) => {
+    // TODO: 装備追加ロジックをhookに移行
+    console.log('Add equipment:', data)
+  }
+
+  const handleDeleteEquipment = (id) => {
+    if (!window.confirm('この装備を削除しますか？\n（この装備を使用している任務がある場合、表示がおかしくなる可能性があります）')) return
+    // TODO: 装備削除ロジックをhookに移行
+    console.log('Delete equipment:', id)
+  }
+
+  const handleAddMission = (data) => {
+    // TODO: 任務追加ロジックをhookに移行
+    console.log('Add mission:', data)
+    setActiveModal(null)
+  }
+
+  const handleDeleteMission = (id) => {
+    if (!window.confirm('この任務を削除しますか？')) return
+    // TODO: 任務削除ロジックをhookに移行
+    console.log('Delete mission:', id)
+  }
+
+  const handleClearErrors = () => {
+    setErrors([])
+  }
+
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans relative">
       <Header onSettingsClick={handleSettingsClick} />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {/* Sticky Dashboard Placeholder */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            🗑️ 本日の廃棄リスト
-          </h2>
-          <p className="text-gray-600">
-            選択中: {selectedMissionIds.length} / 廃棄リスト表示予定
-          </p>
-        </div>
+      <StickyDashboard
+        scrapList={scrapList}
+        selectedCount={selectedMissionIds.size}
+      />
 
-        {/* Control Bar Placeholder */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
-          <div className="flex items-center gap-4">
-            <button className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700">
-              + 装備管理
-            </button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              + 任務追加
-            </button>
-          </div>
-        </div>
+      <div className="max-w-3xl mx-auto p-4">
+        <ControlBar
+          filterText={filterText}
+          filterCategory={filterCategory}
+          categories={uniqueCategories}
+          onFilterTextChange={setFilterText}
+          onFilterCategoryChange={setFilterCategory}
+          onEquipmentClick={() => setActiveModal('equipment')}
+          onMissionClick={() => setActiveModal('mission')}
+        />
+      </div>
 
-        {/* Mission List Placeholder */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            📋 任務一覧
-          </h3>
-          {missionsLoading && (
-            <p className="text-gray-600">読み込み中...</p>
-          )}
-          {missionsError && (
-            <p className="text-red-600">エラー: {missionsError}</p>
-          )}
-          {!missionsLoading && !missionsError && (
-            <p className="text-gray-600">
-              {missions.length} 件の任務が読み込まれました
-            </p>
-          )}
-        </div>
-      </main>
+      <div className="max-w-3xl mx-auto px-4 pb-20">
+        {missionsLoading && (
+          <p className="text-center py-10 text-slate-400">読み込み中...</p>
+        )}
+        {missionsError && (
+          <p className="text-center py-10 text-red-600">エラー: {missionsError}</p>
+        )}
+        {!missionsLoading && !missionsError && (
+          <MissionList
+            missions={filteredMissions}
+            equipments={equipments}
+            selectedMissionIds={selectedMissionIds}
+            onToggle={toggleMission}
+            onDelete={handleDeleteMission}
+          />
+        )}
+      </div>
 
-      {/* Footer Area Placeholder */}
-      <footer className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm text-gray-600">
-            ▼ エラーログ ({errors.length})
-          </p>
-        </div>
-      </footer>
+      <FooterArea errors={errors} onClearErrors={handleClearErrors} />
+
+      <Modal
+        isOpen={activeModal === 'equipment'}
+        title="装備の管理・追加"
+        onClose={() => setActiveModal(null)}
+      >
+        <EquipmentModal
+          equipments={equipments}
+          categories={uniqueCategories}
+          onSave={handleAddEquipment}
+          onDelete={handleDeleteEquipment}
+          onCancel={() => setActiveModal(null)}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={activeModal === 'mission'}
+        title="任務を追加"
+        onClose={() => setActiveModal(null)}
+      >
+        <MissionModal
+          equipments={equipments}
+          onSave={handleAddMission}
+          onCancel={() => setActiveModal(null)}
+        />
+      </Modal>
     </div>
   )
 }
