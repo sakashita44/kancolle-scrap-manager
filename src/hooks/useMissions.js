@@ -63,6 +63,7 @@ export function useMissions(appVersion = '1.0.0') {
       setUserMissions(loaded);
     } catch (err) {
       console.error('[useMissions] Failed to load user missions:', err);
+      setUserMissions([]);
     }
   }, []);
 

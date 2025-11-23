@@ -63,6 +63,7 @@ export function useEquipments(appVersion = '1.0.0') {
       setUserEquipments(loaded);
     } catch (err) {
       console.error('[useEquipments] Failed to load user equipments:', err);
+      setUserEquipments([]);
     }
   }, []);
 
