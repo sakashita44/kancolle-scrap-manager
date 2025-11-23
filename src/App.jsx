@@ -3,6 +3,7 @@ import { useEquipments } from './hooks/useEquipments'
 import { useMissions } from './hooks/useMissions'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
+import Header from './components/Header'
 
 function App() {
   const { equipments, loading: equipmentsLoading, error: equipmentsError } = useEquipments()
@@ -12,18 +13,13 @@ function App() {
 
   const [errors, setErrors] = useState([])
 
+  const handleSettingsClick = () => {
+    console.log('Settings clicked')
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">
-              艦これ 工廠任務廃棄プランナー
-            </h1>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-slate-100">
+      <Header onSettingsClick={handleSettingsClick} />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
