@@ -24,18 +24,33 @@ Expected commands once configured:
 * `npm run build` - Build for production (outputs to `dist/`)
 * `npm run test` - Run tests (not yet implemented)
 
+### Development Flow
+
+1. check current branch status with `git status`
+1. check issue and `progress.md` for next tasks
+1. create branch with rule in `copilot-instructions.md` from main branch
+    * `<prefix>/<yyyymm>/sakashita44/<issue-number: if exists>-<short-description>`
+    * e.g. `feat/202511/sakashita44/5-add-validation`
+1. implement feature / fix bug
+1. test locally
+1. update `docs/progress.md` if task affects progress
+1. commit with rule in `copilot-instructions.md`
+1. push to remote
+1. create pull request
+1. return to step 1 after merge
+
 ## Data Architecture
 
 ### ID Naming Convention
 
 The project uses strict prefix-based namespacing to prevent data conflicts:
 
-| Data Type          | Prefix   | Format Example       | Generation Method     | Deletable |
-| :----------------- | :------- | :------------------- | :-------------------- | :-------- |
-| Official Equipment | `m_eq_`  | `m_eq_gun_12cm`      | Manual definition     | No        |
-| Official Mission   | `m_ms_`  | `m_ms_daily_scrap_1` | Manual definition     | No        |
-| User Equipment     | `u_eq_`  | `u_eq_<UUID>`        | `crypto.randomUUID()` | Yes       |
-| User Mission       | `u_ms_`  | `u_ms_<UUID>`        | `crypto.randomUUID()` | Yes       |
+| Data Type          | Prefix  | Format Example       | Generation Method     | Deletable |
+| :----------------- | :------ | :------------------- | :-------------------- | :-------- |
+| Official Equipment | `m_eq_` | `m_eq_gun_12cm`      | Manual definition     | No        |
+| Official Mission   | `m_ms_` | `m_ms_daily_scrap_1` | Manual definition     | No        |
+| User Equipment     | `u_eq_` | `u_eq_<UUID>`        | `crypto.randomUUID()` | Yes       |
+| User Mission       | `u_ms_` | `u_ms_<UUID>`        | `crypto.randomUUID()` | Yes       |
 
 **Critical Rules**:
 
@@ -70,7 +85,7 @@ The calculation algorithm determines the **minimum** equipment to scrap when mul
 
 ### Example Calculation
 
-```
+```text
 Selected missions:
 - Mission A: 機銃(Category) ×5
 - Mission B: 25mm単装機銃(Item, category="機銃") ×2
@@ -165,3 +180,8 @@ Key error scenarios:
 * `docs/schema.md` - Complete data structure definitions and validation rules
 * `docs/ui_specification.md` - Detailed UI/UX specifications and component behavior
 * `docs/error_handling.md` - Error classification and recovery strategies
+* `docs/progress.md` - Project progress tracking and next steps
+
+## other notes
+
+* docs/exampleはgit管理しません．gitignoreにも追加しません．後ほど手動削除します
