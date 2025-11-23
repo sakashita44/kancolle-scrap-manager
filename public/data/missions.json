@@ -1,0 +1,153 @@
+{
+  "version": "1.0.0-dummy",
+  "missions": [
+    {
+      "id": "m_ms_daily_scrap_1",
+      "name": "装備開発力の整備",
+      "period": "Daily",
+      "reqs": [
+        {
+          "id": "req_1",
+          "targetId": "m_eq_cat_main_gun_s",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "id": "m_ms_daily_scrap_2",
+      "name": "工廠環境の整備",
+      "period": "Daily",
+      "reqs": [
+        {
+          "id": "req_1",
+          "targetId": "m_eq_cat_machine_gun",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "m_ms_weekly_scrap_1",
+      "name": "対空機銃量産",
+      "period": "Weekly",
+      "reqs": [
+        {
+          "id": "req_1",
+          "targetId": "m_eq_cat_machine_gun",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "id": "m_ms_weekly_scrap_2",
+      "name": "主砲兵装の整備",
+      "period": "Weekly",
+      "reqs": [
+        {
+          "id": "req_1",
+          "targetId": "m_eq_cat_main_gun_s",
+          "count": 4
+        },
+        {
+          "id": "req_2",
+          "targetId": "m_eq_cat_main_gun_m",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "m_ms_weekly_scrap_3",
+      "name": "魚雷兵装の整備",
+      "period": "Weekly",
+      "reqs": [
+        {
+          "id": "req_1",
+          "targetId": "m_eq_cat_torpedo",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "id": "m_ms_weekly_scrap_4",
+      "name": "対潜兵装の整備",
+      "period": "Weekly",
+      "reqs": [
+        {
+          "id": "req_1",
+          "targetId": "m_eq_cat_depth_charge",
+          "count": 3
+        },
+        {
+          "id": "req_2",
+          "targetId": "m_eq_cat_sonar",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "m_ms_monthly_scrap_1",
+      "name": "艦載機の整備",
+      "period": "Monthly",
+      "reqs": [
+        {
+          "id": "req_1",
+          "targetId": "m_eq_cat_fighter",
+          "count": 3
+        },
+        {
+          "id": "req_2",
+          "targetId": "m_eq_cat_bomber",
+          "count": 3
+        },
+        {
+          "id": "req_3",
+          "targetId": "m_eq_cat_torpedo_bomber",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "m_ms_monthly_scrap_2",
+      "name": "大口径主砲の整備",
+      "period": "Monthly",
+      "reqs": [
+        {
+          "id": "req_1",
+          "targetId": "m_eq_cat_main_gun_l",
+          "count": 4
+        },
+        {
+          "id": "req_2",
+          "targetId": "m_eq_gun_35_6cm",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "m_ms_quarterly_scrap_1",
+      "name": "兵装の大規模整理",
+      "period": "Quarterly",
+      "reqs": [
+        {
+          "id": "req_1",
+          "targetId": "m_eq_cat_main_gun_s",
+          "count": 10
+        },
+        {
+          "id": "req_2",
+          "targetId": "m_eq_cat_main_gun_m",
+          "count": 8
+        },
+        {
+          "id": "req_3",
+          "targetId": "m_eq_cat_machine_gun",
+          "count": 12
+        },
+        {
+          "id": "req_4",
+          "targetId": "m_eq_cat_torpedo",
+          "count": 8
+        }
+      ]
+    }
+  ]
+}
