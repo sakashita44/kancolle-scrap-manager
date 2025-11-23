@@ -13,8 +13,20 @@ import EquipmentModal from './components/EquipmentModal'
 import MissionModal from './components/MissionModal'
 
 function App() {
-  const { equipments, loading: equipmentsLoading, error: equipmentsError } = useEquipments()
-  const { missions, loading: missionsLoading, error: missionsError } = useMissions()
+  const {
+    allEquipments: equipments,
+    loading: equipmentsLoading,
+    error: equipmentsError,
+    addUserEquipment,
+    deleteUserEquipment
+  } = useEquipments()
+  const {
+    allMissions: missions,
+    loading: missionsLoading,
+    error: missionsError,
+    addUserMission,
+    deleteUserMission
+  } = useMissions()
   const { selectedMissionIds, toggleMission, clearSelection } = useSelectedMissions()
   const { scrapList, isCalculating } = useScrapCalculation(selectedMissionIds, missions, equipments)
 
@@ -49,26 +61,30 @@ function App() {
   }
 
   const handleAddEquipment = (data) => {
-    // TODO: 装備追加ロジックをhookに移行
-    console.log('Add equipment:', data)
+    const newEquipment = {
+      id: `u_eq_${crypto.randomUUID()}`,
+      ...data
+    }
+    addUserEquipment(newEquipment)
   }
 
   const handleDeleteEquipment = (id) => {
     if (!window.confirm('この装備を削除しますか？\n（この装備を使用している任務がある場合、表示がおかしくなる可能性があります）')) return
-    // TODO: 装備削除ロジックをhookに移行
-    console.log('Delete equipment:', id)
+    deleteUserEquipment(id)
   }
 
   const handleAddMission = (data) => {
-    // TODO: 任務追加ロジックをhookに移行
-    console.log('Add mission:', data)
+    const newMission = {
+      id: `u_ms_${crypto.randomUUID()}`,
+      ...data
+    }
+    addUserMission(newMission)
     setActiveModal(null)
   }
 
   const handleDeleteMission = (id) => {
     if (!window.confirm('この任務を削除しますか？')) return
-    // TODO: 任務削除ロジックをhookに移行
-    console.log('Delete mission:', id)
+    deleteUserMission(id)
   }
 
   const handleClearErrors = () => {
