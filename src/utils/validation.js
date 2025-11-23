@@ -27,6 +27,72 @@ export function validateMissionExists(missionId, missions) {
 }
 
 /**
+ * IDの一意性を確認
+ * @param {string} id - チェックするID
+ * @param {Object[]} existingItems - 既存のデータ配列
+ * @returns {boolean} 一意の場合true（重複がない場合true）
+ */
+export function validateUniqueId(id, existingItems) {
+  return !existingItems.some((item) => item.id === id);
+}
+
+/**
+ * 名前の一意性を確認
+ * @param {string} name - チェックする名前
+ * @param {Object[]} existingItems - 既存のデータ配列
+ * @returns {boolean} 一意の場合true（重複がない場合true）
+ */
+export function validateUniqueName(name, existingItems) {
+  return !existingItems.some((item) => item.name === name);
+}
+
+/**
+ * 配列内でIDの重複がないかチェック
+ * @param {Object[]} items - チェックするデータ配列
+ * @returns {Object} { valid: boolean, duplicates: string[] }
+ */
+export function validateNoDuplicateIds(items) {
+  const idSet = new Set();
+  const duplicates = [];
+
+  for (const item of items) {
+    if (idSet.has(item.id)) {
+      duplicates.push(item.id);
+    } else {
+      idSet.add(item.id);
+    }
+  }
+
+  return {
+    valid: duplicates.length === 0,
+    duplicates,
+  };
+}
+
+/**
+ * 配列内で名前の重複がないかチェック
+ * @param {Object[]} items - チェックするデータ配列
+ * @returns {Object} { valid: boolean, duplicates: string[] }
+ */
+export function validateNoDuplicateNames(items) {
+  const nameSet = new Set();
+  const duplicates = [];
+
+  for (const item of items) {
+    if (nameSet.has(item.name)) {
+      duplicates.push(item.name);
+    } else {
+      nameSet.add(item.name);
+    }
+  }
+
+  return {
+    valid: duplicates.length === 0,
+    duplicates,
+  };
+}
+
+/**
  * 装備データの妥当性を検証
  * @param {Object} equipment - 装備データ
  * @returns {Object} { valid: boolean, errors: string[] }
