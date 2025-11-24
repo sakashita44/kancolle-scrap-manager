@@ -9,16 +9,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Tech Stack
 
 * **Frontend**: React, Tailwind CSS, Lucide React
-* **Build Tool**: Not yet configured (documentation mentions Vite)
+* **Build Tool**: Vite
 * **Hosting**: Static hosting on Lolipop
-* **Master Data**: Hosted on GitHub Pages as JSON
-* **Data Storage**: Browser LocalStorage
+* **Master Data**: Hosted on GitHub Pages as JSON (primary), bundled in `public/data/` (fallback)
+* **Data Storage**: Browser LocalStorage (user data), SessionStorage (selected state)
 
 ## Development Commands
-
-**Note**: The project appears to be in early setup phase. Build tools are not yet configured in package.json but documentation indicates Vite will be used.
-
-Expected commands once configured:
 
 * `npm run dev` - Start development server
 * `npm run build` - Build for production (outputs to `dist/`)
@@ -44,45 +40,86 @@ Expected commands once configured:
 
 ### ID Naming Convention
 
-The project uses strict prefix-based namespacing to prevent data conflicts:
+The project uses prefix-based namespacing to prevent data conflicts:
 
-| Data Type          | Prefix  | Format Example       | Generation Method     | Deletable |
-| :----------------- | :------ | :------------------- | :-------------------- | :-------- |
-| Official Equipment | `m_eq_` | `m_eq_gun_12cm`      | Manual definition     | No        |
-| Official Mission   | `m_ms_` | `m_ms_daily_scrap_1` | Manual definition     | No        |
-| User Equipment     | `u_eq_` | `u_eq_<UUID>`        | `crypto.randomUUID()` | Yes       |
-| User Mission       | `u_ms_` | `u_ms_<UUID>`        | `crypto.randomUUID()` | Yes       |
+| Data Type          | Prefix   | Format Example       | Generation Method     | Deletable |
+| :----------------- | :------- | :------------------- | :-------------------- | :-------- |
+| Official Category  | `m_cat_` | `m_cat_gun_s`        | Manual definition     | No        |
+| Official Equipment | `m_eq_`  | `m_eq_gun_12cm`      | Manual definition     | No        |
+| Official Mission   | `m_ms_`  | `m_ms_daily_scrap_1` | Manual definition     | No        |
+| User Category      | `u_cat_` | `u_cat_<UUID>`       | `crypto.randomUUID()` | Yes       |
+| User Equipment     | `u_eq_`  | `u_eq_<UUID>`        | `crypto.randomUUID()` | Yes       |
+| User Mission       | `u_ms_`  | `u_ms_<UUID>`        | `crypto.randomUUID()` | Yes       |
 
 **Critical Rules**:
 
+* Prefixes are recommended for readability but not mandatory (validation checks prefix format if present)
 * Official master data IDs are **immutable** once published (to prevent breaking user data references)
 * Deprecated items should be logically deleted by renaming to "【廃止】..." rather than removing the ID
 * UUIDs are generated using `crypto.randomUUID()`, requiring HTTPS or localhost environment
+* `isMaster` flag is **never stored** in JSON files - it's automatically assigned at runtime based on data source (GitHub Pages/public/data → true, LocalStorage → false)
 
 ### Data Flow Strategy
 
-The app uses a hybrid fetch strategy for master data:
+The app uses a hybrid fetch strategy with comprehensive validation for master data:
 
-1. **Primary**: Fetch from GitHub Pages (`https://<user>.github.io/.../data/missions.json`)
-2. **Fallback**: If GitHub Pages fails, fetch from local hosting server (`./data/missions.json`)
-3. **Failure**: Display warning banner, operate with user-defined data only
+**Fetch Process**:
+
+1. **Primary**: Fetch from GitHub Pages (`https://<user>.github.io/.../data/{categories,equipments,missions}.json`)
+   * Timeout: 10 seconds with `AbortController`
+   * Retry: 1 attempt after 1 second delay on failure
+   * Validation: Schema validation immediately after successful fetch
+2. **Fallback**: If GitHub Pages fails or validation fails, fetch from local hosting server (`./data/*.json`)
+   * Same validation process applied
+3. **Cache**: If both sources fail, use previously cached data (if available)
+4. **Failure**: Display warning banner, operate with user-defined data only
+
+**Validation on Startup**:
+
+* **Master Data Validation**: All fetched JSON files are validated against schema (required fields, types, ID formats)
+* **LocalStorage Validation**: User-defined data is validated on load, corrupt entries are auto-removed with warning display
+* **Auto-Recovery**: Corrupt data is silently removed from LocalStorage to maintain app stability
 
 Cache busting is implemented via URL query parameters (e.g., `?v=1.0.0`).
 
 ### Storage Locations
 
-* **LocalStorage**: User-defined equipment/missions, app settings
-* **SessionStorage**: Selected mission state (cleared on tab close)
+**LocalStorage** (persists across sessions):
+
+* `ksp_app_version` - App version
+* `ksp_user_categories` - User-defined categories
+* `ksp_user_equipments` - User-defined equipment list
+* `ksp_user_missions` - User-defined missions list
+* `ksp_about_shown` - About modal display flag (initial launch)
+
+**SessionStorage** (cleared on tab/window close):
+
+* `ksp_selected_missions` - Currently selected mission IDs
+* `ksp_filter_period` - Period filter selection
+* `ksp_filter_category` - Equipment category filter selection
+* `ksp_mission_list_expanded` - Mission list expand/collapse state
+
+**Data Sources**:
+
 * **GitHub Pages**: Official master data (primary source)
-* **`public/data/`**: Backup master data bundled with deployment
+* **`public/data/`**: Backup master data bundled with deployment (copied to `dist/` on build)
 
 ## Core Calculation Logic
 
-The calculation algorithm determines the **minimum** equipment to scrap when multiple missions are selected in parallel. Key principles:
+The calculation algorithm determines the **minimum** equipment to scrap when multiple missions are selected in parallel.
 
-1. **MAX Aggregation**: When multiple missions require the same equipment, use the maximum count (not sum)
-2. **OR Condition (Inclusion Resolution)**: Item-specific requirements are subtracted from category requirements
-3. **Validation**: Equipment IDs that don't exist in the master are excluded from calculation with a warning
+### Algorithm Phases
+
+1. **Pre-check**: Return empty list if no missions selected, error if >8 missions selected
+2. **Expand Requirements**: Extract all requirements from selected missions
+3. **Integrity Check**: Filter out requirements with non-existent equipment IDs, display warnings
+4. **Group by Type**: Separate Item requirements from Category requirements
+5. **MAX Aggregation (Items)**: For same equipment ID, use maximum count (not sum)
+6. **MAX Aggregation (Categories)**: For same category ID, use maximum count (not sum)
+7. **Inclusion Resolution (OR Condition)**: Subtract Item counts from Category counts within same category
+   * If Category count ≤ Item total → Remove category requirement (Items satisfy it)
+   * If Category count > Item total → Keep remaining count
+8. **Generate Result**: Combine Item and Category results, sort by category name
 
 ### Example Calculation
 
@@ -96,7 +133,7 @@ Result:
 - 機銃(Category): 3 pieces  ← (5 - 2 = 3)
 ```
 
-The algorithm is in `docs/calculation_logic.md` with detailed phase-by-phase implementation steps.
+See `docs/calculation_logic.md` for detailed implementation with test cases.
 
 ## Deployment Process
 
@@ -146,19 +183,42 @@ From `.github/copilot-instructions.md`:
 
 ## Error Handling Strategy
 
-Comprehensive error handling is defined in `docs/error_handling.md`:
+The app implements 4-level error classification with comprehensive recovery strategies (see `docs/error_handling.md`):
 
-* **Critical**: App cannot continue, display error modal with reload option
-* **Error**: Feature unavailable, disable that feature only
-* **Warning**: Operation continues with notification (e.g., missing equipment ID in mission)
-* **Info**: Informational only (e.g., fallback to local master data)
+### Error Levels
 
-Key error scenarios:
+| Level    | Impact          | User Action | Recovery                             |
+| :------- | :-------------- | :---------- | :----------------------------------- |
+| Critical | App cannot run  | Required    | Display modal, reload required       |
+| Error    | Feature blocked | Recommended | Disable feature, other features work |
+| Warning  | Continues       | Optional    | Show warning, all features available |
+| Info     | No error        | None        | Informational notification only      |
 
-* Network errors have automatic retry (1 attempt) + fallback to local files
-* Data integrity errors (missing equipment IDs) show warnings on mission cards but allow calculation
-* LocalStorage quota exceeded prompts user to export data
-* Import validation errors block import completely but preserve existing data
+### Key Error Scenarios
+
+**Network & Data Fetching**:
+
+* GitHub Pages fetch failure → Auto-retry (1 attempt, 1s delay) → Fallback to local files → Cache → User data only mode
+* Master data validation failure → Fallback chain → Display Critical error with cache option if both sources corrupted
+* Timeout handling: 10 seconds with `AbortController`
+
+**Data Integrity**:
+
+* Missing equipment IDs in missions → Warning icon on mission card, exclude from calculation
+* LocalStorage data corruption on startup → Auto-remove corrupt entries, display warning with details
+* ID conflicts → Last-loaded wins (user data overrides official), log warning
+
+**Storage Issues**:
+
+* LocalStorage quota exceeded → Block save, prompt user to export data
+* Private browsing mode → Read-only mode, disable edit UI
+* Cross-tab data updates → Display reload notification (no auto-merge)
+
+**Import/Export**:
+
+* JSON syntax error → Block import, display detailed error
+* Schema validation failure → Block import, show field-level errors
+* Import success → Complete overwrite of target data type with confirmation
 
 ## Important Implementation Notes
 
@@ -166,23 +226,30 @@ Key error scenarios:
 
 2. **HTTPS Required**: `crypto.randomUUID()` requires secure context. App must run on HTTPS or localhost.
 
-3. **Schema Versioning**: All JSON files have a `version` field following Semantic Versioning. Future versions must implement migration logic.
+3. **Schema Versioning**: All JSON files have a `version` field following Semantic Versioning. Validation checks schema structure, not version numbers. Future schema changes must maintain backward compatibility (add fields only, never remove/change types).
 
-4. **Max Selection Limit**: UI must enforce max 8 simultaneous mission selections (game constraint).
+4. **Display Order Management**:
+   * Each data type has an `order` field (integer) for sort order
+   * Data is sorted first by `isMaster` flag (official first), then by `order` ascending
+   * User additions get max(existing order) + 1 within their data source
+   * `order` is independent between official and user data
 
-5. **Validation UX**: Use disabled button pattern instead of post-submit error messages. Invalid forms should disable save buttons with inline error indicators.
+5. **Max Selection Limit**: UI must enforce max 8 simultaneous mission selections (game constraint).
 
-6. **Data Immutability**: Never mutate original mission data during calculation. Always create new objects for results.
+6. **Validation UX**: Use disabled button pattern instead of post-submit error messages. Invalid forms should disable save buttons with inline error indicators.
+
+7. **Data Immutability**: Never mutate original mission data during calculation. Always create new objects for results.
+
+8. **About Modal on First Launch**: Display About modal automatically on first app launch (check `localStorage['ksp_about_shown']`). This serves as disclaimer confirmation. On subsequent launches, only show via settings menu.
+
+9. **Equipment Management Modal**: Equipment addition uses a two-section modal (add form + list) that stays open for continuous additions. Category selection uses datalist for auto-suggestion of existing categories.
 
 ## Key Documentation Files
 
 * `docs/design.md` - System architecture and detailed specifications
-* `docs/calculation_logic.md` - Algorithm implementation with test cases
-* `docs/schema.md` - Complete data structure definitions and validation rules
-* `docs/ui_specification.md` - Detailed UI/UX specifications and component behavior
-* `docs/error_handling.md` - Error classification and recovery strategies
+* `docs/calculation_logic.md` - Algorithm implementation with test cases (8 phases detailed)
+* `docs/schema.md` - Complete data structure definitions, validation rules, and `order`/`isMaster` specifications
+* `docs/ui_specification.md` - Detailed UI/UX specifications including modal behaviors and filter combinations
+* `docs/error_handling.md` - Error classification (4 levels), recovery strategies, and validation on startup
+* `docs/import_export.md` - Import/export file formats, validation flow, and filename generation rules
 * `docs/progress.md` - Project progress tracking and next steps
-
-## other notes
-
-* docs/exampleはgit管理しません．gitignoreにも追加しません．後ほど手動削除します
