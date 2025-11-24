@@ -20,6 +20,7 @@ export function useMissions(appVersion = '1.0.0') {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataSource, setDataSource] = useState(null);
+  const [corruptedItems, setCorruptedItems] = useState([]);
 
   // マスタデータをフェッチ
   useEffect(() => {
@@ -56,14 +57,16 @@ export function useMissions(appVersion = '1.0.0') {
     };
   }, [appVersion]);
 
-  // ユーザー定義任務をLocalStorageから読込
+  // ユーザー定義任務をLocalStorageから読込（起動時バリデーション付き）
   useEffect(() => {
     try {
-      const loaded = loadUserMissions();
-      setUserMissions(loaded);
+      const result = loadUserMissions();
+      setUserMissions(result.data);
+      setCorruptedItems(result.corruptedItems);
     } catch (err) {
       console.error('[useMissions] Failed to load user missions:', err);
       setUserMissions([]);
+      setCorruptedItems([]);
     }
   }, []);
 
@@ -143,6 +146,7 @@ export function useMissions(appVersion = '1.0.0') {
     loading,
     error,
     dataSource,
+    corruptedItems,
 
     // 操作関数
     addUserMission,
