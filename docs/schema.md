@@ -14,6 +14,27 @@
 
 現在のスキーマバージョン: `1.0.0`
 
+## データ構造の2つの形式
+
+本アプリケーションのデータ構造には2つの形式が存在する.
+
+### 永続化形式（JSONスキーマ）
+
+ファイルやLocalStorageに保存される形式.
+
+* `isMaster`フィールドは**含まれない**
+* 改竄防止のため,公式/ユーザー判定情報は保存しない
+
+### ランタイム形式（内部スキーマ）
+
+アプリケーション実行時にメモリ上で使用される形式.
+
+* `isMaster`フィールドが**自動付与される**
+* データ取得元（公式マスタ/LocalStorage）に基づいて判定
+* hooks、UIコンポーネントはこの形式を使用
+
+**重要**: 本仕様書の型定義（`@typedef`）は**ランタイム形式**を記述している.JSONファイルの実例は**永続化形式**を示している.
+
 ## ID規則
 
 各データは`id`フィールドで識別する.
@@ -105,8 +126,6 @@ items.sort((a, b) => {
 | `name`     | String | ○    | 1〜20文字 | カテゴリ名   |
 | `order`    | Number | ○    | 整数      | 表示順序     |
 
-**注**: `isMaster`フラグはデータ取得時に自動付与されるため,JSONには含まれない.
-
 ### 2. 装備マスタデータ (equipments.json)
 
 ```json
@@ -147,8 +166,6 @@ items.sort((a, b) => {
 | `categoryId` | String | ○    | カテゴリIDに対応         | 所属カテゴリのID(`categories.json`内)        |
 | `type`       | Enum   | ○    | `"Item"` or `"Category"` | 具体装備(`Item`) or カテゴリ代表(`Category`) |
 | `order`      | Number | ○    | 整数                     | カテゴリ内表示順序                           |
-
-**注**: `isMaster`フラグはデータ取得時に自動付与されるため,JSONには含まれない.
 
 #### type の使い分け
 
@@ -201,8 +218,6 @@ items.sort((a, b) => {
 | `period`   | Enum   | ○    | 下記参照  | 任務の周期           |
 | `order`    | Number | ○    | 整数      | 周期内表示順序       |
 | `reqs`     | Array  | ○    | 1〜10件   | 要求装備のリスト     |
-
-**注**: `isMaster`フラグはデータ取得時に自動付与されるため,JSONには含まれない.
 
 #### period の値と表示順序
 
@@ -263,7 +278,7 @@ items.sort((a, b) => {
 }
 ```
 
-構造は`categories.json`と同一（`isMaster`なし）.
+構造は`categories.json`と同一.
 
 #### 4.3 ksp_user_equipments
 
@@ -282,7 +297,7 @@ items.sort((a, b) => {
 }
 ```
 
-構造は`equipments.json`と同一（`isMaster`なし）.
+構造は`equipments.json`と同一.
 
 #### 4.4 ksp_user_missions
 
@@ -307,7 +322,7 @@ items.sort((a, b) => {
 }
 ```
 
-構造は`missions.json`と同一（`isMaster`なし）.
+構造は`missions.json`と同一.
 
 #### 4.5 ksp_selected_missions
 
@@ -356,7 +371,7 @@ items.sort((a, b) => {
 }
 ```
 
-`categories`配列と`equipments`配列を含む（`isMaster`なし）.
+`categories`配列と`equipments`配列を含む.
 
 #### 5.2 任務エクスポートデータ (kancolle_scrap_missions_YYYYMMDD.json)
 
@@ -381,7 +396,7 @@ items.sort((a, b) => {
 }
 ```
 
-構造は`missions.json`と同一（`isMaster`なし）.
+構造は`missions.json`と同一.
 
 #### 5.3 エクスポート/インポートの仕様
 
@@ -393,7 +408,6 @@ items.sort((a, b) => {
     * 任務ファイル: `missions`配列が存在
 * **上書き挙動**: インポート時は該当タイプの既存データを全上書き(事前警告あり)
 * **部分インポート**: 装備（カテゴリ含む）のみ,任務のみのインポートが可能
-* **isMaster自動付与**: インポート時に`isMaster: false`が自動的に付与される
 
 ## バリデーション規則
 
