@@ -1,12 +1,33 @@
 import { useState, useMemo } from 'react'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Plus, Trash2 } from 'lucide-react'
 import { PERIOD, LIMITS } from '../types/schema'
 
 const MissionModal = ({ equipments, missions, onSave, onCancel }) => {
   const [name, setName] = useState('')
   const [period, setPeriod] = useState('Weekly')
-  const [reqTargetId, setReqTargetId] = useState(equipments[0]?.id || '')
-  const [reqCount, setReqCount] = useState(1)
+  // 複数の要求装備を管理（最初の1枠は必須）
+  const [reqs, setReqs] = useState([
+    { id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 }
+  ])
+
+  // 装備追加
+  const addReq = () => {
+    if (reqs.length < LIMITS.REQUIREMENTS_PER_MISSION_MAX) {
+      setReqs([...reqs, { id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 }])
+    }
+  }
+
+  // 装備削除（最初の1枠は削除不可）
+  const removeReq = (id) => {
+    if (reqs.length > 1) {
+      setReqs(reqs.filter(req => req.id !== id))
+    }
+  }
+
+  // 装備の更新
+  const updateReq = (id, field, value) => {
+    setReqs(reqs.map(req => req.id === id ? { ...req, [field]: value } : req))
+  }
 
   // リアルタイムバリデーション
   const validationErrors = useMemo(() => {
@@ -20,32 +41,40 @@ const MissionModal = ({ equipments, missions, onSave, onCancel }) => {
     }
 
     // 要求装備の検証
-    if (!reqTargetId) {
-      errors.reqTargetId = '要求装備を選択してください'
-    }
+    reqs.forEach((req, index) => {
+      if (!req.targetId) {
+        errors[`req_${req.id}_target`] = '要求装備を選択してください'
+      }
 
-    // 必要数の検証
-    const count = parseInt(reqCount)
-    if (isNaN(count) || count < LIMITS.REQUIREMENT_COUNT_MIN) {
-      errors.reqCount = `必要数は${LIMITS.REQUIREMENT_COUNT_MIN}以上である必要があります`
-    } else if (count > LIMITS.REQUIREMENT_COUNT_MAX) {
-      errors.reqCount = `必要数は${LIMITS.REQUIREMENT_COUNT_MAX}以下である必要があります`
+      const count = parseInt(req.count)
+      if (isNaN(count) || count < LIMITS.REQUIREMENT_COUNT_MIN) {
+        errors[`req_${req.id}_count`] = `必要数は${LIMITS.REQUIREMENT_COUNT_MIN}以上である必要があります`
+      } else if (count > LIMITS.REQUIREMENT_COUNT_MAX) {
+        errors[`req_${req.id}_count`] = `必要数は${LIMITS.REQUIREMENT_COUNT_MAX}以下である必要があります`
+      }
+    })
+
+    // 重複チェック
+    const targetIds = reqs.map(r => r.targetId).filter(Boolean)
+    const duplicates = targetIds.filter((id, index) => targetIds.indexOf(id) !== index)
+    if (duplicates.length > 0) {
+      errors.duplicate = '同じ装備が複数回選択されています'
     }
 
     return errors
-  }, [name, reqTargetId, reqCount])
+  }, [name, reqs])
 
   // フォームが有効かどうか
-  const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== '' && reqTargetId
+  const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== '' && reqs.length > 0
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!isFormValid) return
-    // 簡易的に1つの装備要求のみ対応
+    // 複数の装備要求に対応
     onSave({
       name,
       period,
-      reqs: [{ targetId: reqTargetId, count: parseInt(reqCount) }]
+      reqs: reqs.map(req => ({ targetId: req.targetId, count: parseInt(req.count) }))
     })
   }
 
@@ -88,44 +117,68 @@ const MissionModal = ({ equipments, missions, onSave, onCancel }) => {
         </select>
       </div>
       <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-        <p className="text-xs font-bold text-slate-500 mb-2">要求装備 (簡易版:1枠のみ)</p>
-        <div className="flex gap-2 mb-2">
-          <select
-            className={`flex-1 px-2 py-2 border rounded-lg text-sm ${
-              validationErrors.reqTargetId ? 'border-red-500' : ''
+        <p className="text-xs font-bold text-slate-500 mb-2">要求装備 (最大{LIMITS.REQUIREMENTS_PER_MISSION_MAX}枠)</p>
+        {validationErrors.duplicate && (
+          <p className="text-xs text-red-500 flex items-center gap-1 mb-2">
+            <AlertCircle className="w-3 h-3" />
+            {validationErrors.duplicate}
+          </p>
+        )}
+        <div className="space-y-2">
+          {reqs.map((req, index) => (
+            <div key={req.id} className="flex gap-2">
+              <select
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${
+                  validationErrors[`req_${req.id}_target`] ? 'border-red-500' : ''
+                }`}
+                value={req.targetId}
+                onChange={e => updateReq(req.id, 'targetId', e.target.value)}
+              >
+                {equipments.map(e => (
+                  <option key={e.id} value={e.id}>
+                    {e.category} - {e.name}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                min={LIMITS.REQUIREMENT_COUNT_MIN}
+                max={LIMITS.REQUIREMENT_COUNT_MAX}
+                className={`w-20 px-2 py-2 border rounded-lg text-center text-sm ${
+                  validationErrors[`req_${req.id}_count`] ? 'border-red-500' : ''
+                }`}
+                value={req.count}
+                onChange={e => updateReq(req.id, 'count', e.target.value)}
+              />
+              {/* 最初の1枠のみ削除ボタンを非表示 */}
+              {index > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => removeReq(req.id)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  title="削除"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              ) : (
+                <div className="w-10"></div>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addReq}
+            disabled={reqs.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX}
+            className={`w-full py-2 text-sm rounded-lg flex items-center justify-center gap-1 transition-colors ${
+              reqs.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
             }`}
-            value={reqTargetId}
-            onChange={e => setReqTargetId(e.target.value)}
           >
-            {equipments.map(e => (
-              <option key={e.id} value={e.id}>
-                {e.category} - {e.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            min={LIMITS.REQUIREMENT_COUNT_MIN}
-            max={LIMITS.REQUIREMENT_COUNT_MAX}
-            className={`w-20 px-2 py-2 border rounded-lg text-center text-sm ${
-              validationErrors.reqCount ? 'border-red-500' : ''
-            }`}
-            value={reqCount}
-            onChange={e => setReqCount(e.target.value)}
-          />
+            <Plus className="w-4 h-4" />
+            装備を追加
+          </button>
         </div>
-        {validationErrors.reqTargetId && (
-          <p className="text-xs text-red-500 flex items-center gap-1">
-            <AlertCircle className="w-3 h-3" />
-            {validationErrors.reqTargetId}
-          </p>
-        )}
-        {validationErrors.reqCount && (
-          <p className="text-xs text-red-500 flex items-center gap-1">
-            <AlertCircle className="w-3 h-3" />
-            {validationErrors.reqCount}
-          </p>
-        )}
       </div>
       <div className="flex gap-2 pt-2">
         <button
