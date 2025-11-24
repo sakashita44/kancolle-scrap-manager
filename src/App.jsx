@@ -38,6 +38,11 @@ function App() {
   const [filterText, setFilterText] = useState('')
   const [filterCategory, setFilterCategory] = useState('ALL')
 
+  // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
+  const equipmentMap = useMemo(() =>
+    new Map(equipments.map(eq => [eq.id, eq]))
+  , [equipments])
+
   // カテゴリ一覧の生成
   const uniqueCategories = useMemo(() =>
     [...new Set(equipments.map(e => e.category))].sort()
@@ -55,13 +60,13 @@ function App() {
       let matchCategory = true
       if (filterCategory !== 'ALL') {
         matchCategory = mission.reqs.some(req => {
-          const eq = equipments.find(e => e.id === req.targetId)
+          const eq = equipmentMap.get(req.targetId)
           return eq && eq.category === filterCategory
         })
       }
       return matchText && matchCategory
     })
-  }, [missions, equipments, filterText, filterCategory])
+  }, [missions, equipmentMap, filterText, filterCategory])
 
   const handleSettingsClick = () => {
     console.log('Settings clicked')
@@ -137,7 +142,7 @@ function App() {
         {!isLoading && !errorMessage && (
           <MissionList
             missions={filteredMissions}
-            equipments={equipments}
+            equipmentMap={equipmentMap}
             selectedMissionIds={selectedMissionIds}
             onToggle={toggleMission}
             onDelete={handleDeleteMission}
