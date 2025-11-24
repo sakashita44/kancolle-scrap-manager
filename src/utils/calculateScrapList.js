@@ -29,6 +29,9 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
     return { scrapList: [], warnings };
   }
 
+  // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
+  const equipmentMap = new Map(allEquipments.map((eq) => [eq.id, eq]));
+
   // フェーズ2: 要求装備の展開
   const allRequirements = expandRequirements(
     selectedMissionIds,
@@ -39,7 +42,7 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
   // フェーズ2.5: 整合性チェック
   const validRequirements = validateRequirements(
     allRequirements,
-    allEquipments,
+    equipmentMap,
     warnings
   );
 
@@ -50,7 +53,7 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
   // フェーズ3: 装備種別ごとにグループ化
   const { itemRequirements, categoryRequirements } = groupByType(
     validRequirements,
-    allEquipments
+    equipmentMap
   );
 
   // フェーズ4: Item要求のMAX集計
@@ -60,13 +63,13 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
   const categoryCountMap = aggregateByMax(categoryRequirements);
 
   // フェーズ6: 包含関係の解決(OR条件)
-  resolveInclusion(itemCountMap, categoryCountMap, allEquipments);
+  resolveInclusion(itemCountMap, categoryCountMap, equipmentMap);
 
   // フェーズ7: 廃棄リストの生成
   const scrapList = generateScrapList(
     itemCountMap,
     categoryCountMap,
-    allEquipments
+    equipmentMap
   );
 
   return { scrapList, warnings };
@@ -112,9 +115,9 @@ function expandRequirements(selectedMissionIds, allMissions, warnings) {
  * フェーズ2.5: 整合性チェック
  * @private
  */
-function validateRequirements(allRequirements, allEquipments, warnings) {
+function validateRequirements(allRequirements, equipmentMap, warnings) {
   return allRequirements.filter((req) => {
-    const equipment = allEquipments.find((eq) => eq.id === req.targetId);
+    const equipment = equipmentMap.get(req.targetId);
 
     if (!equipment) {
       warnings.push({
@@ -134,12 +137,12 @@ function validateRequirements(allRequirements, allEquipments, warnings) {
  * フェーズ3: 装備種別ごとにグループ化
  * @private
  */
-function groupByType(validRequirements, allEquipments) {
+function groupByType(validRequirements, equipmentMap) {
   const itemRequirements = [];
   const categoryRequirements = [];
 
   for (const req of validRequirements) {
-    const equipment = allEquipments.find((eq) => eq.id === req.targetId);
+    const equipment = equipmentMap.get(req.targetId);
 
     if (equipment.type === EQUIPMENT_TYPE.ITEM) {
       itemRequirements.push(req);
@@ -170,11 +173,9 @@ function aggregateByMax(requirements) {
  * フェーズ6: 包含関係の解決(OR条件)
  * @private
  */
-function resolveInclusion(itemCountMap, categoryCountMap, allEquipments) {
+function resolveInclusion(itemCountMap, categoryCountMap, equipmentMap) {
   for (const [categoryTargetId, categoryCount] of categoryCountMap) {
-    const categoryEquipment = allEquipments.find(
-      (eq) => eq.id === categoryTargetId
-    );
+    const categoryEquipment = equipmentMap.get(categoryTargetId);
 
     if (!categoryEquipment) {
       continue;
@@ -185,7 +186,7 @@ function resolveInclusion(itemCountMap, categoryCountMap, allEquipments) {
     // 同じカテゴリのItem要求の合計を計算
     let itemTotalInCategory = 0;
     for (const [itemTargetId, itemCount] of itemCountMap) {
-      const itemEquipment = allEquipments.find((eq) => eq.id === itemTargetId);
+      const itemEquipment = equipmentMap.get(itemTargetId);
       if (itemEquipment && itemEquipment.category === categoryName) {
         itemTotalInCategory += itemCount;
       }
@@ -208,12 +209,12 @@ function resolveInclusion(itemCountMap, categoryCountMap, allEquipments) {
  * フェーズ7: 廃棄リストの生成
  * @private
  */
-function generateScrapList(itemCountMap, categoryCountMap, allEquipments) {
+function generateScrapList(itemCountMap, categoryCountMap, equipmentMap) {
   const scrapList = [];
 
   // Item要求を追加
   for (const [equipmentId, count] of itemCountMap) {
-    const equipment = allEquipments.find((eq) => eq.id === equipmentId);
+    const equipment = equipmentMap.get(equipmentId);
     if (equipment) {
       scrapList.push({
         equipmentId: equipment.id,
@@ -227,7 +228,7 @@ function generateScrapList(itemCountMap, categoryCountMap, allEquipments) {
 
   // Category要求を追加
   for (const [equipmentId, count] of categoryCountMap) {
-    const equipment = allEquipments.find((eq) => eq.id === equipmentId);
+    const equipment = equipmentMap.get(equipmentId);
     if (equipment) {
       scrapList.push({
         equipmentId: equipment.id,

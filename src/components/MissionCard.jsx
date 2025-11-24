@@ -2,7 +2,7 @@ import { Trash2 } from 'lucide-react'
 
 const MissionCard = ({
   mission,
-  equipments,
+  equipmentMap,
   isSelected,
   onToggle,
   onDelete
@@ -31,7 +31,7 @@ const MissionCard = ({
           </div>
           <div className="text-sm text-slate-500 mt-1 flex flex-wrap gap-2">
             {mission.reqs.map((req, i) => {
-              const eq = equipments.find(e => e.id === req.targetId)
+              const eq = equipmentMap.get(req.targetId)
               return (
                 <span key={i} className="bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200">
                   {eq ? eq.name : '削除済み装備'} x{req.count}

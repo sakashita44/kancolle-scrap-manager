@@ -2,7 +2,7 @@ import MissionCard from './MissionCard'
 
 const MissionList = ({
   missions,
-  equipments,
+  equipmentMap,
   selectedMissionIds,
   onToggle,
   onDelete
@@ -21,7 +21,7 @@ const MissionList = ({
         <MissionCard
           key={mission.id}
           mission={mission}
-          equipments={equipments}
+          equipmentMap={equipmentMap}
           isSelected={selectedMissionIds.includes(mission.id)}
           onToggle={onToggle}
           onDelete={onDelete}
