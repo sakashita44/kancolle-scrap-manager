@@ -11,12 +11,14 @@ import FooterArea from './components/FooterArea'
 import Modal from './components/Modal'
 import EquipmentModal from './components/EquipmentModal'
 import MissionModal from './components/MissionModal'
+import GlobalWarningBanner from './components/GlobalWarningBanner'
 
 function App() {
   const {
     allEquipments: equipments,
     loading: equipmentsLoading,
     error: equipmentsError,
+    corruptedItems: corruptedEquipments,
     addUserEquipment,
     deleteUserEquipment
   } = useEquipments()
@@ -24,6 +26,7 @@ function App() {
     allMissions: missions,
     loading: missionsLoading,
     error: missionsError,
+    corruptedItems: corruptedMissions,
     addUserMission,
     deleteUserMission
   } = useMissions()
@@ -99,6 +102,13 @@ function App() {
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans relative">
       <Header onSettingsClick={handleSettingsClick} />
 
+      {/* 破損データ警告バナー */}
+      <GlobalWarningBanner
+        corruptedEquipments={corruptedEquipments}
+        corruptedMissions={corruptedMissions}
+        type="warning"
+      />
+
       <StickyDashboard
         scrapList={scrapList}
         selectedCount={selectedCount}
@@ -158,6 +168,7 @@ function App() {
       >
         <MissionModal
           equipments={equipments}
+          missions={missions}
           onSave={handleAddMission}
           onCancel={() => setActiveModal(null)}
         />
