@@ -3,6 +3,7 @@ import { useEquipments } from './hooks/useEquipments'
 import { useMissions } from './hooks/useMissions'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
+import { useMissionFilter } from './hooks/useMissionFilter'
 import { generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import Header from './components/Header'
 import StickyDashboard from './components/StickyDashboard'
@@ -37,33 +38,26 @@ function App() {
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
-  const [filterText, setFilterText] = useState('')
-  const [filterCategory, setFilterCategory] = useState('ALL')
 
   // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
   const equipmentMap = useMemo(() =>
     new Map(equipments.map(eq => [eq.id, eq]))
   , [equipments])
 
+  // フィルタリング
+  const {
+    filteredMissions,
+    filterText,
+    setFilterText,
+    filterCategory,
+    setFilterCategory,
+    filterPeriod,
+    setFilterPeriod
+  } = useMissionFilter(missions, equipmentMap)
+
   // ローディング・エラー状態の統合
   const isLoading = equipmentsLoading || missionsLoading
   const errorMessage = equipmentsError || missionsError
-
-  // フィルタリング
-  const filteredMissions = useMemo(() => {
-    return missions.filter(mission => {
-      const matchText = mission.name.includes(filterText)
-
-      let matchCategory = true
-      if (filterCategory !== 'ALL') {
-        matchCategory = mission.reqs.some(req => {
-          const eq = equipmentMap.get(req.targetId)
-          return eq && eq.category === filterCategory
-        })
-      }
-      return matchText && matchCategory
-    })
-  }, [missions, equipmentMap, filterText, filterCategory])
 
   const handleSettingsClick = () => {
     console.log('Settings clicked')
@@ -121,9 +115,11 @@ function App() {
         <ControlBar
           filterText={filterText}
           filterCategory={filterCategory}
+          filterPeriod={filterPeriod}
           categories={categories}
           onFilterTextChange={setFilterText}
           onFilterCategoryChange={setFilterCategory}
+          onFilterPeriodChange={setFilterPeriod}
           onEquipmentClick={() => setActiveModal('equipment')}
           onMissionClick={() => setActiveModal('mission')}
         />

@@ -1,11 +1,14 @@
 import { Plus, Search } from 'lucide-react'
+import { PERIOD } from '../types/schema'
 
 const ControlBar = ({
   filterText,
   filterCategory,
+  filterPeriod,
   categories,
   onFilterTextChange,
   onFilterCategoryChange,
+  onFilterPeriodChange,
   onEquipmentClick,
   onMissionClick
 }) => {
@@ -23,6 +26,19 @@ const ControlBar = ({
             onChange={(e) => onFilterTextChange(e.target.value)}
           />
         </div>
+        <select
+          className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600 outline-none"
+          value={filterPeriod}
+          onChange={(e) => onFilterPeriodChange(e.target.value)}
+        >
+          <option value="ALL">全周期</option>
+          <option value={PERIOD.DAILY}>Daily</option>
+          <option value={PERIOD.WEEKLY}>Weekly</option>
+          <option value={PERIOD.MONTHLY}>Monthly</option>
+          <option value={PERIOD.QUARTERLY}>Quarterly</option>
+          <option value={PERIOD.YEARLY}>Yearly</option>
+          <option value={PERIOD.ONE_TIME}>OneTime</option>
+        </select>
         <select
           className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600 outline-none"
           value={filterCategory}
