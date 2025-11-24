@@ -3,6 +3,7 @@ import { useEquipments } from './hooks/useEquipments'
 import { useMissions } from './hooks/useMissions'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
+import { generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import Header from './components/Header'
 import StickyDashboard from './components/StickyDashboard'
 import ControlBar from './components/ControlBar'
@@ -16,6 +17,7 @@ import GlobalWarningBanner from './components/GlobalWarningBanner'
 function App() {
   const {
     allEquipments: equipments,
+    categories,
     loading: equipmentsLoading,
     error: equipmentsError,
     corruptedItems: corruptedEquipments,
@@ -41,11 +43,6 @@ function App() {
   // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
   const equipmentMap = useMemo(() =>
     new Map(equipments.map(eq => [eq.id, eq]))
-  , [equipments])
-
-  // カテゴリ一覧の生成
-  const uniqueCategories = useMemo(() =>
-    [...new Set(equipments.map(e => e.category))].sort()
   , [equipments])
 
   // ローディング・エラー状態の統合
@@ -74,7 +71,7 @@ function App() {
 
   const handleAddEquipment = (data) => {
     const newEquipment = {
-      id: `u_eq_${crypto.randomUUID()}`,
+      id: generateEquipmentId(),
       ...data
     }
     addUserEquipment(newEquipment)
@@ -87,7 +84,7 @@ function App() {
 
   const handleAddMission = (data) => {
     const newMission = {
-      id: `u_ms_${crypto.randomUUID()}`,
+      id: generateMissionId(),
       ...data
     }
     addUserMission(newMission)
@@ -124,7 +121,7 @@ function App() {
         <ControlBar
           filterText={filterText}
           filterCategory={filterCategory}
-          categories={uniqueCategories}
+          categories={categories}
           onFilterTextChange={setFilterText}
           onFilterCategoryChange={setFilterCategory}
           onEquipmentClick={() => setActiveModal('equipment')}
@@ -159,7 +156,7 @@ function App() {
       >
         <EquipmentModal
           equipments={equipments}
-          categories={uniqueCategories}
+          categories={categories}
           onSave={handleAddEquipment}
           onDelete={handleDeleteEquipment}
           onCancel={() => setActiveModal(null)}

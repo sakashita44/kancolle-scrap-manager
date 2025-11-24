@@ -4,7 +4,7 @@
  * @module hooks/useEquipments
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { fetchEquipments } from '../utils/dataFetch.js';
 import { loadUserEquipments, saveUserEquipments } from '../utils/localStorage.js';
 
@@ -136,11 +136,17 @@ export function useEquipments(appVersion = '1.0.0') {
     return [...new Set(categories)].sort();
   }, [allEquipments]);
 
+  // 全カテゴリのリスト（計算済み）
+  const categories = useMemo(() => {
+    return [...new Set(allEquipments.map((eq) => eq.category))].sort();
+  }, [allEquipments]);
+
   return {
     // データ
     masterEquipments,
     userEquipments,
     allEquipments,
+    categories,
 
     // 状態
     loading,
