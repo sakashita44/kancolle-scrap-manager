@@ -1,5 +1,7 @@
-import { useState } from 'react'
-import { Plus, Search, List, Trash2 } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Plus, Search, List, Trash2, AlertCircle } from 'lucide-react'
+import { validateEquipment, validateUniqueName } from '../utils/validation'
+import { LIMITS } from '../types/schema'
 
 const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) => {
   const [name, setName] = useState('')
@@ -7,9 +9,44 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
   const [type, setType] = useState('Item')
   const [searchText, setSearchText] = useState('')
 
+  // リアルタイムバリデーション
+  const validationErrors = useMemo(() => {
+    const errors = {}
+
+    // 名前の検証
+    if (name.trim() === '') {
+      errors.name = '装備名は必須です'
+    } else if (name.length > LIMITS.EQUIPMENT_NAME_MAX) {
+      errors.name = `装備名は${LIMITS.EQUIPMENT_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+    }
+
+    // カテゴリの検証
+    if (category.trim() === '') {
+      errors.category = 'カテゴリは必須です'
+    } else if (category.length > LIMITS.CATEGORY_NAME_MAX) {
+      errors.category = `カテゴリは${LIMITS.CATEGORY_NAME_MAX}文字以内で入力してください (現在: ${category.length}文字)`
+    }
+
+    return errors
+  }, [name, category])
+
+  // 同名チェック（警告）
+  const nameWarning = useMemo(() => {
+    if (name.trim() !== '' && !validationErrors.name) {
+      const isUnique = validateUniqueName(name, equipments)
+      if (!isUnique) {
+        return '同じ名前の装備が既に存在します'
+      }
+    }
+    return null
+  }, [name, equipments, validationErrors.name])
+
+  // フォームが有効かどうか
+  const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== '' && category.trim() !== ''
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!name || !category) return
+    if (!isFormValid) return
     onSave({ name, category, type })
     setName('') // 連続追加しやすくするためクリア
   }
@@ -27,20 +64,42 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
         </h4>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">装備名</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1">
+              装備名
+              {name && <span className="ml-1 text-[10px] text-slate-400">({name.length}/{LIMITS.EQUIPMENT_NAME_MAX})</span>}
+            </label>
             <input
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${
+                validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+              }`}
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="例: 12.7cm連装砲B型改二"
               required
             />
+            {validationErrors.name && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {validationErrors.name}
+              </p>
+            )}
+            {!validationErrors.name && nameWarning && (
+              <p className="mt-1 text-xs text-amber-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {nameWarning}
+              </p>
+            )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">カテゴリ</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1">
+              カテゴリ
+              {category && <span className="ml-1 text-[10px] text-slate-400">({category.length}/{LIMITS.CATEGORY_NAME_MAX})</span>}
+            </label>
             <div className="flex gap-2">
               <input
-                className="flex-1 px-3 py-2 border rounded-lg text-sm"
+                className={`flex-1 px-3 py-2 border rounded-lg text-sm ${
+                  validationErrors.category ? 'border-red-500' : ''
+                }`}
                 value={category}
                 onChange={e => setCategory(e.target.value)}
                 list="category-list"
@@ -51,6 +110,12 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
                 {categories.map(c => <option key={c} value={c} />)}
               </datalist>
             </div>
+            {validationErrors.category && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {validationErrors.category}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-500 mb-1">区分</label>
@@ -63,7 +128,15 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
               <option value="Category">カテゴリ代表 (「機銃」など)</option>
             </select>
           </div>
-          <button type="submit" className="w-full py-2 bg-teal-600 text-white rounded-lg font-bold text-sm hover:bg-teal-700">
+          <button
+            type="submit"
+            disabled={!isFormValid}
+            className={`w-full py-2 rounded-lg font-bold text-sm transition-colors ${
+              isFormValid
+                ? 'bg-teal-600 text-white hover:bg-teal-700'
+                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+            }`}
+          >
             リストに追加
           </button>
         </form>
