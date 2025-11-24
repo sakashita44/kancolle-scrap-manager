@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PERIOD } from '../types/schema'
 
 const MissionModal = ({ equipments, onSave, onCancel }) => {
   const [name, setName] = useState('')
@@ -36,10 +37,12 @@ const MissionModal = ({ equipments, onSave, onCancel }) => {
           value={period}
           onChange={e => setPeriod(e.target.value)}
         >
-          <option value="Daily">Daily</option>
-          <option value="Weekly">Weekly</option>
-          <option value="Monthly">Monthly</option>
-          <option value="OneTime">OneTime</option>
+          <option value={PERIOD.DAILY}>Daily</option>
+          <option value={PERIOD.WEEKLY}>Weekly</option>
+          <option value={PERIOD.MONTHLY}>Monthly</option>
+          <option value={PERIOD.QUARTERLY}>Quarterly</option>
+          <option value={PERIOD.YEARLY}>Yearly</option>
+          <option value={PERIOD.ONE_TIME}>OneTime</option>
         </select>
       </div>
       <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">

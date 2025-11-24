@@ -28,7 +28,7 @@ function App() {
     deleteUserMission
   } = useMissions()
   const { selectedMissionIds, selectedCount, toggleMission, clearSelection } = useSelectedMissions()
-  const { scrapList, calculating } = useScrapCalculation(selectedMissionIds, missions, equipments)
+  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipments)
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
@@ -39,6 +39,10 @@ function App() {
   const uniqueCategories = useMemo(() =>
     [...new Set(equipments.map(e => e.category))].sort()
   , [equipments])
+
+  // ローディング・エラー状態の統合
+  const isLoading = equipmentsLoading || missionsLoading
+  const errorMessage = equipmentsError || missionsError
 
   // フィルタリング
   const filteredMissions = useMemo(() => {
@@ -98,6 +102,7 @@ function App() {
       <StickyDashboard
         scrapList={scrapList}
         selectedCount={selectedCount}
+        onClearSelection={clearSelection}
       />
 
       <div className="max-w-3xl mx-auto p-4">
@@ -113,13 +118,13 @@ function App() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 pb-20">
-        {missionsLoading && (
+        {isLoading && (
           <p className="text-center py-10 text-slate-400">読み込み中...</p>
         )}
-        {missionsError && (
-          <p className="text-center py-10 text-red-600">エラー: {missionsError}</p>
+        {errorMessage && (
+          <p className="text-center py-10 text-red-600">エラー: {errorMessage}</p>
         )}
-        {!missionsLoading && !missionsError && (
+        {!isLoading && !errorMessage && (
           <MissionList
             missions={filteredMissions}
             equipments={equipments}
