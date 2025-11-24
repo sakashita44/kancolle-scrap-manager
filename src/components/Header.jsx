@@ -6,7 +6,7 @@ const Header = ({ onSettingsClick }) => {
       <div className="max-w-3xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Anchor className="w-6 h-6 text-teal-400" />
-          <h1 className="font-bold text-lg">工廠任務廃棄プランナー</h1>
+          <h1 className="font-bold text-lg">工廠任務廃棄マネージャー</h1>
         </div>
         <button
           onClick={onSettingsClick}

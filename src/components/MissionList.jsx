@@ -1,12 +1,15 @@
 import MissionCard from './MissionCard'
+import { LIMITS } from '../types/schema'
 
 const MissionList = ({
   missions,
   equipmentMap,
   selectedMissionIds,
+  selectedCount,
   onToggle,
   onDelete
 }) => {
+  const isMaxSelected = selectedCount >= LIMITS.SELECTED_MISSIONS_MAX
   if (missions.length === 0) {
     return (
       <div className="text-center py-10 text-slate-400">
@@ -17,16 +20,21 @@ const MissionList = ({
 
   return (
     <div className="space-y-2">
-      {missions.map(mission => (
-        <MissionCard
-          key={mission.id}
-          mission={mission}
-          equipmentMap={equipmentMap}
-          isSelected={selectedMissionIds.includes(mission.id)}
-          onToggle={onToggle}
-          onDelete={onDelete}
-        />
-      ))}
+      {missions.map(mission => {
+        const isSelected = selectedMissionIds.includes(mission.id)
+        const isDisabled = isMaxSelected && !isSelected
+        return (
+          <MissionCard
+            key={mission.id}
+            mission={mission}
+            equipmentMap={equipmentMap}
+            isSelected={isSelected}
+            isDisabled={isDisabled}
+            onToggle={onToggle}
+            onDelete={onDelete}
+          />
+        )
+      })}
     </div>
   )
 }

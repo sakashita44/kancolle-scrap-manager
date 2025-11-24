@@ -8,6 +8,7 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
   const [category, setCategory] = useState(categories[0] || '')
   const [type, setType] = useState('Item')
   const [searchText, setSearchText] = useState('')
+  const [isNewCategory, setIsNewCategory] = useState(false)
 
   // リアルタイムバリデーション
   const validationErrors = useMemo(() => {
@@ -91,25 +92,47 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">
-              カテゴリ
-              {category && <span className="ml-1 text-[10px] text-slate-400">({category.length}/{LIMITS.CATEGORY_NAME_MAX})</span>}
-            </label>
-            <div className="flex gap-2">
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-xs font-medium text-slate-500">
+                カテゴリ
+                {category && <span className="ml-1 text-[10px] text-slate-400">({category.length}/{LIMITS.CATEGORY_NAME_MAX})</span>}
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsNewCategory(!isNewCategory)
+                  if (!isNewCategory) setCategory('')
+                  else setCategory(categories[0] || '')
+                }}
+                className="text-[10px] text-blue-600 hover:text-blue-700 underline"
+              >
+                {isNewCategory ? '既存から選択' : '新規作成'}
+              </button>
+            </div>
+            {isNewCategory ? (
               <input
-                className={`flex-1 px-3 py-2 border rounded-lg text-sm ${
+                className={`w-full px-3 py-2 border rounded-lg text-sm ${
                   validationErrors.category ? 'border-red-500' : ''
                 }`}
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                list="category-list"
-                placeholder="選択または入力"
+                placeholder="新しいカテゴリ名を入力"
                 required
               />
-              <datalist id="category-list">
-                {categories.map(c => <option key={c} value={c} />)}
-              </datalist>
-            </div>
+            ) : (
+              <select
+                className={`w-full px-3 py-2 border rounded-lg text-sm ${
+                  validationErrors.category ? 'border-red-500' : ''
+                }`}
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+                required
+              >
+                {categories.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            )}
             {validationErrors.category && (
               <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
@@ -127,6 +150,9 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
               <option value="Item">個別装備 (Item)</option>
               <option value="Category">カテゴリ代表 (「機銃」など)</option>
             </select>
+            <p className="mt-1 text-[10px] text-slate-500">
+              ℹ️ 個別装備: 具体的な装備名（例: 25mm単装機銃）/ カテゴリ代表: カテゴリ全体を指す（例: 機銃）
+            </p>
           </div>
           <button
             type="submit"
