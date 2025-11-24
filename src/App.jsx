@@ -27,7 +27,7 @@ function App() {
     addUserMission,
     deleteUserMission
   } = useMissions()
-  const { selectedMissionIds, toggleMission, clearSelection } = useSelectedMissions()
+  const { selectedMissionIds, selectedCount, toggleMission, clearSelection } = useSelectedMissions()
   const { scrapList, calculating } = useScrapCalculation(selectedMissionIds, missions, equipments)
 
   const [errors, setErrors] = useState([])
@@ -97,7 +97,7 @@ function App() {
 
       <StickyDashboard
         scrapList={scrapList}
-        selectedCount={selectedMissionIds.size}
+        selectedCount={selectedCount}
       />
 
       <div className="max-w-3xl mx-auto p-4">

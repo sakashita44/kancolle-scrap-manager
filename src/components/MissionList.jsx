@@ -22,7 +22,7 @@ const MissionList = ({
           key={mission.id}
           mission={mission}
           equipments={equipments}
-          isSelected={selectedMissionIds.has(mission.id)}
+          isSelected={selectedMissionIds.includes(mission.id)}
           onToggle={onToggle}
           onDelete={onDelete}
         />
