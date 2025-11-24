@@ -28,6 +28,7 @@ Expected commands once configured:
 
 1. check current branch status with `git status`
 1. check issue and `progress.md` for next tasks
+    * Must: check comments of related issues for additional context
 1. create branch with rule in `copilot-instructions.md` from main branch
     * `<prefix>/<yyyymm>/sakashita44/<issue-number: if exists>-<short-description>`
     * e.g. `feat/202511/sakashita44/5-add-validation`
