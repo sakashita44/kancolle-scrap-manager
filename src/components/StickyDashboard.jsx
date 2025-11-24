@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Trash2, ChevronUp, ChevronDown, X } from 'lucide-react'
 import { groupScrapListByCategory } from '../utils/scrapListFormatters'
+import { LIMITS } from '../types/schema'
 
 /**
  * 廃棄リストを表示するスティッキーダッシュボード
@@ -26,11 +27,11 @@ const StickyDashboard = ({ scrapList, selectedCount, onClearSelection }) => {
           onClick={() => setIsOpen(!isOpen)}
         >
           <Trash2 className="w-5 h-5 text-red-500" />
-          <h2 className="font-bold text-slate-700">本日の廃棄リスト</h2>
+          <h2 className="font-bold text-slate-700">廃棄リスト</h2>
 
           <div className="ml-auto flex items-center gap-3">
             <span className="text-xs bg-slate-200 px-2 py-1 rounded-full text-slate-600">
-              選択中: {selectedCount}
+              {selectedCount}/{LIMITS.SELECTED_MISSIONS_MAX}
             </span>
             {selectedCount > 0 && (
               <button

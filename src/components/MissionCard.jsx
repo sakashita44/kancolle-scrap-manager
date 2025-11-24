@@ -4,6 +4,7 @@ const MissionCard = ({
   mission,
   equipmentMap,
   isSelected,
+  isDisabled = false,
   onToggle,
   onDelete
 }) => {
@@ -11,15 +12,20 @@ const MissionCard = ({
 
   return (
     <label
-      className={`block bg-white rounded-lg border shadow-sm transition-colors cursor-pointer group relative ${
-        isSelected ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-blue-300'
+      className={`block bg-white rounded-lg border shadow-sm transition-colors group relative ${
+        isDisabled
+          ? 'border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed'
+          : isSelected
+          ? 'border-blue-400 bg-blue-50 cursor-pointer'
+          : 'border-slate-200 hover:border-blue-300 cursor-pointer'
       }`}
     >
       <div className="p-4 flex items-start gap-3">
         <input
           type="checkbox"
-          className="mt-1 w-5 h-5 text-blue-600 rounded border-gray-300"
+          className="mt-1 w-5 h-5 text-blue-600 rounded border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
           checked={isSelected}
+          disabled={isDisabled}
           onChange={() => onToggle(mission.id)}
         />
         <div className="flex-1">

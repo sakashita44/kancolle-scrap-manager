@@ -137,6 +137,7 @@ function App() {
             missions={filteredMissions}
             equipmentMap={equipmentMap}
             selectedMissionIds={selectedMissionIds}
+            selectedCount={selectedCount}
             onToggle={toggleMission}
             onDelete={handleDeleteMission}
           />
