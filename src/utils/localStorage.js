@@ -5,6 +5,7 @@
  */
 
 import { STORAGE_KEYS, SCHEMA_VERSION } from '../types/schema.js';
+import { validateEquipment, validateMission } from './validation.js';
 
 /**
  * LocalStorageから値を取得してJSONパース
@@ -61,17 +62,43 @@ export function saveUserEquipments(equipments) {
 }
 
 /**
- * ユーザー定義装備を読込
- * @returns {Array} 装備データの配列（存在しない場合は空配列）
+ * ユーザー定義装備を読込（起動時バリデーション付き）
+ * @returns {{data: Array, corruptedItems: Array}} 装備データと破損アイテム情報
  */
 export function loadUserEquipments() {
-  const data = getItem(STORAGE_KEYS.USER_EQUIPMENTS);
-  if (!data || !data.equipments) {
+  const rawData = getItem(STORAGE_KEYS.USER_EQUIPMENTS);
+  if (!rawData || !rawData.equipments) {
     console.log('[LocalStorage] No user equipments found');
-    return [];
+    return { data: [], corruptedItems: [] };
   }
-  console.log('[LocalStorage] Loaded user equipments:', data.equipments.length, 'items');
-  return data.equipments;
+
+  // 起動時バリデーション
+  const validEquipments = [];
+  const corruptedItems = [];
+
+  rawData.equipments.forEach((equipment) => {
+    const validation = validateEquipment(equipment);
+    if (validation.valid) {
+      validEquipments.push(equipment);
+    } else {
+      console.warn('[LocalStorage] Corrupted equipment detected:', equipment.id, validation.errors);
+      corruptedItems.push({
+        id: equipment.id || 'unknown',
+        name: equipment.name || 'unknown',
+        type: 'equipment',
+        errors: validation.errors,
+      });
+    }
+  });
+
+  // 破損データがあれば正常なデータのみで上書き保存
+  if (corruptedItems.length > 0) {
+    console.log('[LocalStorage] Removing', corruptedItems.length, 'corrupted equipment(s)');
+    saveUserEquipments(validEquipments);
+  }
+
+  console.log('[LocalStorage] Loaded user equipments:', validEquipments.length, 'items');
+  return { data: validEquipments, corruptedItems };
 }
 
 /**
@@ -89,17 +116,43 @@ export function saveUserMissions(missions) {
 }
 
 /**
- * ユーザー定義任務を読込
- * @returns {Array} 任務データの配列（存在しない場合は空配列）
+ * ユーザー定義任務を読込（起動時バリデーション付き）
+ * @returns {{data: Array, corruptedItems: Array}} 任務データと破損アイテム情報
  */
 export function loadUserMissions() {
-  const data = getItem(STORAGE_KEYS.USER_MISSIONS);
-  if (!data || !data.missions) {
+  const rawData = getItem(STORAGE_KEYS.USER_MISSIONS);
+  if (!rawData || !rawData.missions) {
     console.log('[LocalStorage] No user missions found');
-    return [];
+    return { data: [], corruptedItems: [] };
   }
-  console.log('[LocalStorage] Loaded user missions:', data.missions.length, 'items');
-  return data.missions;
+
+  // 起動時バリデーション
+  const validMissions = [];
+  const corruptedItems = [];
+
+  rawData.missions.forEach((mission) => {
+    const validation = validateMission(mission);
+    if (validation.valid) {
+      validMissions.push(mission);
+    } else {
+      console.warn('[LocalStorage] Corrupted mission detected:', mission.id, validation.errors);
+      corruptedItems.push({
+        id: mission.id || 'unknown',
+        name: mission.name || 'unknown',
+        type: 'mission',
+        errors: validation.errors,
+      });
+    }
+  });
+
+  // 破損データがあれば正常なデータのみで上書き保存
+  if (corruptedItems.length > 0) {
+    console.log('[LocalStorage] Removing', corruptedItems.length, 'corrupted mission(s)');
+    saveUserMissions(validMissions);
+  }
+
+  console.log('[LocalStorage] Loaded user missions:', validMissions.length, 'items');
+  return { data: validMissions, corruptedItems };
 }
 
 /**
