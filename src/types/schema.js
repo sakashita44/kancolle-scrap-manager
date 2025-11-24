@@ -61,13 +61,24 @@
  */
 
 /**
- * 廃棄リスト項目
+ * 廃棄リスト項目 (基本形式)
+ * calculateScrapListの戻り値要素
  * @typedef {Object} ScrapListItem
  * @property {string} equipmentId - 装備ID
  * @property {string} equipmentName - 装備名
  * @property {string} category - カテゴリ名
  * @property {number} count - 廃棄数
  * @property {EquipmentType} type - 装備区分
+ */
+
+/**
+ * カテゴリ別集計データ
+ * UI表示用の集計形式
+ * @typedef {Object} CategoryGroup
+ * @property {string} categoryName - カテゴリ名
+ * @property {number} totalCount - カテゴリ内の総数
+ * @property {Array<{name: string, count: number}>} items - 個別装備リスト
+ * @property {number} remainder - カテゴリ代表の数（何でもOK）
  */
 
 /**

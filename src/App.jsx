@@ -28,7 +28,7 @@ function App() {
     deleteUserMission
   } = useMissions()
   const { selectedMissionIds, toggleMission, clearSelection } = useSelectedMissions()
-  const { scrapList, isCalculating } = useScrapCalculation(selectedMissionIds, missions, equipments)
+  const { scrapList, calculating } = useScrapCalculation(selectedMissionIds, missions, equipments)
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)

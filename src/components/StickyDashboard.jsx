@@ -1,8 +1,21 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Trash2, ChevronUp, ChevronDown } from 'lucide-react'
+import { groupScrapListByCategory } from '../utils/scrapListFormatters'
 
+/**
+ * 廃棄リストを表示するスティッキーダッシュボード
+ * @param {Object} props
+ * @param {import('../types/schema').ScrapListItem[]} props.scrapList - 廃棄リスト（基本形式）
+ * @param {number} props.selectedCount - 選択中の任務数
+ */
 const StickyDashboard = ({ scrapList, selectedCount }) => {
   const [isOpen, setIsOpen] = useState(true)
+
+  // 廃棄リストをカテゴリ別にグループ化
+  const categoryGroups = useMemo(
+    () => groupScrapListByCategory(scrapList),
+    [scrapList]
+  )
 
   return (
     <div className="sticky top-0 z-10 bg-white/95 backdrop-blur shadow-md border-b border-slate-200 transition-all">
@@ -27,13 +40,13 @@ const StickyDashboard = ({ scrapList, selectedCount }) => {
         {/* 開閉するコンテンツエリア */}
         {isOpen && (
           <div className="mt-2 pb-2 animate-in fade-in slide-in-from-top-2 duration-200">
-            {scrapList.length === 0 ? (
+            {categoryGroups.length === 0 ? (
               <div className="text-center py-4 text-slate-400 text-sm bg-slate-50 rounded-lg border border-dashed border-slate-300">
                 下の一覧から任務を選択してください
               </div>
             ) : (
               <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
-                {scrapList.map((group, idx) => (
+                {categoryGroups.map((group, idx) => (
                   <div key={idx} className="flex-none w-64 bg-slate-50 border border-slate-200 rounded-lg p-3 shadow-sm snap-center">
                     <div className="flex justify-between items-center mb-2 border-b border-slate-200 pb-1">
                       <span className="font-bold text-sm text-slate-700">{group.categoryName}</span>

@@ -13,6 +13,16 @@ import { calculateScrapList } from '../utils/calculateScrapList.js';
  * @param {Object[]} allMissions - 全任務データ
  * @param {Object[]} allEquipments - 全装備データ
  * @returns {Object} 廃棄リストと警告情報
+ * @returns {import('../types/schema').ScrapListItem[]} scrapList - 廃棄リスト（基本形式）
+ * @returns {number} totalCount - 廃棄総数
+ * @returns {number} itemCount - アイテム数
+ * @returns {Array} warnings - 警告リスト
+ * @returns {Array} errors - エラーリスト
+ * @returns {Array} warningMessages - 警告メッセージリスト
+ * @returns {boolean} hasWarnings - 警告があるか
+ * @returns {boolean} hasErrors - エラーがあるか
+ * @returns {boolean} calculating - 計算中フラグ
+ * @returns {Function} recalculate - 手動再計算関数
  */
 export function useScrapCalculation(selectedMissionIds, allMissions, allEquipments) {
   const [scrapList, setScrapList] = useState([]);
@@ -72,20 +82,6 @@ export function useScrapCalculation(selectedMissionIds, allMissions, allEquipmen
     calculate();
   }, [calculate]);
 
-  // カテゴリ別に廃棄リストをグループ化
-  const scrapListByCategory = useMemo(() => {
-    const grouped = {};
-
-    for (const item of scrapList) {
-      if (!grouped[item.category]) {
-        grouped[item.category] = [];
-      }
-      grouped[item.category].push(item);
-    }
-
-    return grouped;
-  }, [scrapList]);
-
   // 廃棄総数
   const totalCount = useMemo(() => {
     return scrapList.reduce((sum, item) => sum + item.count, 0);
@@ -101,7 +97,6 @@ export function useScrapCalculation(selectedMissionIds, allMissions, allEquipmen
   return {
     // データ
     scrapList,
-    scrapListByCategory,
     warnings,
     errors,
     warningMessages,
