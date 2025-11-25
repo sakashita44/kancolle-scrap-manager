@@ -125,6 +125,13 @@ export async function fetchMasterData(type, version = '1.0.0') {
       );
     }
 
+    // isMaster: true を付与
+    if (type === 'equipments' && data.equipments) {
+      data.equipments = data.equipments.map(eq => ({ ...eq, isMaster: true }));
+    } else if (type === 'missions' && data.missions) {
+      data.missions = data.missions.map(ms => ({ ...ms, isMaster: true }));
+    }
+
     console.log(`[DataFetch] Successfully fetched and validated ${type} from GitHub Pages`);
     return {
       data,
@@ -146,6 +153,13 @@ export async function fetchMasterData(type, version = '1.0.0') {
           `Validation failed: ${validation.invalidItems.length} invalid items found. ` +
           `First error: ${validation.invalidItems[0].errors[0]}`
         );
+      }
+
+      // isMaster: true を付与
+      if (type === 'equipments' && data.equipments) {
+        data.equipments = data.equipments.map(eq => ({ ...eq, isMaster: true }));
+      } else if (type === 'missions' && data.missions) {
+        data.missions = data.missions.map(ms => ({ ...ms, isMaster: true }));
       }
 
       console.log(`[DataFetch] Successfully fetched and validated ${type} from local`);

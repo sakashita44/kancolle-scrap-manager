@@ -53,12 +53,15 @@ function setItem(key, value) {
  * @throws {Error} 保存に失敗した場合
  */
 export function saveUserEquipments(equipments) {
+  // isMasterフィールドを除外（仕様: JSONには含まれない）
+  const cleanedEquipments = equipments.map(({ isMaster, ...eq }) => eq);
+
   const data = {
     version: SCHEMA_VERSION,
-    equipments,
+    equipments: cleanedEquipments,
   };
   setItem(STORAGE_KEYS.USER_EQUIPMENTS, data);
-  console.log('[LocalStorage] Saved user equipments:', equipments.length, 'items');
+  console.log('[LocalStorage] Saved user equipments:', cleanedEquipments.length, 'items');
 }
 
 /**
@@ -79,7 +82,8 @@ export function loadUserEquipments() {
   rawData.equipments.forEach((equipment) => {
     const validation = validateEquipment(equipment);
     if (validation.valid) {
-      validEquipments.push(equipment);
+      // isMaster: false を付与
+      validEquipments.push({ ...equipment, isMaster: false });
     } else {
       console.warn('[LocalStorage] Corrupted equipment detected:', equipment.id, validation.errors);
       corruptedItems.push({
@@ -107,12 +111,15 @@ export function loadUserEquipments() {
  * @throws {Error} 保存に失敗した場合
  */
 export function saveUserMissions(missions) {
+  // isMasterフィールドを除外（仕様: JSONには含まれない）
+  const cleanedMissions = missions.map(({ isMaster, ...ms }) => ms);
+
   const data = {
     version: SCHEMA_VERSION,
-    missions,
+    missions: cleanedMissions,
   };
   setItem(STORAGE_KEYS.USER_MISSIONS, data);
-  console.log('[LocalStorage] Saved user missions:', missions.length, 'items');
+  console.log('[LocalStorage] Saved user missions:', cleanedMissions.length, 'items');
 }
 
 /**
@@ -133,7 +140,8 @@ export function loadUserMissions() {
   rawData.missions.forEach((mission) => {
     const validation = validateMission(mission);
     if (validation.valid) {
-      validMissions.push(mission);
+      // isMaster: false を付与
+      validMissions.push({ ...mission, isMaster: false });
     } else {
       console.warn('[LocalStorage] Corrupted mission detected:', mission.id, validation.errors);
       corruptedItems.push({

@@ -70,9 +70,18 @@ export function useEquipments(appVersion = '1.0.0') {
     }
   }, []);
 
-  // 公式マスタとユーザー定義をマージ
+  // 公式マスタとユーザー定義をマージしてソート
   useEffect(() => {
     const merged = [...masterEquipments, ...userEquipments];
+
+    // ソート: isMaster優先（公式が先）→ order昇順
+    merged.sort((a, b) => {
+      // 公式優先（isMasterは取得時に自動付与済み）
+      if (a.isMaster !== b.isMaster) return b.isMaster ? 1 : -1;
+      // 同じグループ内ではorder順
+      return a.order - b.order;
+    });
+
     setAllEquipments(merged);
   }, [masterEquipments, userEquipments]);
 
@@ -136,9 +145,21 @@ export function useEquipments(appVersion = '1.0.0') {
     return [...new Set(categories)].sort();
   }, [allEquipments]);
 
-  // 全カテゴリのリスト（計算済み）
+  // 全カテゴリのリスト（計算済み、マスタデータの出現順を維持）
   const categories = useMemo(() => {
-    return [...new Set(allEquipments.map((eq) => eq.category))].sort();
+    const seen = new Set();
+    const orderedCategories = [];
+
+    // allEquipmentsは既にソート済み（isMaster→order順）
+    // 出現順にカテゴリを収集することでマスタの順序を維持
+    allEquipments.forEach((eq) => {
+      if (!seen.has(eq.categoryId)) {
+        seen.add(eq.categoryId);
+        orderedCategories.push(eq.categoryId);
+      }
+    });
+
+    return orderedCategories;
   }, [allEquipments]);
 
   return {
