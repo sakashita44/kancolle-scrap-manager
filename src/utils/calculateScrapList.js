@@ -11,9 +11,10 @@ import { EQUIPMENT_TYPE, LIMITS } from '../types/schema.js';
  * @param {string[]} selectedMissionIds - 選択中の任務IDリスト
  * @param {Object[]} allMissions - 全任務データ
  * @param {Object[]} allEquipments - 全装備データ
+ * @param {Map} categoryNameMap - カテゴリIDから名前への変換Map
  * @returns {Object} { scrapList: 廃棄リスト, warnings: 警告情報 }
  */
-export function calculateScrapList(selectedMissionIds, allMissions, allEquipments) {
+export function calculateScrapList(selectedMissionIds, allMissions, allEquipments, categoryNameMap) {
   const warnings = [];
 
   // フェーズ1: 事前チェック
@@ -31,14 +32,6 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
 
   // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
   const equipmentMap = new Map(allEquipments.map((eq) => [eq.id, eq]));
-
-  // カテゴリIDからカテゴリ名への変換Map (type: "Category"の装備のnameを使用)
-  const categoryNameMap = new Map();
-  allEquipments.forEach((eq) => {
-    if (eq.type === EQUIPMENT_TYPE.CATEGORY) {
-      categoryNameMap.set(eq.categoryId, eq.name);
-    }
-  });
 
   // フェーズ2: 要求装備の展開
   const allRequirements = expandRequirements(

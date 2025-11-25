@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { AlertCircle, Plus, Trash2 } from 'lucide-react'
 import { PERIOD, LIMITS } from '../types/schema'
 
-const MissionModal = ({ equipments, missions, getCategoryName, onSave, onCancel }) => {
+const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onSave, onCancel }) => {
   const [name, setName] = useState('')
   const [period, setPeriod] = useState('Weekly')
   // 複数の要求装備を管理（最初の1枠は必須）
@@ -74,7 +74,8 @@ const MissionModal = ({ equipments, missions, getCategoryName, onSave, onCancel 
     onSave({
       name,
       period,
-      reqs: reqs.map(req => ({ targetId: req.targetId, count: parseInt(req.count) }))
+      reqs: reqs.map(req => ({ targetId: req.targetId, count: parseInt(req.count) })),
+      order: getNextOrder()
     })
   }
 

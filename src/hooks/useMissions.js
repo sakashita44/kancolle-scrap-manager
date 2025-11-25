@@ -152,6 +152,13 @@ export function useMissions(appVersion = '1.0.0') {
     return [...new Set(periods)].sort();
   }, [allMissions]);
 
+  // ユーザー定義任務の次の order 値を取得
+  const getNextOrder = useCallback(() => {
+    if (userMissions.length === 0) return 1;
+    const maxOrder = Math.max(...userMissions.map(ms => ms.order || 0));
+    return maxOrder + 1;
+  }, [userMissions]);
+
   return {
     // データ
     masterMissions,
@@ -173,5 +180,6 @@ export function useMissions(appVersion = '1.0.0') {
     findMissionById,
     filterByPeriod,
     getPeriods,
+    getNextOrder,
   };
 }

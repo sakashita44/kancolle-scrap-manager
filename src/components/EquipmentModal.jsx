@@ -3,7 +3,7 @@ import { Plus, Search, List, Trash2, AlertCircle } from 'lucide-react'
 import { validateEquipment, validateUniqueName } from '../utils/validation'
 import { LIMITS } from '../types/schema'
 
-const EquipmentModal = ({ equipments, categories, getCategoryName, onSave, onDelete, onCancel }) => {
+const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder, onSave, onDelete, onCancel }) => {
   const [name, setName] = useState('')
   const [category, setCategory] = useState(categories[0] || '')
   const [type, setType] = useState('Item')
@@ -48,7 +48,7 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, onSave, onDel
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!isFormValid) return
-    onSave({ name, categoryId: category, type, order: 1 })
+    onSave({ name, categoryId: category, type, order: getNextOrder() })
     setName('') // 連続追加しやすくするためクリア
   }
 

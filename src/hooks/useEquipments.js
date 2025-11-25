@@ -134,46 +134,18 @@ export function useEquipments(appVersion = '1.0.0') {
     return allEquipments.find((eq) => eq.id === equipmentId) || null;
   }, [allEquipments]);
 
-  // 全カテゴリのリスト（計算済み、マスタデータの出現順を維持）
-  const categories = useMemo(() => {
-    const seen = new Set();
-    const orderedCategories = [];
-
-    // allEquipmentsは既にソート済み（isMaster→order順）
-    // 出現順にカテゴリを収集することでマスタの順序を維持
-    allEquipments.forEach((eq) => {
-      if (!seen.has(eq.categoryId)) {
-        seen.add(eq.categoryId);
-        orderedCategories.push(eq.categoryId);
-      }
-    });
-
-    return orderedCategories;
-  }, [allEquipments]);
-
-  // カテゴリIDからカテゴリ名への変換Map
-  const categoryNameMap = useMemo(() => {
-    const map = new Map();
-    allEquipments.forEach((eq) => {
-      if (eq.type === 'Category') {
-        map.set(eq.categoryId, eq.name);
-      }
-    });
-    return map;
-  }, [allEquipments]);
-
-  // カテゴリIDからカテゴリ名を取得
-  const getCategoryName = useCallback((categoryId) => {
-    return categoryNameMap.get(categoryId) || categoryId;
-  }, [categoryNameMap]);
+  // ユーザー定義装備の次の order 値を取得
+  const getNextOrder = useCallback(() => {
+    if (userEquipments.length === 0) return 1;
+    const maxOrder = Math.max(...userEquipments.map(eq => eq.order || 0));
+    return maxOrder + 1;
+  }, [userEquipments]);
 
   return {
     // データ
     masterEquipments,
     userEquipments,
     allEquipments,
-    categories,
-    categoryNameMap,
 
     // 状態
     loading,
@@ -188,6 +160,6 @@ export function useEquipments(appVersion = '1.0.0') {
 
     // ユーティリティ
     findEquipmentById,
-    getCategoryName,
+    getNextOrder,
   };
 }
