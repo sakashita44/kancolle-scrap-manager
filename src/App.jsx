@@ -16,6 +16,7 @@ import EquipmentModal from './components/EquipmentModal'
 import MissionModal from './components/MissionModal'
 import GlobalWarningBanner from './components/GlobalWarningBanner'
 import ConfirmDialog from './components/ConfirmDialog'
+import AboutModal from './components/AboutModal'
 
 function App() {
   const {
@@ -49,6 +50,7 @@ function App() {
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
 
   // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
   const equipmentMap = useMemo(() =>
@@ -70,8 +72,18 @@ function App() {
   const isLoading = equipmentsLoading || missionsLoading
   const errorMessage = equipmentsError || missionsError
 
-  const handleSettingsClick = () => {
-    console.log('Settings clicked')
+  const handleAboutOpen = () => {
+    setIsAboutModalOpen(true)
+  }
+
+  const handleExport = () => {
+    // TODO: issue #12で実装予定
+    console.log('エクスポート機能は issue #12 で実装予定')
+  }
+
+  const handleImport = () => {
+    // TODO: issue #12で実装予定
+    console.log('インポート機能は issue #12 で実装予定')
   }
 
   const handleAddEquipment = (data) => {
@@ -128,7 +140,11 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans relative">
-      <Header onSettingsClick={handleSettingsClick} />
+      <Header
+        onAboutOpen={handleAboutOpen}
+        onExport={handleExport}
+        onImport={handleImport}
+      />
 
       {/* 破損データ警告バナー */}
       <GlobalWarningBanner
@@ -219,6 +235,11 @@ function App() {
         variant="danger"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
+      />
+
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
       />
     </div>
   )
