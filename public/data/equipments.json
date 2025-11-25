@@ -3,7 +3,7 @@
   "equipments": [
     {
       "id": "m_eq_cat_main_gun_s",
-      "name": "種別不問",
+      "name": "小口径主砲（種別不問）",
       "categoryId": "m_cat_gun_s",
       "type": "Category",
       "order": 0
@@ -38,7 +38,7 @@
     },
     {
       "id": "m_eq_cat_main_gun_m",
-      "name": "種別不問",
+      "name": "中口径主砲（種別不問）",
       "categoryId": "m_cat_gun_m",
       "type": "Category",
       "order": 0
@@ -66,7 +66,7 @@
     },
     {
       "id": "m_eq_cat_main_gun_l",
-      "name": "種別不問",
+      "name": "大口径主砲（種別不問）",
       "categoryId": "m_cat_gun_l",
       "type": "Category",
       "order": 0
@@ -94,7 +94,7 @@
     },
     {
       "id": "m_eq_cat_machine_gun",
-      "name": "種別不問",
+      "name": "機銃（種別不問）",
       "categoryId": "m_cat_mg",
       "type": "Category",
       "order": 0
@@ -129,7 +129,7 @@
     },
     {
       "id": "m_eq_cat_torpedo",
-      "name": "種別不問",
+      "name": "魚雷（種別不問）",
       "categoryId": "m_cat_torpedo",
       "type": "Category",
       "order": 0
@@ -157,7 +157,7 @@
     },
     {
       "id": "m_eq_cat_depth_charge",
-      "name": "種別不問",
+      "name": "爆雷（種別不問）",
       "categoryId": "m_cat_dc",
       "type": "Category",
       "order": 0
@@ -178,7 +178,7 @@
     },
     {
       "id": "m_eq_cat_sonar",
-      "name": "種別不問",
+      "name": "ソナー（種別不問）",
       "categoryId": "m_cat_sonar",
       "type": "Category",
       "order": 0
@@ -206,7 +206,7 @@
     },
     {
       "id": "m_eq_cat_fighter",
-      "name": "種別不問",
+      "name": "艦上戦闘機（種別不問）",
       "categoryId": "m_cat_fighter",
       "type": "Category",
       "order": 0
@@ -227,7 +227,7 @@
     },
     {
       "id": "m_eq_cat_bomber",
-      "name": "種別不問",
+      "name": "艦上爆撃機（種別不問）",
       "categoryId": "m_cat_bomber",
       "type": "Category",
       "order": 0
@@ -248,7 +248,7 @@
     },
     {
       "id": "m_eq_cat_torpedo_bomber",
-      "name": "種別不問",
+      "name": "艦上攻撃機（種別不問）",
       "categoryId": "m_cat_tb",
       "type": "Category",
       "order": 0
@@ -269,7 +269,7 @@
     },
     {
       "id": "m_eq_cat_recon",
-      "name": "種別不問",
+      "name": "艦上偵察機（種別不問）",
       "categoryId": "m_cat_recon",
       "type": "Category",
       "order": 0
