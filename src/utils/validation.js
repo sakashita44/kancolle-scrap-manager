@@ -107,11 +107,14 @@ export function validateEquipment(equipment) {
   if (!equipment.name) {
     errors.push('name は必須です');
   }
-  if (!equipment.category) {
-    errors.push('category は必須です');
+  if (!equipment.categoryId) {
+    errors.push('categoryId は必須です');
   }
   if (!equipment.type) {
     errors.push('type は必須です');
+  }
+  if (typeof equipment.order !== 'number') {
+    errors.push('order は数値である必要があります');
   }
 
   // ID形式チェック
@@ -138,8 +141,15 @@ export function validateEquipment(equipment) {
   if (equipment.name && equipment.name.length > LIMITS.EQUIPMENT_NAME_MAX) {
     errors.push(`name は${LIMITS.EQUIPMENT_NAME_MAX}文字以内にしてください`);
   }
-  if (equipment.category && equipment.category.length > LIMITS.CATEGORY_NAME_MAX) {
-    errors.push(`category は${LIMITS.CATEGORY_NAME_MAX}文字以内にしてください`);
+  if (equipment.categoryId && equipment.categoryId.length > LIMITS.CATEGORY_NAME_MAX) {
+    errors.push(`categoryId は${LIMITS.CATEGORY_NAME_MAX}文字以内にしてください`);
+  }
+
+  // order値チェック
+  if (typeof equipment.order === 'number') {
+    if (!Number.isInteger(equipment.order)) {
+      errors.push('order は整数である必要があります');
+    }
   }
 
   // type値チェック
@@ -173,6 +183,9 @@ export function validateMission(mission) {
   }
   if (!mission.period) {
     errors.push('period は必須です');
+  }
+  if (typeof mission.order !== 'number') {
+    errors.push('order は数値である必要があります');
   }
   if (!mission.reqs) {
     errors.push('reqs は必須です');
@@ -208,6 +221,13 @@ export function validateMission(mission) {
     const validPeriods = Object.values(PERIOD);
     if (!validPeriods.includes(mission.period)) {
       errors.push(`period は ${validPeriods.join(', ')} のいずれかである必要があります`);
+    }
+  }
+
+  // order値チェック
+  if (typeof mission.order === 'number') {
+    if (!Number.isInteger(mission.order)) {
+      errors.push('order は整数である必要があります');
     }
   }
 

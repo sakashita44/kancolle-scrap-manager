@@ -32,6 +32,14 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
   // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
   const equipmentMap = new Map(allEquipments.map((eq) => [eq.id, eq]));
 
+  // カテゴリIDからカテゴリ名への変換Map (type: "Category"の装備のnameを使用)
+  const categoryNameMap = new Map();
+  allEquipments.forEach((eq) => {
+    if (eq.type === EQUIPMENT_TYPE.CATEGORY) {
+      categoryNameMap.set(eq.categoryId, eq.name);
+    }
+  });
+
   // フェーズ2: 要求装備の展開
   const allRequirements = expandRequirements(
     selectedMissionIds,
@@ -69,7 +77,8 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
   const scrapList = generateScrapList(
     itemCountMap,
     categoryCountMap,
-    equipmentMap
+    equipmentMap,
+    categoryNameMap
   );
 
   return { scrapList, warnings };
@@ -209,17 +218,18 @@ function resolveInclusion(itemCountMap, categoryCountMap, equipmentMap) {
  * フェーズ7: 廃棄リストの生成
  * @private
  */
-function generateScrapList(itemCountMap, categoryCountMap, equipmentMap) {
+function generateScrapList(itemCountMap, categoryCountMap, equipmentMap, categoryNameMap) {
   const scrapList = [];
 
   // Item要求を追加
   for (const [equipmentId, count] of itemCountMap) {
     const equipment = equipmentMap.get(equipmentId);
     if (equipment) {
+      const categoryName = categoryNameMap.get(equipment.categoryId) || equipment.categoryId;
       scrapList.push({
         equipmentId: equipment.id,
         equipmentName: equipment.name,
-        category: equipment.category,
+        category: categoryName,
         count: count,
         type: equipment.type,
       });
@@ -230,10 +240,11 @@ function generateScrapList(itemCountMap, categoryCountMap, equipmentMap) {
   for (const [equipmentId, count] of categoryCountMap) {
     const equipment = equipmentMap.get(equipmentId);
     if (equipment) {
+      const categoryName = categoryNameMap.get(equipment.categoryId) || equipment.categoryId;
       scrapList.push({
         equipmentId: equipment.id,
         equipmentName: equipment.name,
-        category: equipment.category,
+        category: categoryName,
         count: count,
         type: equipment.type,
       });
