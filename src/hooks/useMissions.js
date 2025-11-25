@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchMissions } from '../utils/dataFetch.js';
 import { loadUserMissions, saveUserMissions } from '../utils/localStorage.js';
+import { PERIOD_ORDER } from '../types/schema.js';
 
 /**
  * 任務データを管理するカスタムフック
@@ -70,9 +71,24 @@ export function useMissions(appVersion = '1.0.0') {
     }
   }, []);
 
-  // 公式マスタとユーザー定義をマージ
+  // 公式マスタとユーザー定義をマージしてソート
   useEffect(() => {
     const merged = [...masterMissions, ...userMissions];
+
+    // ソート: 周期順（PERIOD_ORDER） → isMaster優先（公式が先） → order昇順
+    merged.sort((a, b) => {
+      // 周期順（PERIOD_ORDERに基づく）
+      const periodIndexA = PERIOD_ORDER.indexOf(a.period);
+      const periodIndexB = PERIOD_ORDER.indexOf(b.period);
+      if (periodIndexA !== periodIndexB) return periodIndexA - periodIndexB;
+
+      // 同じ周期内では公式優先（isMasterは取得時に自動付与済み）
+      if (a.isMaster !== b.isMaster) return b.isMaster ? 1 : -1;
+
+      // 同じグループ内ではorder順
+      return a.order - b.order;
+    });
+
     setAllMissions(merged);
   }, [masterMissions, userMissions]);
 
@@ -136,6 +152,13 @@ export function useMissions(appVersion = '1.0.0') {
     return [...new Set(periods)].sort();
   }, [allMissions]);
 
+  // ユーザー定義任務の次の order 値を取得
+  const getNextOrder = useCallback(() => {
+    if (userMissions.length === 0) return 1;
+    const maxOrder = Math.max(...userMissions.map(ms => ms.order || 0));
+    return maxOrder + 1;
+  }, [userMissions]);
+
   return {
     // データ
     masterMissions,
@@ -157,5 +180,6 @@ export function useMissions(appVersion = '1.0.0') {
     findMissionById,
     filterByPeriod,
     getPeriods,
+    getNextOrder,
   };
 }

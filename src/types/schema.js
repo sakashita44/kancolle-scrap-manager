@@ -14,12 +14,23 @@
  */
 
 /**
+ * カテゴリデータ
+ * @typedef {Object} Category
+ * @property {string} id - カテゴリID
+ * @property {string} name - カテゴリ名 (1-20文字)
+ * @property {number} order - 表示順序
+ * @property {boolean} isMaster - 公式マスタ(true) or ユーザー定義(false) (データ取得時に自動付与)
+ */
+
+/**
  * 装備データ
  * @typedef {Object} Equipment
- * @property {string} id - 装備ID (m_eq_* or u_eq_*)
+ * @property {string} id - 装備ID
  * @property {string} name - 装備名 (1-40文字)
- * @property {string} category - カテゴリ名 (1-20文字)
+ * @property {string} categoryId - カテゴリID
  * @property {EquipmentType} type - 装備区分
+ * @property {number} order - カテゴリ内表示順序
+ * @property {boolean} isMaster - 公式マスタ(true) or ユーザー定義(false) (データ取得時に自動付与)
  */
 
 /**
@@ -40,9 +51,11 @@
 /**
  * 任務データ
  * @typedef {Object} Mission
- * @property {string} id - 任務ID (m_ms_* or u_ms_*)
+ * @property {string} id - 任務ID
  * @property {string} name - 任務名 (1-50文字)
  * @property {Period} period - 任務周期
+ * @property {number} order - 周期内表示順序
+ * @property {boolean} isMaster - 公式マスタ(true) or ユーザー定義(false) (データ取得時に自動付与)
  * @property {Requirement[]} reqs - 要求装備のリスト (1-10件)
  */
 
@@ -106,15 +119,20 @@ export const PERIOD = {
   ONE_TIME: 'OneTime',
 };
 
+export const PERIOD_ORDER = ['Daily', 'Weekly', 'Monthly', 'Quarterly', 'Yearly', 'OneTime'];
+
 export const ID_PREFIX = {
+  MASTER_CATEGORY: 'm_cat_',
   MASTER_EQUIPMENT: 'm_eq_',
   MASTER_MISSION: 'm_ms_',
+  USER_CATEGORY: 'u_cat_',
   USER_EQUIPMENT: 'u_eq_',
   USER_MISSION: 'u_ms_',
 };
 
 export const STORAGE_KEYS = {
   APP_VERSION: 'ksp_app_version',
+  USER_CATEGORIES: 'ksp_user_categories',
   USER_EQUIPMENTS: 'ksp_user_equipments',
   USER_MISSIONS: 'ksp_user_missions',
   SELECTED_MISSIONS: 'ksp_selected_missions',

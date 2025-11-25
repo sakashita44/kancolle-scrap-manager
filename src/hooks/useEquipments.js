@@ -70,9 +70,18 @@ export function useEquipments(appVersion = '1.0.0') {
     }
   }, []);
 
-  // 公式マスタとユーザー定義をマージ
+  // 公式マスタとユーザー定義をマージしてソート
   useEffect(() => {
     const merged = [...masterEquipments, ...userEquipments];
+
+    // ソート: isMaster優先（公式が先）→ order昇順
+    merged.sort((a, b) => {
+      // 公式優先（isMasterは取得時に自動付与済み）
+      if (a.isMaster !== b.isMaster) return b.isMaster ? 1 : -1;
+      // 同じグループ内ではorder順
+      return a.order - b.order;
+    });
+
     setAllEquipments(merged);
   }, [masterEquipments, userEquipments]);
 
@@ -125,28 +134,18 @@ export function useEquipments(appVersion = '1.0.0') {
     return allEquipments.find((eq) => eq.id === equipmentId) || null;
   }, [allEquipments]);
 
-  // カテゴリで装備をフィルタ
-  const filterByCategory = useCallback((category) => {
-    return allEquipments.filter((eq) => eq.category === category);
-  }, [allEquipments]);
-
-  // 全カテゴリのリストを取得（重複なし）
-  const getCategories = useCallback(() => {
-    const categories = allEquipments.map((eq) => eq.category);
-    return [...new Set(categories)].sort();
-  }, [allEquipments]);
-
-  // 全カテゴリのリスト（計算済み）
-  const categories = useMemo(() => {
-    return [...new Set(allEquipments.map((eq) => eq.category))].sort();
-  }, [allEquipments]);
+  // ユーザー定義装備の次の order 値を取得
+  const getNextOrder = useCallback(() => {
+    if (userEquipments.length === 0) return 1;
+    const maxOrder = Math.max(...userEquipments.map(eq => eq.order || 0));
+    return maxOrder + 1;
+  }, [userEquipments]);
 
   return {
     // データ
     masterEquipments,
     userEquipments,
     allEquipments,
-    categories,
 
     // 状態
     loading,
@@ -161,7 +160,6 @@ export function useEquipments(appVersion = '1.0.0') {
 
     // ユーティリティ
     findEquipmentById,
-    filterByCategory,
-    getCategories,
+    getNextOrder,
   };
 }

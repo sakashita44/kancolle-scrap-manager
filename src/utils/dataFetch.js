@@ -49,7 +49,7 @@ async function fetchJson(url) {
 /**
  * マスタデータのバリデーション
  * @param {Object} data - バリデーション対象データ
- * @param {string} type - データタイプ ('equipments' | 'missions')
+ * @param {string} type - データタイプ ('equipments' | 'missions' | 'categories')
  * @returns {{valid: boolean, invalidItems: Array}} バリデーション結果
  */
 function validateMasterData(data, type) {
@@ -87,6 +87,38 @@ function validateMasterData(data, type) {
         });
       }
     });
+  } else if (type === 'categories') {
+    if (!data.categories || !Array.isArray(data.categories)) {
+      throw new Error('Invalid data structure: categories array is missing');
+    }
+
+    data.categories.forEach((category, index) => {
+      // カテゴリの基本バリデーション
+      if (!category.id || typeof category.id !== 'string') {
+        invalidItems.push({
+          index,
+          id: category.id || 'unknown',
+          name: category.name || 'unknown',
+          errors: ['id is required and must be a string'],
+        });
+      }
+      if (!category.name || typeof category.name !== 'string') {
+        invalidItems.push({
+          index,
+          id: category.id || 'unknown',
+          name: category.name || 'unknown',
+          errors: ['name is required and must be a string'],
+        });
+      }
+      if (typeof category.order !== 'number') {
+        invalidItems.push({
+          index,
+          id: category.id || 'unknown',
+          name: category.name || 'unknown',
+          errors: ['order is required and must be a number'],
+        });
+      }
+    });
   }
 
   return {
@@ -101,7 +133,7 @@ function validateMasterData(data, type) {
  * 2. 失敗したらローカルにフォールバック → バリデーション
  * 3. 両方失敗したらエラーをthrow
  *
- * @param {string} type - データタイプ ('equipments' | 'missions')
+ * @param {string} type - データタイプ ('equipments' | 'missions' | 'categories')
  * @param {string} [version] - アプリバージョン（デフォルト: package.jsonのバージョン）
  * @returns {Promise<Object>} マスタデータ
  * @throws {Error} 両方のソースから取得・バリデーションに失敗した場合
@@ -125,6 +157,15 @@ export async function fetchMasterData(type, version = '1.0.0') {
       );
     }
 
+    // isMaster: true を付与
+    if (type === 'equipments' && data.equipments) {
+      data.equipments = data.equipments.map(eq => ({ ...eq, isMaster: true }));
+    } else if (type === 'missions' && data.missions) {
+      data.missions = data.missions.map(ms => ({ ...ms, isMaster: true }));
+    } else if (type === 'categories' && data.categories) {
+      data.categories = data.categories.map(cat => ({ ...cat, isMaster: true }));
+    }
+
     console.log(`[DataFetch] Successfully fetched and validated ${type} from GitHub Pages`);
     return {
       data,
@@ -146,6 +187,15 @@ export async function fetchMasterData(type, version = '1.0.0') {
           `Validation failed: ${validation.invalidItems.length} invalid items found. ` +
           `First error: ${validation.invalidItems[0].errors[0]}`
         );
+      }
+
+      // isMaster: true を付与
+      if (type === 'equipments' && data.equipments) {
+        data.equipments = data.equipments.map(eq => ({ ...eq, isMaster: true }));
+      } else if (type === 'missions' && data.missions) {
+        data.missions = data.missions.map(ms => ({ ...ms, isMaster: true }));
+      } else if (type === 'categories' && data.categories) {
+        data.categories = data.categories.map(cat => ({ ...cat, isMaster: true }));
       }
 
       console.log(`[DataFetch] Successfully fetched and validated ${type} from local`);
@@ -184,9 +234,18 @@ export async function fetchMissions(version) {
 }
 
 /**
+ * カテゴリマスタデータをフェッチ
+ * @param {string} [version] - アプリバージョン
+ * @returns {Promise<Object>} カテゴリマスタデータ
+ */
+export async function fetchCategories(version) {
+  return fetchMasterData('categories', version);
+}
+
+/**
  * 全てのマスタデータを並列でフェッチ
  * @param {string} [version] - アプリバージョン
- * @returns {Promise<Object>} { equipments, missions, sources }
+ * @returns {Promise<Object>} { equipments, missions, categories, sources }
  */
 export async function fetchAllMasterData(version) {
   const [equipmentsResult, missionsResult] = await Promise.all([

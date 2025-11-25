@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useEquipments } from './hooks/useEquipments'
 import { useMissions } from './hooks/useMissions'
+import { useCategories } from './hooks/useCategories'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
 import { useMissionFilter } from './hooks/useMissionFilter'
@@ -18,7 +19,7 @@ import GlobalWarningBanner from './components/GlobalWarningBanner'
 function App() {
   const {
     allEquipments: equipments,
-    categories,
+    getNextOrder: getNextEquipmentOrder,
     loading: equipmentsLoading,
     error: equipmentsError,
     corruptedItems: corruptedEquipments,
@@ -31,10 +32,18 @@ function App() {
     error: missionsError,
     corruptedItems: corruptedMissions,
     addUserMission,
-    deleteUserMission
+    deleteUserMission,
+    getNextOrder: getNextMissionOrder
   } = useMissions()
+  const {
+    categoryIds: categories,
+    categoryNameMap,
+    getCategoryName,
+    loading: categoriesLoading,
+    error: categoriesError
+  } = useCategories()
   const { selectedMissionIds, selectedCount, toggleMission, clearSelection } = useSelectedMissions()
-  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipments)
+  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipments, categoryNameMap)
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
@@ -117,6 +126,7 @@ function App() {
           filterCategory={filterCategory}
           filterPeriod={filterPeriod}
           categories={categories}
+          getCategoryName={getCategoryName}
           onFilterTextChange={setFilterText}
           onFilterCategoryChange={setFilterCategory}
           onFilterPeriodChange={setFilterPeriod}
@@ -154,6 +164,8 @@ function App() {
         <EquipmentModal
           equipments={equipments}
           categories={categories}
+          getCategoryName={getCategoryName}
+          getNextOrder={getNextEquipmentOrder}
           onSave={handleAddEquipment}
           onDelete={handleDeleteEquipment}
           onCancel={() => setActiveModal(null)}
@@ -168,6 +180,8 @@ function App() {
         <MissionModal
           equipments={equipments}
           missions={missions}
+          getCategoryName={getCategoryName}
+          getNextOrder={getNextMissionOrder}
           onSave={handleAddMission}
           onCancel={() => setActiveModal(null)}
         />

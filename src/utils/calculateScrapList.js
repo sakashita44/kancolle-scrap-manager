@@ -11,9 +11,10 @@ import { EQUIPMENT_TYPE, LIMITS } from '../types/schema.js';
  * @param {string[]} selectedMissionIds - 選択中の任務IDリスト
  * @param {Object[]} allMissions - 全任務データ
  * @param {Object[]} allEquipments - 全装備データ
+ * @param {Map} categoryNameMap - カテゴリIDから名前への変換Map
  * @returns {Object} { scrapList: 廃棄リスト, warnings: 警告情報 }
  */
-export function calculateScrapList(selectedMissionIds, allMissions, allEquipments) {
+export function calculateScrapList(selectedMissionIds, allMissions, allEquipments, categoryNameMap) {
   const warnings = [];
 
   // フェーズ1: 事前チェック
@@ -69,7 +70,8 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
   const scrapList = generateScrapList(
     itemCountMap,
     categoryCountMap,
-    equipmentMap
+    equipmentMap,
+    categoryNameMap
   );
 
   return { scrapList, warnings };
@@ -181,13 +183,13 @@ function resolveInclusion(itemCountMap, categoryCountMap, equipmentMap) {
       continue;
     }
 
-    const categoryName = categoryEquipment.category;
+    const categoryId = categoryEquipment.categoryId;
 
     // 同じカテゴリのItem要求の合計を計算
     let itemTotalInCategory = 0;
     for (const [itemTargetId, itemCount] of itemCountMap) {
       const itemEquipment = equipmentMap.get(itemTargetId);
-      if (itemEquipment && itemEquipment.category === categoryName) {
+      if (itemEquipment && itemEquipment.categoryId === categoryId) {
         itemTotalInCategory += itemCount;
       }
     }
@@ -209,17 +211,18 @@ function resolveInclusion(itemCountMap, categoryCountMap, equipmentMap) {
  * フェーズ7: 廃棄リストの生成
  * @private
  */
-function generateScrapList(itemCountMap, categoryCountMap, equipmentMap) {
+function generateScrapList(itemCountMap, categoryCountMap, equipmentMap, categoryNameMap) {
   const scrapList = [];
 
   // Item要求を追加
   for (const [equipmentId, count] of itemCountMap) {
     const equipment = equipmentMap.get(equipmentId);
     if (equipment) {
+      const categoryName = categoryNameMap.get(equipment.categoryId) || equipment.categoryId;
       scrapList.push({
         equipmentId: equipment.id,
         equipmentName: equipment.name,
-        category: equipment.category,
+        category: categoryName,
         count: count,
         type: equipment.type,
       });
@@ -230,10 +233,11 @@ function generateScrapList(itemCountMap, categoryCountMap, equipmentMap) {
   for (const [equipmentId, count] of categoryCountMap) {
     const equipment = equipmentMap.get(equipmentId);
     if (equipment) {
+      const categoryName = categoryNameMap.get(equipment.categoryId) || equipment.categoryId;
       scrapList.push({
         equipmentId: equipment.id,
         equipmentName: equipment.name,
-        category: equipment.category,
+        category: categoryName,
         count: count,
         type: equipment.type,
       });

@@ -14,43 +14,137 @@
 
 現在のスキーマバージョン: `1.0.0`
 
+## データ構造の2つの形式
+
+本アプリケーションのデータ構造には2つの形式が存在する.
+
+### 永続化形式（JSONスキーマ）
+
+ファイルやLocalStorageに保存される形式.
+
+* `isMaster`フィールドは**含まれない**
+* 改竄防止のため,公式/ユーザー判定情報は保存しない
+
+### ランタイム形式（内部スキーマ）
+
+アプリケーション実行時にメモリ上で使用される形式.
+
+* `isMaster`フィールドが**自動付与される**
+* データ取得元（公式マスタ/LocalStorage）に基づいて判定
+* hooks、UIコンポーネントはこの形式を使用
+
+**重要**: 本仕様書の型定義（`@typedef`）は**ランタイム形式**を記述している.JSONファイルの実例は**永続化形式**を示している.
+
 ## ID規則
 
-データの競合を防ぐため,IDにはプレフィックスによる名前空間を使用する.
+各データは`id`フィールドで識別する.
 
-| データ種別   | プレフィックス | フォーマット例       | 生成方法              | 削除可否 |
-| :----------- | :------------- | :------------------- | :-------------------- | :------- |
-| 公式装備     | `m_eq_`        | `m_eq_gun_12cm`      | 手動定義              | 不可     |
-| 公式任務     | `m_ms_`        | `m_ms_daily_scrap_1` | 手動定義              | 不可     |
-| ユーザー装備 | `u_eq_`        | `u_eq_<任意文字列>`  | `crypto.randomUUID()` 推奨 | 可       |
-| ユーザー任務 | `u_ms_`        | `u_ms_<任意文字列>`  | `crypto.randomUUID()` 推奨 | 可       |
+| データ種別       | IDプレフィックス（推奨） | フォーマット例          | データソース       | 生成方法              | 削除可否 |
+| :--------------- | :----------------------- | :---------------------- | :----------------- | :-------------------- | :------- |
+| 公式カテゴリ     | `m_cat_`                 | `m_cat_gun_s`           | 公式マスタ         | 手動定義              | 不可     |
+| 公式装備         | `m_eq_`                  | `m_eq_12cm_gun`         | 公式マスタ         | 手動定義              | 不可     |
+| 公式任務         | `m_ms_`                  | `m_ms_daily_scrap_1`    | 公式マスタ         | 手動定義              | 不可     |
+| ユーザーカテゴリ | `u_cat_`                 | `u_cat_<UUID>`          | LocalStorage       | `crypto.randomUUID()` | 可       |
+| ユーザー装備     | `u_eq_`                  | `u_eq_<UUID>`           | LocalStorage       | `crypto.randomUUID()` | 可       |
+| ユーザー任務     | `u_ms_`                  | `u_ms_<UUID>`           | LocalStorage       | `crypto.randomUUID()` | 可       |
 
 ### ID生成ルール
 
-* 公式マスタのIDは英数字とアンダースコアのみ使用し,可読性を重視する
-* ユーザー定義データのIDはプレフィックスさえ正しければ任意の文字列を使用可能
-* 一意性を保証するため`crypto.randomUUID()`の使用を推奨するが必須ではない
-* IDは一度発行したら変更不可(参照整合性の維持のため)
+* **プレフィックスは推奨レベル**: `m_` / `u_` および `cat_` / `eq_` / `ms_` のプレフィックスは可読性のため推奨されるが,必須ではない
+* **公式マスタ**: 英数字とアンダースコアのみ使用し,可読性を重視する
+* **ユーザー定義**: 任意の文字列を使用可能. 一意性を保証するため`crypto.randomUUID()`の使用を推奨
+* **不変性**: IDは一度発行したら変更不可(参照整合性の維持のため)
+* **公式/ユーザー判定**: データ取得時に自動判定（公式マスタから取得したデータは`isMaster: true`,LocalStorageから取得したデータは`isMaster: false`を内部的に付与）
+
+## 表示順序の管理
+
+各データは`order`フィールドで表示順序を制御する.
+
+### orderの仕様
+
+* **型**: 整数（Number）
+* **初期値**: 公式マスタは1から順に採番,ユーザー定義も1から独立して採番
+* **ソート順**: データ取得時に付与される`isMaster`フラグで公式/ユーザーを分離後,`order`の昇順でソート
+* **刻み幅**: 1刻み（将来的な挿入は`order`値を変更して対応）
+* **ユーザー追加時**: 同じデータソース（LocalStorage）内の最大値+1を自動設定
+
+### isMasterフラグの自動付与
+
+JSONファイルには`isMaster`フィールドは含まれない. データ取得時にシステムが自動的に付与する:
+
+* **公式マスタデータ** (`dataFetch.js`): フェッチ後に`isMaster: true`を付与
+* **LocalStorageデータ** (`localStorage.js`): ロード後に`isMaster: false`を付与
+
+これによりユーザーが`isMaster`を改竄することを防ぎ,データ整合性を保証する.
+
+### ソートロジック例
+
+```javascript
+// カテゴリ・装備・任務共通
+items.sort((a, b) => {
+  // 公式優先（isMasterは取得時に自動付与済み）
+  if (a.isMaster !== b.isMaster) return b.isMaster ? 1 : -1;
+  // 同じグループ内ではorder順
+  return a.order - b.order;
+});
+```
 
 ## データ構造定義
 
-### 1. 装備マスタデータ (equipments.json)
+### 1. カテゴリマスタデータ (categories.json)
+
+```json
+{
+  "version": "1.0.0",
+  "categories": [
+    {
+      "id": "m_cat_gun_s",
+      "name": "小口径主砲",
+      "order": 1
+    },
+    {
+      "id": "m_cat_gun_m",
+      "name": "中口径主砲",
+      "order": 2
+    }
+  ]
+}
+```
+
+#### フィールド定義
+
+| フィールド   | 型     | 必須 | 説明                 |
+| :----------- | :----- | :--- | :------------------- |
+| `version`    | String | ○    | スキーマバージョン   |
+| `categories` | Array  | ○    | カテゴリデータの配列 |
+
+#### Category オブジェクト
+
+| フィールド | 型     | 必須 | 制約      | 説明         |
+| :--------- | :----- | :--- | :-------- | :----------- |
+| `id`       | String | ○    | 一意      | カテゴリID   |
+| `name`     | String | ○    | 1〜20文字 | カテゴリ名   |
+| `order`    | Number | ○    | 整数      | 表示順序     |
+
+### 2. 装備マスタデータ (equipments.json)
 
 ```json
 {
   "version": "1.0.0",
   "equipments": [
     {
-      "id": "m_eq_gun_12cm",
+      "id": "m_eq_12cm_gun",
       "name": "12cm単装砲",
-      "category": "小口径主砲",
-      "type": "Item"
+      "categoryId": "m_cat_gun_s",
+      "type": "Item",
+      "order": 1
     },
     {
-      "id": "m_eq_cat_main_gun_s",
+      "id": "m_eq_cat_gun_s",
       "name": "小口径主砲",
-      "category": "小口径主砲",
-      "type": "Category"
+      "categoryId": "m_cat_gun_s",
+      "type": "Category",
+      "order": 0
     }
   ]
 }
@@ -65,21 +159,22 @@
 
 #### Equipment オブジェクト
 
-| フィールド | 型     | 必須 | 制約                     | 説明                                         |
-| :--------- | :----- | :--- | :----------------------- | :------------------------------------------- |
-| `id`       | String | ○    | ID規則に従う             | 一意識別子                                   |
-| `name`     | String | ○    | 1〜40文字                | 装備名                                       |
-| `category` | String | ○    | 1〜20文字                | カテゴリ名(集計キー)                         |
-| `type`     | Enum   | ○    | `"Item"` or `"Category"` | 具体装備(`Item`) or カテゴリ代表(`Category`) |
+| フィールド   | 型     | 必須 | 制約                     | 説明                                         |
+| :----------- | :----- | :--- | :----------------------- | :------------------------------------------- |
+| `id`         | String | ○    | 一意                     | 装備ID                                       |
+| `name`       | String | ○    | 1〜40文字                | 装備名                                       |
+| `categoryId` | String | ○    | カテゴリIDに対応         | 所属カテゴリのID(`categories.json`内)        |
+| `type`       | Enum   | ○    | `"Item"` or `"Category"` | 具体装備(`Item`) or カテゴリ代表(`Category`) |
+| `order`      | Number | ○    | 整数                     | カテゴリ内表示順序                           |
 
 #### type の使い分け
 
 * `Item`: 具体的な装備(例: "12cm単装砲", "25mm単装機銃")
 * `Category`: カテゴリを代表するエントリ(例: "小口径主砲", "機銃")
     * 任務の要求装備で「機銃×3」のようにカテゴリ指定する場合に使用
-    * `name`と`category`は通常同じ値
+    * `order: 0`で同カテゴリ内の先頭に配置
 
-### 2. 任務マスタデータ (missions.json)
+### 3. 任務マスタデータ (missions.json)
 
 ```json
 {
@@ -89,15 +184,16 @@
       "id": "m_ms_daily_scrap_1",
       "name": "装備の整理",
       "period": "Daily",
+      "order": 1,
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_main_gun_s",
+          "targetId": "m_eq_cat_gun_s",
           "count": 2
         },
         {
           "id": "req_2",
-          "targetId": "m_eq_gun_12cm",
+          "targetId": "m_eq_12cm_gun",
           "count": 1
         }
       ]
@@ -115,22 +211,26 @@
 
 #### Mission オブジェクト
 
-| フィールド | 型     | 必須 | 制約         | 説明             |
-| :--------- | :----- | :--- | :----------- | :--------------- |
-| `id`       | String | ○    | ID規則に従う | 一意識別子       |
-| `name`     | String | ○    | 1〜50文字    | 任務名           |
-| `period`   | Enum   | ○    | 下記参照     | 任務の周期       |
-| `reqs`     | Array  | ○    | 1〜10件      | 要求装備のリスト |
+| フィールド | 型     | 必須 | 制約      | 説明                 |
+| :--------- | :----- | :--- | :-------- | :------------------- |
+| `id`       | String | ○    | 一意      | 任務ID               |
+| `name`     | String | ○    | 1〜50文字 | 任務名               |
+| `period`   | Enum   | ○    | 下記参照  | 任務の周期           |
+| `order`    | Number | ○    | 整数      | 周期内表示順序       |
+| `reqs`     | Array  | ○    | 1〜10件   | 要求装備のリスト     |
 
-#### period の値
+#### period の値と表示順序
 
-| 値          | 説明         |
-| :---------- | :----------- |
-| `Daily`     | デイリー     |
-| `Weekly`    | ウィークリー |
-| `Monthly`   | マンスリー   |
-| `Quarterly` | クォータリー |
-| `OneTime`   | 単発         |
+周期は以下の順序で表示される（`PERIOD_ORDER`で定義）:
+
+| 値          | 説明         | 表示順 |
+| :---------- | :----------- | :----- |
+| `Daily`     | デイリー     | 1      |
+| `Weekly`    | ウィークリー | 2      |
+| `Monthly`   | マンスリー   | 3      |
+| `Quarterly` | クォータリー | 4      |
+| `Yearly`    | 年間         | 5      |
+| `OneTime`   | 単発         | 6      |
 
 #### Requirement オブジェクト
 
@@ -145,15 +245,16 @@
 * `reqs`配列内で同じ`targetId`が複数回出現してはならない(同じ装備を複数回要求する場合は`count`を加算する)
 * `targetId`が存在しない装備IDを参照している場合,計算時に警告を表示し,その要求は無視される
 
-### 3. ユーザーデータ (LocalStorage)
+### 4. ユーザーデータ (LocalStorage)
 
 ブラウザの`localStorage`に保存されるデータ構造を定義する.
 
-#### 3.1 キー一覧
+#### 4.1 キー一覧
 
 | キー名                      | 内容                           | データ型   | 永続化         |
 | :-------------------------- | :----------------------------- | :--------- | :------------- |
 | `ksp_app_version`           | アプリバージョン               | String     | LocalStorage   |
+| `ksp_user_categories`       | ユーザー定義カテゴリリスト     | JSON文字列 | LocalStorage   |
 | `ksp_user_equipments`       | ユーザー定義装備リスト         | JSON文字列 | LocalStorage   |
 | `ksp_user_missions`         | ユーザー定義任務リスト         | JSON文字列 | LocalStorage   |
 | `ksp_about_shown`           | About表示済みフラグ            | Boolean    | LocalStorage   |
@@ -162,17 +263,35 @@
 | `ksp_filter_category`       | 装備カテゴリフィルタの選択状態 | String     | SessionStorage |
 | `ksp_mission_list_expanded` | 任務一覧の展開状態             | Boolean    | SessionStorage |
 
-#### 3.2 ksp_user_equipments
+#### 4.2 ksp_user_categories
+
+```json
+{
+  "version": "1.0.0",
+  "categories": [
+    {
+      "id": "u_cat_123e4567-e89b-12d3-a456-426614174000",
+      "name": "カスタム分類",
+      "order": 1
+    }
+  ]
+}
+```
+
+構造は`categories.json`と同一.
+
+#### 4.3 ksp_user_equipments
 
 ```json
 {
   "version": "1.0.0",
   "equipments": [
     {
-      "id": "u_eq_123e4567-e89b-12d3-a456-426614174000",
+      "id": "u_eq_123e4567-e89b-12d3-a456-426614174001",
       "name": "カスタム砲",
-      "category": "主砲",
-      "type": "Item"
+      "categoryId": "m_cat_gun_s",
+      "type": "Item",
+      "order": 1
     }
   ]
 }
@@ -180,20 +299,21 @@
 
 構造は`equipments.json`と同一.
 
-#### 3.3 ksp_user_missions
+#### 4.4 ksp_user_missions
 
 ```json
 {
   "version": "1.0.0",
   "missions": [
     {
-      "id": "u_ms_123e4567-e89b-12d3-a456-426614174001",
+      "id": "u_ms_123e4567-e89b-12d3-a456-426614174002",
       "name": "カスタム任務",
       "period": "Weekly",
+      "order": 1,
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_gun_12cm",
+          "targetId": "m_eq_12cm_gun",
           "count": 3
         }
       ]
@@ -204,7 +324,7 @@
 
 構造は`missions.json`と同一.
 
-#### 3.4 ksp_selected_missions
+#### 4.5 ksp_selected_missions
 
 ```json
 {
@@ -221,42 +341,53 @@
 | `version`            | String | ○    |         | スキーマバージョン   |
 | `selectedMissionIds` | Array  | ○    | 最大8件 | 選択中の任務IDリスト |
 
-### 4. エクスポート/インポートデータ
+### 5. エクスポート/インポートデータ
 
-ユーザー定義データをエクスポート/インポートする際のJSON形式を定義する.装備と任務でファイルを分割し,マスタデータと同じ構造を使用する.
+ユーザー定義データをエクスポート/インポートする際のJSON形式を定義する.
 
-#### 4.1 装備エクスポートデータ (user_equipments.json)
+#### 5.1 装備エクスポートデータ (kancolle_scrap_equipments_YYYYMMDD.json)
+
+装備とカテゴリを1つのファイルで出力する（参照整合性を保つため）.
 
 ```json
 {
   "version": "1.0.0",
+  "categories": [
+    {
+      "id": "u_cat_custom",
+      "name": "カスタム分類",
+      "order": 1
+    }
+  ],
   "equipments": [
     {
-      "id": "u_eq_123e4567-e89b-12d3-a456-426614174000",
+      "id": "u_eq_abc-123",
       "name": "カスタム砲",
-      "category": "主砲",
-      "type": "Item"
+      "categoryId": "u_cat_custom",
+      "type": "Item",
+      "order": 1
     }
   ]
 }
 ```
 
-構造は`equipments.json`と同一.
+`categories`配列と`equipments`配列を含む.
 
-#### 4.2 任務エクスポートデータ (user_missions.json)
+#### 5.2 任務エクスポートデータ (kancolle_scrap_missions_YYYYMMDD.json)
 
 ```json
 {
   "version": "1.0.0",
   "missions": [
     {
-      "id": "u_ms_123e4567-e89b-12d3-a456-426614174001",
+      "id": "u_ms_def-456",
       "name": "カスタム任務",
       "period": "Weekly",
+      "order": 1,
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_gun_12cm",
+          "targetId": "m_eq_12cm_gun",
           "count": 3
         }
       ]
@@ -267,16 +398,16 @@
 
 構造は`missions.json`と同一.
 
-#### 4.3 エクスポート/インポートの仕様
+#### 5.3 エクスポート/インポートの仕様
 
-* **エクスポート**: 装備と任務を別々のファイルとしてダウンロード
+* **エクスポート**: 装備（カテゴリ含む）と任務を別々のファイルとしてダウンロード
     * ファイル名: `kancolle_scrap_equipments_YYYYMMDD.json`, `kancolle_scrap_missions_YYYYMMDD.json`
 * **インポート**: 装備または任務のファイルを個別に読み込み可能
-    * ファイルの`version`フィールドで装備/任務を自動判別
-    * 装備ファイル: `equipments`配列が存在
+    * ファイルの配列フィールドで自動判別
+    * 装備ファイル: `categories`配列と`equipments`配列が存在
     * 任務ファイル: `missions`配列が存在
 * **上書き挙動**: インポート時は該当タイプの既存データを全上書き(事前警告あり)
-* **部分インポート**: 装備のみ,任務のみのインポートが可能
+* **部分インポート**: 装備（カテゴリ含む）のみ,任務のみのインポートが可能
 
 ## バリデーション規則
 

@@ -3,7 +3,7 @@ import { Plus, Search, List, Trash2, AlertCircle } from 'lucide-react'
 import { validateEquipment, validateUniqueName } from '../utils/validation'
 import { LIMITS } from '../types/schema'
 
-const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) => {
+const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder, onSave, onDelete, onCancel }) => {
   const [name, setName] = useState('')
   const [category, setCategory] = useState(categories[0] || '')
   const [type, setType] = useState('Item')
@@ -48,12 +48,12 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!isFormValid) return
-    onSave({ name, category, type })
+    onSave({ name, categoryId: category, type, order: getNextOrder() })
     setName('') // 連続追加しやすくするためクリア
   }
 
   const filteredEquipments = equipments.filter(e =>
-    e.name.includes(searchText) || e.category.includes(searchText)
+    e.name.includes(searchText) || getCategoryName(e.categoryId).includes(searchText)
   )
 
   return (
@@ -129,7 +129,7 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
                 required
               >
                 {categories.map(c => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>{getCategoryName(c)}</option>
                 ))}
               </select>
             )}
@@ -193,7 +193,7 @@ const EquipmentModal = ({ equipments, categories, onSave, onDelete, onCancel }) 
               <div className="flex-1 min-w-0 mr-2">
                 <div className="text-sm font-medium text-slate-700 truncate">{eq.name}</div>
                 <div className="text-xs text-slate-400 flex gap-2">
-                  <span>{eq.category}</span>
+                  <span>{getCategoryName(eq.categoryId)}</span>
                   <span className="bg-slate-100 px-1 rounded text-[10px]">{eq.type}</span>
                 </div>
               </div>

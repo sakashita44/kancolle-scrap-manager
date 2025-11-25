@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "categories": [
+    {
+      "id": "m_cat_gun_s",
+      "name": "小口径主砲",
+      "order": 1
+    },
+    {
+      "id": "m_cat_gun_m",
+      "name": "中口径主砲",
+      "order": 2
+    },
+    {
+      "id": "m_cat_gun_l",
+      "name": "大口径主砲",
+      "order": 3
+    },
+    {
+      "id": "m_cat_mg",
+      "name": "機銃",
+      "order": 4
+    },
+    {
+      "id": "m_cat_torpedo",
+      "name": "魚雷",
+      "order": 5
+    },
+    {
+      "id": "m_cat_dc",
+      "name": "爆雷",
+      "order": 6
+    },
+    {
+      "id": "m_cat_sonar",
+      "name": "ソナー",
+      "order": 7
+    },
+    {
+      "id": "m_cat_fighter",
+      "name": "艦上戦闘機",
+      "order": 8
+    },
+    {
+      "id": "m_cat_bomber",
+      "name": "艦上爆撃機",
+      "order": 9
+    },
+    {
+      "id": "m_cat_tb",
+      "name": "艦上攻撃機",
+      "order": 10
+    },
+    {
+      "id": "m_cat_recon",
+      "name": "艦上偵察機",
+      "order": 11
+    }
+  ]
+}
