@@ -15,6 +15,7 @@ import Modal from './components/Modal'
 import EquipmentModal from './components/EquipmentModal'
 import MissionModal from './components/MissionModal'
 import GlobalWarningBanner from './components/GlobalWarningBanner'
+import ConfirmDialog from './components/ConfirmDialog'
 
 function App() {
   const {
@@ -47,6 +48,7 @@ function App() {
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
 
   // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
   const equipmentMap = useMemo(() =>
@@ -81,8 +83,12 @@ function App() {
   }
 
   const handleDeleteEquipment = (id) => {
-    if (!window.confirm('この装備を削除しますか？\n（この装備を使用している任務がある場合、表示がおかしくなる可能性があります）')) return
-    deleteUserEquipment(id)
+    setConfirmDialog({
+      isOpen: true,
+      type: 'equipment',
+      id,
+      message: 'この装備を削除しますか？\n（この装備を使用している任務がある場合、表示がおかしくなる可能性があります）'
+    })
   }
 
   const handleAddMission = (data) => {
@@ -95,8 +101,25 @@ function App() {
   }
 
   const handleDeleteMission = (id) => {
-    if (!window.confirm('この任務を削除しますか？')) return
-    deleteUserMission(id)
+    setConfirmDialog({
+      isOpen: true,
+      type: 'mission',
+      id,
+      message: 'この任務を削除しますか？'
+    })
+  }
+
+  const handleConfirmDelete = () => {
+    if (confirmDialog.type === 'equipment') {
+      deleteUserEquipment(confirmDialog.id)
+    } else if (confirmDialog.type === 'mission') {
+      deleteUserMission(confirmDialog.id)
+    }
+    setConfirmDialog({ isOpen: false, type: null, id: null, message: '' })
+  }
+
+  const handleCancelDelete = () => {
+    setConfirmDialog({ isOpen: false, type: null, id: null, message: '' })
   }
 
   const handleClearErrors = () => {
@@ -186,6 +209,17 @@ function App() {
           onCancel={() => setActiveModal(null)}
         />
       </Modal>
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.type === 'equipment' ? '装備の削除' : '任務の削除'}
+        message={confirmDialog.message}
+        confirmText="削除"
+        cancelText="キャンセル"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   )
 }
