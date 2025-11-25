@@ -210,17 +210,22 @@
     * isMaster自動付与と並び替えロジックの実装
         * dataFetch.js: マスタデータにisMaster:true付与
         * localStorage.js: ユーザーデータにisMaster:false付与、保存時に除外
-        * useEquipments.js: isMaster→order順ソート、categories順序維持
+        * useEquipments.js: isMaster→order順ソート
         * useMissions.js: period→isMaster→order順ソート
     * orderとcategoryIdフィールドのバリデーション追加
         * validation.js: equipment.orderとmission.orderのバリデーション追加
         * validation.js: equipment.category→categoryIdに修正
-        * calculateScrapList.js: categoryNameMap追加、categoryId→カテゴリ名変換
     * category→categoryId移行と表示ロジック整理
-        * useEquipments.js: categoryNameMapとgetCategoryName追加（データ層の責務）
-        * App.jsx: getCategoryNameをEquipmentModalに渡す
         * EquipmentModal.jsx: categoryIdベースの表示に変更、order追加
         * useMissionFilter.js: categoryIdベースのフィルタリング
+    * order自動採番とcategories.json活用でバグ修正
+        * useEquipments.js/useMissions.js: getNextOrder()関数追加（最大order+1）
+        * EquipmentModal.jsx/MissionModal.jsx: order固定値→自動採番に修正
+        * dataFetch.js: fetchCategories()追加、categoriesバリデーション実装
+        * useCategories.js: 新規作成（categories.jsonからカテゴリマスタ取得）
+        * App.jsx: useCategories()使用、カテゴリ取得元を変更
+        * calculateScrapList.js: categoryNameMapを引数で受け取るよう修正
+        * useEquipments.js: categoryNameMap/getCategoryName削除（責務分離）
 
 ## 次のステップ
 
