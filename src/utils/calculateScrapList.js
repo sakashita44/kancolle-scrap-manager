@@ -190,13 +190,13 @@ function resolveInclusion(itemCountMap, categoryCountMap, equipmentMap) {
       continue;
     }
 
-    const categoryName = categoryEquipment.category;
+    const categoryId = categoryEquipment.categoryId;
 
     // 同じカテゴリのItem要求の合計を計算
     let itemTotalInCategory = 0;
     for (const [itemTargetId, itemCount] of itemCountMap) {
       const itemEquipment = equipmentMap.get(itemTargetId);
-      if (itemEquipment && itemEquipment.category === categoryName) {
+      if (itemEquipment && itemEquipment.categoryId === categoryId) {
         itemTotalInCategory += itemCount;
       }
     }

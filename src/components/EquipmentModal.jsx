@@ -129,7 +129,7 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, onSave, onDel
                 required
               >
                 {categories.map(c => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>{getCategoryName(c)}</option>
                 ))}
               </select>
             )}

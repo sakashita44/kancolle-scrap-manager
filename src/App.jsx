@@ -119,6 +119,7 @@ function App() {
           filterCategory={filterCategory}
           filterPeriod={filterPeriod}
           categories={categories}
+          getCategoryName={getCategoryName}
           onFilterTextChange={setFilterText}
           onFilterCategoryChange={setFilterCategory}
           onFilterPeriodChange={setFilterPeriod}
@@ -171,6 +172,7 @@ function App() {
         <MissionModal
           equipments={equipments}
           missions={missions}
+          getCategoryName={getCategoryName}
           onSave={handleAddMission}
           onCancel={() => setActiveModal(null)}
         />

@@ -6,6 +6,7 @@ const ControlBar = ({
   filterCategory,
   filterPeriod,
   categories,
+  getCategoryName,
   onFilterTextChange,
   onFilterCategoryChange,
   onFilterPeriodChange,
@@ -45,7 +46,7 @@ const ControlBar = ({
           onChange={(e) => onFilterCategoryChange(e.target.value)}
         >
           <option value="ALL">全種別</option>
-          {categories.map(c => <option key={c} value={c}>{c}</option>)}
+          {categories.map(c => <option key={c} value={c}>{getCategoryName(c)}</option>)}
         </select>
       </div>
 

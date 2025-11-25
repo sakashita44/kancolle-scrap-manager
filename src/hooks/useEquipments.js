@@ -134,17 +134,6 @@ export function useEquipments(appVersion = '1.0.0') {
     return allEquipments.find((eq) => eq.id === equipmentId) || null;
   }, [allEquipments]);
 
-  // カテゴリで装備をフィルタ
-  const filterByCategory = useCallback((category) => {
-    return allEquipments.filter((eq) => eq.category === category);
-  }, [allEquipments]);
-
-  // 全カテゴリのリストを取得（重複なし）
-  const getCategories = useCallback(() => {
-    const categories = allEquipments.map((eq) => eq.category);
-    return [...new Set(categories)].sort();
-  }, [allEquipments]);
-
   // 全カテゴリのリスト（計算済み、マスタデータの出現順を維持）
   const categories = useMemo(() => {
     const seen = new Set();
@@ -199,8 +188,6 @@ export function useEquipments(appVersion = '1.0.0') {
 
     // ユーティリティ
     findEquipmentById,
-    filterByCategory,
-    getCategories,
     getCategoryName,
   };
 }
