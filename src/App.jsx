@@ -19,6 +19,8 @@ function App() {
   const {
     allEquipments: equipments,
     categories,
+    categoryNameMap,
+    getCategoryName,
     loading: equipmentsLoading,
     error: equipmentsError,
     corruptedItems: corruptedEquipments,
@@ -154,6 +156,7 @@ function App() {
         <EquipmentModal
           equipments={equipments}
           categories={categories}
+          getCategoryName={getCategoryName}
           onSave={handleAddEquipment}
           onDelete={handleDeleteEquipment}
           onCancel={() => setActiveModal(null)}

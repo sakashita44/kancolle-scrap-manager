@@ -28,7 +28,7 @@ export function useMissionFilter(missions, equipmentMap) {
       if (filterCategory !== 'ALL') {
         matchCategory = mission.reqs.some(req => {
           const eq = equipmentMap.get(req.targetId)
-          return eq && eq.category === filterCategory
+          return eq && eq.categoryId === filterCategory
         })
       }
 

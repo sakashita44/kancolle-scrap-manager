@@ -162,12 +162,29 @@ export function useEquipments(appVersion = '1.0.0') {
     return orderedCategories;
   }, [allEquipments]);
 
+  // カテゴリIDからカテゴリ名への変換Map
+  const categoryNameMap = useMemo(() => {
+    const map = new Map();
+    allEquipments.forEach((eq) => {
+      if (eq.type === 'Category') {
+        map.set(eq.categoryId, eq.name);
+      }
+    });
+    return map;
+  }, [allEquipments]);
+
+  // カテゴリIDからカテゴリ名を取得
+  const getCategoryName = useCallback((categoryId) => {
+    return categoryNameMap.get(categoryId) || categoryId;
+  }, [categoryNameMap]);
+
   return {
     // データ
     masterEquipments,
     userEquipments,
     allEquipments,
     categories,
+    categoryNameMap,
 
     // 状態
     loading,
@@ -184,5 +201,6 @@ export function useEquipments(appVersion = '1.0.0') {
     findEquipmentById,
     filterByCategory,
     getCategories,
+    getCategoryName,
   };
 }
