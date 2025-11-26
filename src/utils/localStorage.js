@@ -6,45 +6,55 @@
 
 import { STORAGE_KEYS, SCHEMA_VERSION } from '../types/schema.js';
 import { validateEquipment, validateMission } from './validation.js';
+import { createStorageHelper } from './storageHelper.js';
+
+// LocalStorage操作用のヘルパー関数
+const { getItem, setItem, removeItem } = createStorageHelper(localStorage, 'LocalStorage');
 
 /**
- * LocalStorageから値を取得してJSONパース
- * @param {string} key - StorageKey
- * @returns {Object|null} パースされたデータ、存在しない場合はnull
+ * ユーザーデータの読込とバリデーション処理の共通関数
+ * @param {string} storageKey - StorageKey
+ * @param {string} dataKey - データキー名（'equipments'/'missions'）
+ * @param {Function} validateFn - バリデーション関数
+ * @param {Function} saveFn - 保存関数
+ * @param {string} dataType - データ種別（ログ用）
+ * @returns {{data: Array, corruptedItems: Array}} データと破損アイテム情報
  */
-function getItem(key) {
-  try {
-    const item = localStorage.getItem(key);
-    if (!item) {
-      return null;
-    }
-    return JSON.parse(item);
-  } catch (error) {
-    console.error(`[LocalStorage] Failed to parse ${key}:`, error);
-    return null;
+function loadAndValidateUserData(storageKey, dataKey, validateFn, saveFn, dataType) {
+  const rawData = getItem(storageKey);
+  if (!rawData || !rawData[dataKey]) {
+    console.log(`[LocalStorage] No user ${dataType} found`);
+    return { data: [], corruptedItems: [] };
   }
-}
 
-/**
- * LocalStorageに値をJSON文字列化して保存
- * @param {string} key - StorageKey
- * @param {Object} value - 保存する値
- * @throws {Error} 容量オーバーまたはプライベートモードの場合
- */
-function setItem(key, value) {
-  try {
-    const jsonString = JSON.stringify(value);
-    localStorage.setItem(key, jsonString);
-  } catch (error) {
-    // QuotaExceededError: LocalStorage容量オーバー
-    if (error.name === 'QuotaExceededError') {
-      throw new Error(
-        'LocalStorageの容量が不足しています. データをエクスポートして整理してください.'
-      );
+  // 起動時バリデーション
+  const validItems = [];
+  const corruptedItems = [];
+
+  rawData[dataKey].forEach((item) => {
+    const validation = validateFn(item);
+    if (validation.valid) {
+      // isMaster: false を付与
+      validItems.push({ ...item, isMaster: false });
+    } else {
+      console.warn(`[LocalStorage] Corrupted ${dataType} detected:`, item.id, validation.errors);
+      corruptedItems.push({
+        id: item.id || 'unknown',
+        name: item.name || 'unknown',
+        type: dataType,
+        errors: validation.errors,
+      });
     }
-    // プライベートモード等でLocalStorageが無効な場合
-    throw new Error('LocalStorageへの保存に失敗しました: ' + error.message);
+  });
+
+  // 破損データがあれば正常なデータのみで上書き保存
+  if (corruptedItems.length > 0) {
+    console.log(`[LocalStorage] Removing ${corruptedItems.length} corrupted ${dataType}(s)`);
+    saveFn(validItems);
   }
+
+  console.log(`[LocalStorage] Loaded user ${dataType}:`, validItems.length, 'items');
+  return { data: validItems, corruptedItems };
 }
 
 /**
@@ -69,40 +79,13 @@ export function saveUserEquipments(equipments) {
  * @returns {{data: Array, corruptedItems: Array}} 装備データと破損アイテム情報
  */
 export function loadUserEquipments() {
-  const rawData = getItem(STORAGE_KEYS.USER_EQUIPMENTS);
-  if (!rawData || !rawData.equipments) {
-    console.log('[LocalStorage] No user equipments found');
-    return { data: [], corruptedItems: [] };
-  }
-
-  // 起動時バリデーション
-  const validEquipments = [];
-  const corruptedItems = [];
-
-  rawData.equipments.forEach((equipment) => {
-    const validation = validateEquipment(equipment);
-    if (validation.valid) {
-      // isMaster: false を付与
-      validEquipments.push({ ...equipment, isMaster: false });
-    } else {
-      console.warn('[LocalStorage] Corrupted equipment detected:', equipment.id, validation.errors);
-      corruptedItems.push({
-        id: equipment.id || 'unknown',
-        name: equipment.name || 'unknown',
-        type: 'equipment',
-        errors: validation.errors,
-      });
-    }
-  });
-
-  // 破損データがあれば正常なデータのみで上書き保存
-  if (corruptedItems.length > 0) {
-    console.log('[LocalStorage] Removing', corruptedItems.length, 'corrupted equipment(s)');
-    saveUserEquipments(validEquipments);
-  }
-
-  console.log('[LocalStorage] Loaded user equipments:', validEquipments.length, 'items');
-  return { data: validEquipments, corruptedItems };
+  return loadAndValidateUserData(
+    STORAGE_KEYS.USER_EQUIPMENTS,
+    'equipments',
+    validateEquipment,
+    saveUserEquipments,
+    'equipment'
+  );
 }
 
 /**
@@ -127,40 +110,13 @@ export function saveUserMissions(missions) {
  * @returns {{data: Array, corruptedItems: Array}} 任務データと破損アイテム情報
  */
 export function loadUserMissions() {
-  const rawData = getItem(STORAGE_KEYS.USER_MISSIONS);
-  if (!rawData || !rawData.missions) {
-    console.log('[LocalStorage] No user missions found');
-    return { data: [], corruptedItems: [] };
-  }
-
-  // 起動時バリデーション
-  const validMissions = [];
-  const corruptedItems = [];
-
-  rawData.missions.forEach((mission) => {
-    const validation = validateMission(mission);
-    if (validation.valid) {
-      // isMaster: false を付与
-      validMissions.push({ ...mission, isMaster: false });
-    } else {
-      console.warn('[LocalStorage] Corrupted mission detected:', mission.id, validation.errors);
-      corruptedItems.push({
-        id: mission.id || 'unknown',
-        name: mission.name || 'unknown',
-        type: 'mission',
-        errors: validation.errors,
-      });
-    }
-  });
-
-  // 破損データがあれば正常なデータのみで上書き保存
-  if (corruptedItems.length > 0) {
-    console.log('[LocalStorage] Removing', corruptedItems.length, 'corrupted mission(s)');
-    saveUserMissions(validMissions);
-  }
-
-  console.log('[LocalStorage] Loaded user missions:', validMissions.length, 'items');
-  return { data: validMissions, corruptedItems };
+  return loadAndValidateUserData(
+    STORAGE_KEYS.USER_MISSIONS,
+    'missions',
+    validateMission,
+    saveUserMissions,
+    'mission'
+  );
 }
 
 /**
@@ -200,8 +156,8 @@ export function isAboutShown() {
  */
 export function clearUserData() {
   try {
-    localStorage.removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
-    localStorage.removeItem(STORAGE_KEYS.USER_MISSIONS);
+    removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
+    removeItem(STORAGE_KEYS.USER_MISSIONS);
     console.log('[LocalStorage] Cleared all user data');
     return true;
   } catch (error) {
@@ -216,10 +172,10 @@ export function clearUserData() {
  */
 export function clearAllData() {
   try {
-    localStorage.removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
-    localStorage.removeItem(STORAGE_KEYS.USER_MISSIONS);
-    localStorage.removeItem(STORAGE_KEYS.APP_VERSION);
-    localStorage.removeItem(STORAGE_KEYS.ABOUT_SHOWN);
+    removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
+    removeItem(STORAGE_KEYS.USER_MISSIONS);
+    removeItem(STORAGE_KEYS.APP_VERSION);
+    removeItem(STORAGE_KEYS.ABOUT_SHOWN);
     console.log('[LocalStorage] Cleared all app data');
     return true;
   } catch (error) {

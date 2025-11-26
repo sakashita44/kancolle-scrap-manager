@@ -4,8 +4,9 @@
  * @module hooks/useCategories
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { fetchCategories } from '../utils/dataFetch.js';
+import { useMasterData } from './useMasterData.js';
 
 /**
  * カテゴリデータを管理するカスタムフック
@@ -13,45 +14,12 @@ import { fetchCategories } from '../utils/dataFetch.js';
  * @returns {Object} カテゴリデータと操作関数
  */
 export function useCategories(appVersion = '1.0.0') {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [dataSource, setDataSource] = useState(null);
-
   // マスタデータをフェッチ
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadCategories() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const result = await fetchCategories(appVersion);
-
-        if (isMounted) {
-          setCategories(result.data.categories || []);
-          setDataSource(result.source);
-        }
-      } catch (err) {
-        if (isMounted) {
-          console.error('[useCategories] Failed to load categories:', err);
-          setError(err.message);
-          setCategories([]);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadCategories();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [appVersion]);
+  const { masterData: categories, loading, error, dataSource } = useMasterData(
+    fetchCategories,
+    'categories',
+    appVersion
+  );
 
   // カテゴリIDからカテゴリ名への変換Map（order順にソート済み）
   const categoryNameMap = useMemo(() => {

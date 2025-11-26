@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react'
-import { Plus, Search, List, Trash2, AlertCircle } from 'lucide-react'
+import { Plus, Search, List, Trash2 } from 'lucide-react'
 import { validateEquipment, validateUniqueName } from '../utils/validation'
 import { LIMITS } from '../types/schema'
+import ValidationErrorDisplay from './ValidationErrorDisplay'
 
 const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder, onSave, onDelete, onCancel }) => {
   const [name, setName] = useState('')
@@ -78,18 +79,10 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
               placeholder="例: 12.7cm連装砲B型改二"
               required
             />
-            {validationErrors.name && (
-              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {validationErrors.name}
-              </p>
-            )}
-            {!validationErrors.name && nameWarning && (
-              <p className="mt-1 text-xs text-amber-500 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {nameWarning}
-              </p>
-            )}
+            <ValidationErrorDisplay
+              error={validationErrors.name}
+              warning={!validationErrors.name ? nameWarning : null}
+            />
           </div>
           <div>
             <div className="flex justify-between items-center mb-1">
@@ -133,12 +126,7 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
                 ))}
               </select>
             )}
-            {validationErrors.category && (
-              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {validationErrors.category}
-              </p>
-            )}
+            <ValidationErrorDisplay error={validationErrors.category} />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-500 mb-1">区分</label>

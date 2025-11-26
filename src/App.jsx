@@ -25,6 +25,7 @@ function App() {
     getNextOrder: getNextEquipmentOrder,
     loading: equipmentsLoading,
     error: equipmentsError,
+    crudError: equipmentsCrudError,
     corruptedItems: corruptedEquipments,
     addUserEquipment,
     deleteUserEquipment
@@ -33,6 +34,7 @@ function App() {
     allMissions: missions,
     loading: missionsLoading,
     error: missionsError,
+    crudError: missionsCrudError,
     corruptedItems: corruptedMissions,
     addUserMission,
     deleteUserMission,
@@ -76,7 +78,7 @@ function App() {
 
   // ローディング・エラー状態の統合
   const isLoading = equipmentsLoading || missionsLoading
-  const errorMessage = equipmentsError || missionsError
+  const errorMessage = equipmentsError || missionsError || equipmentsCrudError || missionsCrudError
 
   const handleAboutOpen = () => {
     setIsAboutModalOpen(true)

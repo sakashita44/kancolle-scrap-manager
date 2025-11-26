@@ -47,6 +47,23 @@ async function fetchJson(url) {
 }
 
 /**
+ * マスタデータにisMaster: trueフラグを付与
+ * @param {Object} data - データオブジェクト
+ * @param {string} type - データタイプ ('equipments' | 'missions' | 'categories')
+ * @returns {Object} isMasterフラグ付与済みのデータ
+ */
+function attachIsMasterFlag(data, type) {
+  if (type === 'equipments' && data.equipments) {
+    data.equipments = data.equipments.map(eq => ({ ...eq, isMaster: true }));
+  } else if (type === 'missions' && data.missions) {
+    data.missions = data.missions.map(ms => ({ ...ms, isMaster: true }));
+  } else if (type === 'categories' && data.categories) {
+    data.categories = data.categories.map(cat => ({ ...cat, isMaster: true }));
+  }
+  return data;
+}
+
+/**
  * マスタデータのバリデーション
  * @param {Object} data - バリデーション対象データ
  * @param {string} type - データタイプ ('equipments' | 'missions' | 'categories')
@@ -158,13 +175,7 @@ export async function fetchMasterData(type, version = '1.0.0') {
     }
 
     // isMaster: true を付与
-    if (type === 'equipments' && data.equipments) {
-      data.equipments = data.equipments.map(eq => ({ ...eq, isMaster: true }));
-    } else if (type === 'missions' && data.missions) {
-      data.missions = data.missions.map(ms => ({ ...ms, isMaster: true }));
-    } else if (type === 'categories' && data.categories) {
-      data.categories = data.categories.map(cat => ({ ...cat, isMaster: true }));
-    }
+    attachIsMasterFlag(data, type);
 
     console.log(`[DataFetch] Successfully fetched and validated ${type} from GitHub Pages`);
     return {
@@ -190,13 +201,7 @@ export async function fetchMasterData(type, version = '1.0.0') {
       }
 
       // isMaster: true を付与
-      if (type === 'equipments' && data.equipments) {
-        data.equipments = data.equipments.map(eq => ({ ...eq, isMaster: true }));
-      } else if (type === 'missions' && data.missions) {
-        data.missions = data.missions.map(ms => ({ ...ms, isMaster: true }));
-      } else if (type === 'categories' && data.categories) {
-        data.categories = data.categories.map(cat => ({ ...cat, isMaster: true }));
-      }
+      attachIsMasterFlag(data, type);
 
       console.log(`[DataFetch] Successfully fetched and validated ${type} from local`);
       return {

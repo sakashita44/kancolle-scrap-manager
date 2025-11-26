@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
-import { AlertCircle, Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { PERIOD, LIMITS } from '../types/schema'
+import ValidationErrorDisplay from './ValidationErrorDisplay'
 
 const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onSave, onCancel }) => {
   const [name, setName] = useState('')
@@ -95,12 +96,7 @@ const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onS
           placeholder="例: (単) 新型兵装の廃棄"
           required
         />
-        {validationErrors.name && (
-          <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
-            <AlertCircle className="w-3 h-3" />
-            {validationErrors.name}
-          </p>
-        )}
+        <ValidationErrorDisplay error={validationErrors.name} />
       </div>
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">周期</label>
@@ -119,12 +115,7 @@ const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onS
       </div>
       <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
         <p className="text-xs font-bold text-slate-500 mb-2">要求装備 (最大{LIMITS.REQUIREMENTS_PER_MISSION_MAX}枠)</p>
-        {validationErrors.duplicate && (
-          <p className="text-xs text-red-500 flex items-center gap-1 mb-2">
-            <AlertCircle className="w-3 h-3" />
-            {validationErrors.duplicate}
-          </p>
-        )}
+        <ValidationErrorDisplay error={validationErrors.duplicate} />
         <div className="space-y-2">
           {reqs.map((req, index) => (
             <div key={req.id} className="flex gap-2">
