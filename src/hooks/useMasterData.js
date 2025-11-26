@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { logError } from '../utils/logger.js';
 
 /**
  * マスタデータを取得する汎用フック
@@ -35,7 +36,11 @@ export function useMasterData(fetchFn, dataKey, appVersion = '1.0.0') {
         }
       } catch (err) {
         if (isMounted) {
-          console.error(`[useMasterData] Failed to load master ${dataKey}:`, err);
+          logError(`Failed to load master ${dataKey}`, {
+            function: 'useMasterData',
+            dataKey,
+            error: err,
+          });
           setError(err.message);
           setMasterData([]);
         }

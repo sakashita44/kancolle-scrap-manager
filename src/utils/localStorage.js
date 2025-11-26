@@ -7,6 +7,7 @@
 import { STORAGE_KEYS, SCHEMA_VERSION } from '../types/schema.js';
 import { validateEquipment, validateMission } from './validation.js';
 import { createStorageHelper } from './storageHelper.js';
+import { logError, logWarning, logInfo } from './logger.js';
 
 // LocalStorage操作用のヘルパー関数
 const { getItem, setItem, removeItem } = createStorageHelper(localStorage, 'LocalStorage');
@@ -23,7 +24,7 @@ const { getItem, setItem, removeItem } = createStorageHelper(localStorage, 'Loca
 function loadAndValidateUserData(storageKey, dataKey, validateFn, saveFn, dataType) {
   const rawData = getItem(storageKey);
   if (!rawData || !rawData[dataKey]) {
-    console.log(`[LocalStorage] No user ${dataType} found`);
+    logInfo(`No user ${dataType} found`, { function: 'loadAndValidateUserData', dataType });
     return { data: [], corruptedItems: [] };
   }
 
@@ -37,7 +38,12 @@ function loadAndValidateUserData(storageKey, dataKey, validateFn, saveFn, dataTy
       // isMaster: false を付与
       validItems.push({ ...item, isMaster: false });
     } else {
-      console.warn(`[LocalStorage] Corrupted ${dataType} detected:`, item.id, validation.errors);
+      logWarning(`Corrupted ${dataType} detected`, {
+        function: 'loadAndValidateUserData',
+        dataType,
+        id: item.id,
+        errors: validation.errors,
+      });
       corruptedItems.push({
         id: item.id || 'unknown',
         name: item.name || 'unknown',
@@ -49,11 +55,19 @@ function loadAndValidateUserData(storageKey, dataKey, validateFn, saveFn, dataTy
 
   // 破損データがあれば正常なデータのみで上書き保存
   if (corruptedItems.length > 0) {
-    console.log(`[LocalStorage] Removing ${corruptedItems.length} corrupted ${dataType}(s)`);
+    logInfo(`Removing ${corruptedItems.length} corrupted ${dataType}(s)`, {
+      function: 'loadAndValidateUserData',
+      dataType,
+      corruptedCount: corruptedItems.length,
+    });
     saveFn(validItems);
   }
 
-  console.log(`[LocalStorage] Loaded user ${dataType}:`, validItems.length, 'items');
+  logInfo(`Loaded user ${dataType}`, {
+    function: 'loadAndValidateUserData',
+    dataType,
+    count: validItems.length,
+  });
   return { data: validItems, corruptedItems };
 }
 
@@ -71,7 +85,10 @@ export function saveUserEquipments(equipments) {
     equipments: cleanedEquipments,
   };
   setItem(STORAGE_KEYS.USER_EQUIPMENTS, data);
-  console.log('[LocalStorage] Saved user equipments:', cleanedEquipments.length, 'items');
+  logInfo('Saved user equipments', {
+    function: 'saveUserEquipments',
+    count: cleanedEquipments.length,
+  });
 }
 
 /**
@@ -102,7 +119,10 @@ export function saveUserMissions(missions) {
     missions: cleanedMissions,
   };
   setItem(STORAGE_KEYS.USER_MISSIONS, data);
-  console.log('[LocalStorage] Saved user missions:', cleanedMissions.length, 'items');
+  logInfo('Saved user missions', {
+    function: 'saveUserMissions',
+    count: cleanedMissions.length,
+  });
 }
 
 /**
@@ -158,10 +178,10 @@ export function clearUserData() {
   try {
     removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
     removeItem(STORAGE_KEYS.USER_MISSIONS);
-    console.log('[LocalStorage] Cleared all user data');
+    logInfo('Cleared all user data', { function: 'clearUserData' });
     return true;
   } catch (error) {
-    console.error('[LocalStorage] Failed to clear user data:', error);
+    logError('Failed to clear user data', { function: 'clearUserData', error });
     return false;
   }
 }
@@ -176,10 +196,10 @@ export function clearAllData() {
     removeItem(STORAGE_KEYS.USER_MISSIONS);
     removeItem(STORAGE_KEYS.APP_VERSION);
     removeItem(STORAGE_KEYS.ABOUT_SHOWN);
-    console.log('[LocalStorage] Cleared all app data');
+    logInfo('Cleared all app data', { function: 'clearAllData' });
     return true;
   } catch (error) {
-    console.error('[LocalStorage] Failed to clear all data:', error);
+    logError('Failed to clear all data', { function: 'clearAllData', error });
     return false;
   }
 }

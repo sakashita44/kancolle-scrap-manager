@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { calculateScrapList } from '../utils/calculateScrapList.js';
+import { logError, logInfo } from '../utils/logger.js';
 
 /**
  * 廃棄リスト計算を管理するカスタムフック
@@ -56,13 +57,17 @@ export function useScrapCalculation(selectedMissionIds, allMissions, allEquipmen
       setScrapList(result.scrapList);
       setWarnings(result.warnings);
 
-      console.log('[useScrapCalculation] Calculated:', {
+      logInfo('Scrap list calculated', {
+        function: 'useScrapCalculation',
         selectedCount: deps.selectedMissionIds.length,
         scrapListCount: result.scrapList.length,
         warningsCount: result.warnings.length,
       });
     } catch (error) {
-      console.error('[useScrapCalculation] Calculation error:', error);
+      logError('Calculation error', {
+        function: 'useScrapCalculation',
+        error,
+      });
       setScrapList([]);
       setWarnings([
         {

@@ -6,6 +6,7 @@ import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { generateEquipmentId, generateMissionId } from './utils/idGenerator'
+import { logInfo } from './utils/logger'
 import Header from './components/Header'
 import StickyDashboard from './components/StickyDashboard'
 import SelectedMissionsSummary from './components/SelectedMissionsSummary'
@@ -86,12 +87,12 @@ function App() {
 
   const handleExport = () => {
     // TODO: issue #12で実装予定
-    console.log('エクスポート機能は issue #12 で実装予定')
+    logInfo('エクスポート機能は issue #12 で実装予定', { function: 'App.handleExport' })
   }
 
   const handleImport = () => {
     // TODO: issue #12で実装予定
-    console.log('インポート機能は issue #12 で実装予定')
+    logInfo('インポート機能は issue #12 で実装予定', { function: 'App.handleImport' })
   }
 
   const handleAddEquipment = (data) => {

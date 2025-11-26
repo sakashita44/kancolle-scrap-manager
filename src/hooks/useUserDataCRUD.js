@@ -5,6 +5,7 @@
  */
 
 import { useCallback } from 'react';
+import { logError } from '../utils/logger.js';
 
 /**
  * ユーザーデータのCRUD操作を提供する汎用フック
@@ -28,7 +29,11 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
       saveUserData(updated);
       return true;
     } catch (err) {
-      console.error(`[useUserDataCRUD] Failed to add ${dataType}:`, err);
+      logError(`Failed to add ${dataType}`, {
+        function: 'useUserDataCRUD.addItem',
+        dataType,
+        error: err,
+      });
       setError(err.message);
       return false;
     }
@@ -49,7 +54,12 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
       saveUserData(updated);
       return true;
     } catch (err) {
-      console.error(`[useUserDataCRUD] Failed to update ${dataType}:`, err);
+      logError(`Failed to update ${dataType}`, {
+        function: 'useUserDataCRUD.updateItem',
+        dataType,
+        id,
+        error: err,
+      });
       setError(err.message);
       return false;
     }
@@ -67,7 +77,12 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
       saveUserData(updated);
       return true;
     } catch (err) {
-      console.error(`[useUserDataCRUD] Failed to delete ${dataType}:`, err);
+      logError(`Failed to delete ${dataType}`, {
+        function: 'useUserDataCRUD.deleteItem',
+        dataType,
+        id,
+        error: err,
+      });
       setError(err.message);
       return false;
     }
