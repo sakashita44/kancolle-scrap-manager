@@ -55,3 +55,27 @@ export function createDefaultSortComparator() {
     return a.order - b.order;
   };
 }
+
+/**
+ * 任務用のソート比較関数を作成（period順 → isMaster優先 → order昇順）
+ * @param {Array} periodOrder - 周期の優先順位配列（PERIOD_ORDER）
+ * @returns {Function} ソート比較関数
+ */
+export function createMissionSortComparator(periodOrder) {
+  return (a, b) => {
+    // 周期順（PERIOD_ORDERに基づく）
+    const periodIndexA = periodOrder.indexOf(a.period);
+    const periodIndexB = periodOrder.indexOf(b.period);
+    if (periodIndexA !== periodIndexB) {
+      return periodIndexA - periodIndexB;
+    }
+
+    // 同じ周期内では公式優先（isMasterがtrueなら先頭）
+    if (a.isMaster !== b.isMaster) {
+      return b.isMaster ? 1 : -1;
+    }
+
+    // 同じグループ内ではorder順
+    return a.order - b.order;
+  };
+}
