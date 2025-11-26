@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { fetchEquipments } from '../utils/dataFetch.js';
 import { loadUserEquipments, saveUserEquipments } from '../utils/localStorage.js';
+import { getNextOrder as getNextOrderUtil } from '../utils/dataManagement.js';
 
 /**
  * 装備データを管理するカスタムフック
@@ -136,9 +137,7 @@ export function useEquipments(appVersion = '1.0.0') {
 
   // ユーザー定義装備の次の order 値を取得
   const getNextOrder = useCallback(() => {
-    if (userEquipments.length === 0) return 1;
-    const maxOrder = Math.max(...userEquipments.map(eq => eq.order || 0));
-    return maxOrder + 1;
+    return getNextOrderUtil(userEquipments);
   }, [userEquipments]);
 
   return {

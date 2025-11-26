@@ -5,39 +5,10 @@
  */
 
 import { STORAGE_KEYS, SCHEMA_VERSION } from '../types/schema.js';
+import { createStorageHelper } from './storageHelper.js';
 
-/**
- * SessionStorageから値を取得してJSONパース
- * @param {string} key - StorageKey
- * @returns {Object|null} パースされたデータ、存在しない場合はnull
- */
-function getItem(key) {
-  try {
-    const item = sessionStorage.getItem(key);
-    if (!item) {
-      return null;
-    }
-    return JSON.parse(item);
-  } catch (error) {
-    console.error(`[SessionStorage] Failed to parse ${key}:`, error);
-    return null;
-  }
-}
-
-/**
- * SessionStorageに値をJSON文字列化して保存
- * @param {string} key - StorageKey
- * @param {Object} value - 保存する値
- */
-function setItem(key, value) {
-  try {
-    const jsonString = JSON.stringify(value);
-    sessionStorage.setItem(key, jsonString);
-  } catch (error) {
-    console.error(`[SessionStorage] Failed to save ${key}:`, error);
-    throw new Error('SessionStorageへの保存に失敗しました: ' + error.message);
-  }
-}
+// SessionStorage操作用のヘルパー関数
+const { getItem, setItem, removeItem } = createStorageHelper(sessionStorage, 'SessionStorage');
 
 /**
  * 選択中の任務IDリストを保存
@@ -73,7 +44,7 @@ export function loadSelectedMissions() {
  */
 export function clearSelectedMissions() {
   try {
-    sessionStorage.removeItem(STORAGE_KEYS.SELECTED_MISSIONS);
+    removeItem(STORAGE_KEYS.SELECTED_MISSIONS);
     console.log('[SessionStorage] Cleared selected missions');
     return true;
   } catch (error) {

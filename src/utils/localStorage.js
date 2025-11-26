@@ -6,46 +6,10 @@
 
 import { STORAGE_KEYS, SCHEMA_VERSION } from '../types/schema.js';
 import { validateEquipment, validateMission } from './validation.js';
+import { createStorageHelper } from './storageHelper.js';
 
-/**
- * LocalStorageから値を取得してJSONパース
- * @param {string} key - StorageKey
- * @returns {Object|null} パースされたデータ、存在しない場合はnull
- */
-function getItem(key) {
-  try {
-    const item = localStorage.getItem(key);
-    if (!item) {
-      return null;
-    }
-    return JSON.parse(item);
-  } catch (error) {
-    console.error(`[LocalStorage] Failed to parse ${key}:`, error);
-    return null;
-  }
-}
-
-/**
- * LocalStorageに値をJSON文字列化して保存
- * @param {string} key - StorageKey
- * @param {Object} value - 保存する値
- * @throws {Error} 容量オーバーまたはプライベートモードの場合
- */
-function setItem(key, value) {
-  try {
-    const jsonString = JSON.stringify(value);
-    localStorage.setItem(key, jsonString);
-  } catch (error) {
-    // QuotaExceededError: LocalStorage容量オーバー
-    if (error.name === 'QuotaExceededError') {
-      throw new Error(
-        'LocalStorageの容量が不足しています. データをエクスポートして整理してください.'
-      );
-    }
-    // プライベートモード等でLocalStorageが無効な場合
-    throw new Error('LocalStorageへの保存に失敗しました: ' + error.message);
-  }
-}
+// LocalStorage操作用のヘルパー関数
+const { getItem, setItem, removeItem } = createStorageHelper(localStorage, 'LocalStorage');
 
 /**
  * ユーザー定義装備を保存
@@ -200,8 +164,8 @@ export function isAboutShown() {
  */
 export function clearUserData() {
   try {
-    localStorage.removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
-    localStorage.removeItem(STORAGE_KEYS.USER_MISSIONS);
+    removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
+    removeItem(STORAGE_KEYS.USER_MISSIONS);
     console.log('[LocalStorage] Cleared all user data');
     return true;
   } catch (error) {
@@ -216,10 +180,10 @@ export function clearUserData() {
  */
 export function clearAllData() {
   try {
-    localStorage.removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
-    localStorage.removeItem(STORAGE_KEYS.USER_MISSIONS);
-    localStorage.removeItem(STORAGE_KEYS.APP_VERSION);
-    localStorage.removeItem(STORAGE_KEYS.ABOUT_SHOWN);
+    removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
+    removeItem(STORAGE_KEYS.USER_MISSIONS);
+    removeItem(STORAGE_KEYS.APP_VERSION);
+    removeItem(STORAGE_KEYS.ABOUT_SHOWN);
     console.log('[LocalStorage] Cleared all app data');
     return true;
   } catch (error) {

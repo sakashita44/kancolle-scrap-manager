@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { fetchMissions } from '../utils/dataFetch.js';
 import { loadUserMissions, saveUserMissions } from '../utils/localStorage.js';
 import { PERIOD_ORDER } from '../types/schema.js';
+import { getNextOrder as getNextOrderUtil } from '../utils/dataManagement.js';
 
 /**
  * 任務データを管理するカスタムフック
@@ -154,9 +155,7 @@ export function useMissions(appVersion = '1.0.0') {
 
   // ユーザー定義任務の次の order 値を取得
   const getNextOrder = useCallback(() => {
-    if (userMissions.length === 0) return 1;
-    const maxOrder = Math.max(...userMissions.map(ms => ms.order || 0));
-    return maxOrder + 1;
+    return getNextOrderUtil(userMissions);
   }, [userMissions]);
 
   return {
