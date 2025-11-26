@@ -8,6 +8,7 @@ import { useMissionFilter } from './hooks/useMissionFilter'
 import { generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import Header from './components/Header'
 import StickyDashboard from './components/StickyDashboard'
+import SelectedMissionsSummary from './components/SelectedMissionsSummary'
 import ControlBar from './components/ControlBar'
 import MissionList from './components/MissionList'
 import FooterArea from './components/FooterArea'
@@ -56,6 +57,11 @@ function App() {
   const equipmentMap = useMemo(() =>
     new Map(equipments.map(eq => [eq.id, eq]))
   , [equipments])
+
+  // 選択中の任務一覧を取得
+  const selectedMissions = useMemo(() =>
+    missions.filter(mission => selectedMissionIds.includes(mission.id))
+  , [missions, selectedMissionIds])
 
   // フィルタリング
   const {
@@ -155,7 +161,12 @@ function App() {
 
       <StickyDashboard
         scrapList={scrapList}
+      />
+
+      <SelectedMissionsSummary
+        selectedMissions={selectedMissions}
         selectedCount={selectedCount}
+        onToggleMission={toggleMission}
         onClearSelection={clearSelection}
       />
 
