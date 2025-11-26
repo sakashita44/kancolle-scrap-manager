@@ -23,11 +23,10 @@
     * [x] パフォーマンス最適化 (#24)
     * [x] App.jsxリファクタリング (#25)
     * [x] 周期フィルタ実装とフィルタロジックのhook化 (#18)
-    * [ ] 共通処理の関数分離 (#50)
+    * [x] 共通処理の関数分離 (#50)
     * [ ] エラーログ出力統一 (#27)
 * [ ] セキュリティ・安定性強化
     * [ ] XSS対策の強化 (#42)
-    * [ ] crypto.randomUUID()のフォールバック (#44)
 * [ ] リリース準備
     * [ ] ユーザーマニュアル整備 (#49)
     * [ ] リリース前QAチェックリスト実施 (#47)
@@ -263,19 +262,24 @@
         * App.jsx: useCategories()使用、カテゴリ取得元を変更
         * calculateScrapList.js: categoryNameMapを引数で受け取るよう修正
         * useEquipments.js: categoryNameMap/getCategoryName削除（責務分離）
-* ✅ 共通処理の関数分離: CRUDエラーハンドリング修正 (2025-11-27) (#50 部分対応)
-    * useEquipments.js: crudError state追加、useUserDataCRUDにsetCrudError渡し
-    * useMissions.js: crudError state追加、useUserDataCRUDにsetCrudError渡し
-    * App.jsx: equipmentsCrudError/missionsCrudError受取、errorMessage統合
-    * エラー種別の分離（マスタデータフェッチエラー vs CRUD操作エラー）
-    * LocalStorage quota超過やJSON serialization失敗を捕捉可能に
+* ✅ 共通処理の関数分離 (2025-11-27) (#50 完了)
+    * **CRUDエラーハンドリング修正**
+      * useEquipments.js: crudError state追加、useUserDataCRUDにsetCrudError渡し
+      * useMissions.js: crudError state追加、useUserDataCRUDにsetCrudError渡し
+      * App.jsx: equipmentsCrudError/missionsCrudError受取、errorMessage統合
+      * エラー種別の分離（マスタデータフェッチエラー vs CRUD操作エラー）
+      * LocalStorage quota超過やJSON serialization失敗を捕捉可能に
+    * **ValidationErrorDisplayコンポーネント実装**
+      * src/components/ValidationErrorDisplay.jsx作成（エラー・警告表示の統一）
+      * EquipmentModal.jsx: 12行削減、ValidationErrorDisplay使用
+      * MissionModal.jsx: 9行削減、ValidationErrorDisplay使用
+      * エラー表示UIの完全統一、保守性向上
 
 ## 次のステップ
 
 ### v1.0.0 残タスク (Priority 1)
 
 * コード品質改善
-    * 共通処理の関数分離 (#50)
     * エラーログ出力統一 (#27)
 * セキュリティ・安定性強化
     * XSS対策の強化 (#42)
