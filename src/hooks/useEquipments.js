@@ -19,6 +19,7 @@ import { useUserDataCRUD } from './useUserDataCRUD.js';
  */
 export function useEquipments(appVersion = '1.0.0') {
   const [allEquipments, setAllEquipments] = useState([]);
+  const [crudError, setCrudError] = useState(null);
 
   // マスタデータをフェッチ
   const { masterData: masterEquipments, loading, error, dataSource } = useMasterData(
@@ -44,7 +45,7 @@ export function useEquipments(appVersion = '1.0.0') {
     userEquipments,
     setUserEquipments,
     saveUserEquipments,
-    () => {}, // setError は不要（useMasterDataで管理）
+    setCrudError,
     'equipment'
   );
 
@@ -67,6 +68,7 @@ export function useEquipments(appVersion = '1.0.0') {
     // 状態
     loading,
     error,
+    crudError,
     dataSource,
     corruptedItems,
 

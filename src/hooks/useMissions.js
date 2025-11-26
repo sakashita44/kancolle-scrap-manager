@@ -20,6 +20,7 @@ import { useUserDataCRUD } from './useUserDataCRUD.js';
  */
 export function useMissions(appVersion = '1.0.0') {
   const [allMissions, setAllMissions] = useState([]);
+  const [crudError, setCrudError] = useState(null);
 
   // マスタデータをフェッチ
   const { masterData: masterMissions, loading, error, dataSource } = useMasterData(
@@ -45,7 +46,7 @@ export function useMissions(appVersion = '1.0.0') {
     userMissions,
     setUserMissions,
     saveUserMissions,
-    () => {}, // setError は不要（useMasterDataで管理）
+    setCrudError,
     'mission'
   );
 
@@ -79,6 +80,7 @@ export function useMissions(appVersion = '1.0.0') {
     // 状態
     loading,
     error,
+    crudError,
     dataSource,
     corruptedItems,
 
