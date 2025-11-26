@@ -6,6 +6,7 @@
 
 import { SCHEMA_VERSION } from '../types/schema.js';
 import { validateEquipment, validateMission } from './validation.js';
+import { logError, logWarning, logInfo } from './logger.js';
 
 /**
  * GitHub Pages URLを生成
@@ -161,13 +162,18 @@ export async function fetchMasterData(type, version = '1.0.0') {
 
   // Step 1: GitHub Pagesから取得 + バリデーション
   try {
-    console.log(`[DataFetch] Fetching ${type} from GitHub Pages: ${githubUrl}`);
+    logInfo(`Fetching ${type} from GitHub Pages: ${githubUrl}`, { function: 'fetchMasterData', type });
     const data = await fetchJson(githubUrl);
 
     // バリデーション実行
     const validation = validateMasterData(data, type);
     if (!validation.valid) {
-      console.error(`[DataFetch] Validation failed for GitHub Pages ${type}:`, validation.invalidItems);
+      logError(`Validation failed for GitHub Pages ${type}`, {
+        function: 'fetchMasterData',
+        type,
+        invalidCount: validation.invalidItems.length,
+        invalidItems: validation.invalidItems,
+      });
       throw new Error(
         `Validation failed: ${validation.invalidItems.length} invalid items found. ` +
         `First error: ${validation.invalidItems[0].errors[0]}`
@@ -177,23 +183,32 @@ export async function fetchMasterData(type, version = '1.0.0') {
     // isMaster: true を付与
     attachIsMasterFlag(data, type);
 
-    console.log(`[DataFetch] Successfully fetched and validated ${type} from GitHub Pages`);
+    logInfo(`Successfully fetched and validated ${type} from GitHub Pages`, { function: 'fetchMasterData', type, source: 'github-pages' });
     return {
       data,
       source: 'github-pages',
     };
   } catch (githubError) {
-    console.warn(`[DataFetch] Failed to fetch/validate from GitHub Pages: ${githubError.message}`);
+    logWarning(`Failed to fetch/validate from GitHub Pages: ${githubError.message}`, {
+      function: 'fetchMasterData',
+      type,
+      error: githubError,
+    });
 
     // Step 2: ローカルフォールバック + バリデーション
     try {
-      console.log(`[DataFetch] Falling back to local: ${localUrl}`);
+      logInfo(`Falling back to local: ${localUrl}`, { function: 'fetchMasterData', type });
       const data = await fetchJson(localUrl);
 
       // バリデーション実行
       const validation = validateMasterData(data, type);
       if (!validation.valid) {
-        console.error(`[DataFetch] Validation failed for local ${type}:`, validation.invalidItems);
+        logError(`Validation failed for local ${type}`, {
+          function: 'fetchMasterData',
+          type,
+          invalidCount: validation.invalidItems.length,
+          invalidItems: validation.invalidItems,
+        });
         throw new Error(
           `Validation failed: ${validation.invalidItems.length} invalid items found. ` +
           `First error: ${validation.invalidItems[0].errors[0]}`
@@ -203,13 +218,17 @@ export async function fetchMasterData(type, version = '1.0.0') {
       // isMaster: true を付与
       attachIsMasterFlag(data, type);
 
-      console.log(`[DataFetch] Successfully fetched and validated ${type} from local`);
+      logInfo(`Successfully fetched and validated ${type} from local`, { function: 'fetchMasterData', type, source: 'local' });
       return {
         data,
         source: 'local',
       };
     } catch (localError) {
-      console.error(`[DataFetch] Failed to fetch/validate from local: ${localError.message}`);
+      logError(`Failed to fetch/validate from local: ${localError.message}`, {
+        function: 'fetchMasterData',
+        type,
+        error: localError,
+      });
 
       // Step 3: 両方失敗
       throw new Error(

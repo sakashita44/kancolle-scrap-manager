@@ -2,6 +2,8 @@
  * Web Storage API（localStorage/sessionStorage）の共通操作ヘルパー
  */
 
+import { logError } from './logger.js';
+
 /**
  * Storageヘルパー関数を作成するファクトリ関数
  * @param {Storage} storage - localStorage または sessionStorage
@@ -22,7 +24,11 @@ export function createStorageHelper(storage, storageName) {
       }
       return JSON.parse(item);
     } catch (error) {
-      console.error(`[${storageName}] Failed to parse ${key}:`, error);
+      logError(`Failed to parse ${key}`, {
+        function: `${storageName}.getItem`,
+        key,
+        error,
+      });
       return null;
     }
   }
@@ -55,7 +61,11 @@ export function createStorageHelper(storage, storageName) {
     try {
       storage.removeItem(key);
     } catch (error) {
-      console.error(`[${storageName}] Failed to remove ${key}:`, error);
+      logError(`Failed to remove ${key}`, {
+        function: `${storageName}.removeItem`,
+        key,
+        error,
+      });
     }
   }
 
@@ -66,7 +76,10 @@ export function createStorageHelper(storage, storageName) {
     try {
       storage.clear();
     } catch (error) {
-      console.error(`[${storageName}] Failed to clear:`, error);
+      logError('Failed to clear', {
+        function: `${storageName}.clear`,
+        error,
+      });
     }
   }
 

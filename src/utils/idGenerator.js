@@ -9,6 +9,8 @@
  * @module utils/idGenerator
  */
 
+import { logWarning } from './logger.js';
+
 /**
  * UUID v4を生成（crypto.randomUUID()のフォールバック付き）
  *
@@ -25,9 +27,10 @@ function generateUUID() {
   }
 
   // フォールバック: 疑似乱数を使用（セキュアではないが動作する）
-  console.warn(
-    '[WARNING] crypto.randomUUID() is not available. Using fallback method. セキュアな環境（HTTPS）での使用を推奨します。'
-  )
+  logWarning('crypto.randomUUID() is not available. Using fallback method', {
+    function: 'generateUUID',
+    message: 'セキュアな環境（HTTPS）での使用を推奨します',
+  });
 
   // RFC 4122 v4形式のUUID生成
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

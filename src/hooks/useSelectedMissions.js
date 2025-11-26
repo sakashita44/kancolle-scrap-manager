@@ -11,6 +11,7 @@ import {
   clearSelectedMissions,
 } from '../utils/sessionStorage.js';
 import { LIMITS } from '../types/schema.js';
+import { logError, logWarning } from '../utils/logger.js';
 
 /**
  * 選択任務を管理するカスタムフック
@@ -25,7 +26,10 @@ export function useSelectedMissions() {
       const loaded = loadSelectedMissions();
       setSelectedMissionIds(loaded);
     } catch (err) {
-      console.error('[useSelectedMissions] Failed to load selected missions:', err);
+      logError('Failed to load selected missions', {
+        function: 'useSelectedMissions',
+        error: err,
+      });
     }
   }, []);
 
@@ -34,7 +38,10 @@ export function useSelectedMissions() {
     try {
       saveSelectedMissions(selectedMissionIds);
     } catch (err) {
-      console.error('[useSelectedMissions] Failed to save selected missions:', err);
+      logError('Failed to save selected missions', {
+        function: 'useSelectedMissions',
+        error: err,
+      });
     }
   }, [selectedMissionIds]);
 
@@ -48,9 +55,10 @@ export function useSelectedMissions() {
 
       // 最大選択数チェック
       if (prev.length >= LIMITS.SELECTED_MISSIONS_MAX) {
-        console.warn(
-          `[useSelectedMissions] Maximum ${LIMITS.SELECTED_MISSIONS_MAX} missions can be selected`
-        );
+        logWarning('Maximum missions can be selected', {
+          function: 'useSelectedMissions.selectMission',
+          maxSelections: LIMITS.SELECTED_MISSIONS_MAX,
+        });
         return prev;
       }
 
@@ -72,9 +80,10 @@ export function useSelectedMissions() {
       } else {
         // 選択
         if (prev.length >= LIMITS.SELECTED_MISSIONS_MAX) {
-          console.warn(
-            `[useSelectedMissions] Maximum ${LIMITS.SELECTED_MISSIONS_MAX} missions can be selected`
-          );
+          logWarning('Maximum missions can be selected', {
+            function: 'useSelectedMissions.toggleMission',
+            maxSelections: LIMITS.SELECTED_MISSIONS_MAX,
+          });
           return prev;
         }
         return [...prev, missionId];

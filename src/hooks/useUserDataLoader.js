@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { logError } from '../utils/logger.js';
 
 /**
  * ユーザーデータを読み込む汎用フック
@@ -22,7 +23,11 @@ export function useUserDataLoader(loadFn, dataType) {
       setUserData(result.data);
       setCorruptedItems(result.corruptedItems);
     } catch (err) {
-      console.error(`[useUserDataLoader] Failed to load ${dataType}:`, err);
+      logError(`Failed to load ${dataType}`, {
+        function: 'useUserDataLoader',
+        dataType,
+        error: err,
+      });
       setUserData([]);
       setCorruptedItems([]);
     }
