@@ -24,6 +24,7 @@ import AboutModal from './components/AboutModal'
 function App() {
   const {
     allEquipments: equipments,
+    userEquipments,
     getNextOrder: getNextEquipmentOrder,
     loading: equipmentsLoading,
     error: equipmentsError,
@@ -31,6 +32,7 @@ function App() {
     dataSource: equipmentsDataSource,
     corruptedItems: corruptedEquipments,
     addUserEquipment,
+    updateUserEquipment,
     deleteUserEquipment
   } = useEquipments()
   const {
@@ -110,6 +112,18 @@ function App() {
       ...data
     }
     addUserEquipment(newEquipment)
+  }
+
+  const handleSwapEquipmentOrder = (id1, id2) => {
+    // 2つの装備のorder値を一度に交換する
+    const eq1 = userEquipments.find(e => e.id === id1)
+    const eq2 = userEquipments.find(e => e.id === id2)
+
+    if (!eq1 || !eq2) return
+
+    const tempOrder = eq1.order
+    updateUserEquipment(id1, { ...eq1, order: eq2.order })
+    updateUserEquipment(id2, { ...eq2, order: tempOrder })
   }
 
   const handleDeleteEquipment = (id) => {
@@ -237,6 +251,7 @@ function App() {
           getCategoryName={getCategoryName}
           getNextOrder={getNextEquipmentOrder}
           onSave={handleAddEquipment}
+          onSwapOrder={handleSwapEquipmentOrder}
           onDelete={handleDeleteEquipment}
           onCancel={() => setActiveModal(null)}
         />

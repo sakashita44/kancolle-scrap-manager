@@ -93,21 +93,21 @@
 
 ### UI
 
-| 機能                         | 状況   | Issue   | 備考                                         |
-| :--------------------------- | :----- | :------ | :------------------------------------------- |
-| Header                       | ✅ 完了 | #7      | アプリ名表示（設定メニューは#20）            |
-| Sticky Dashboard             | ✅ 完了 | #7      | 廃棄リスト表示                               |
-| Control Bar                  | ✅ 完了 | #7, #18 | テキスト検索、周期フィルタ、カテゴリフィルタ |
-| Mission List                 | ✅ 完了 | #7      | 任務カード一覧、選択機能                     |
-| Footer Area                  | ✅ 完了 | #7      | エラーログ表示                               |
-| 装備管理モーダル             | ✅ 完了 | #7      | 装備の追加・削除・一覧                       |
-| 任務追加/編集モーダル        | ✅ 完了 | #7      | 任務の作成（全周期対応）                     |
-| Modal共通コンポーネント      | ✅ 完了 | #7      | 汎用モーダルベース                           |
-| 選択中任務一覧               | ✅ 完了 | #17     | フィルタ適用時でも選択任務を常に表示         |
-| 削除確認ダイアログ           | ✅ 完了 | #19     | ConfirmDialogコンポーネント、DIP原則適用     |
-| Header設定メニュー           | ✅ 完了 | #20     | 設定ドロップダウン、Aboutモーダル            |
+| 機能                         | 状況   | Issue    | 備考                                         |
+| :--------------------------- | :----- | :------- | :------------------------------------------- |
+| Header                       | ✅ 完了 | #7       | アプリ名表示（設定メニューは#20）            |
+| Sticky Dashboard             | ✅ 完了 | #7       | 廃棄リスト表示                               |
+| Control Bar                  | ✅ 完了 | #7, #18  | テキスト検索、周期フィルタ、カテゴリフィルタ |
+| Mission List                 | ✅ 完了 | #7       | 任務カード一覧、選択機能                     |
+| Footer Area                  | ✅ 完了 | #7       | エラーログ表示                               |
+| 装備管理モーダル             | ✅ 完了 | #7       | 装備の追加・削除・一覧                       |
+| 任務追加/編集モーダル        | ✅ 完了 | #7       | 任務の作成（全周期対応）                     |
+| Modal共通コンポーネント      | ✅ 完了 | #7       | 汎用モーダルベース                           |
+| 選択中任務一覧               | ✅ 完了 | #17      | フィルタ適用時でも選択任務を常に表示         |
+| 削除確認ダイアログ           | ✅ 完了 | #19      | ConfirmDialogコンポーネント、DIP原則適用     |
+| Header設定メニュー           | ✅ 完了 | #20      | 設定ドロップダウン、Aboutモーダル            |
 | Global Warning Banner        | ✅ 完了 | #21, #31 | 破損データ通知、マスタフェッチ失敗警告       |
-| Modal フォームバリデーション | ✅ 完了 | #31     | リアルタイムバリデーション、エラー表示       |
+| Modal フォームバリデーション | ✅ 完了 | #31      | リアルタイムバリデーション、エラー表示       |
 
 ### その他機能
 
@@ -123,10 +123,10 @@
 
 ### コード品質・リファクタリング
 
-| 項目                     | 状況     | Issue | 備考                                     |
-| :----------------------- | :------- | :---- | :--------------------------------------- |
-| SOLID原則違反の分析      | ✅ 完了   | -     | 密結合・責務過多などの課題を特定         |
-| リファクタリング提案整理 | ✅ 完了   | -     | 過剰な抽象化提案を削除（YAGNI原則適用）  |
+| 項目                     | 状況   | Issue | 備考                                     |
+| :----------------------- | :----- | :---- | :--------------------------------------- |
+| SOLID原則違反の分析      | ✅ 完了 | -     | 密結合・責務過多などの課題を特定         |
+| リファクタリング提案整理 | ✅ 完了 | -     | 過剰な抽象化提案を削除（YAGNI原則適用）  |
 | App.jsxリファクタリング  | ✅ 完了 | #25   | ID生成ユーティリティ化、カテゴリ生成分離 |
 | フィルタロジックのhook化 | ✅ 完了 | #18   | useMissionFilter.js作成、SRP適合         |
 | エラーログ出力統一       | ✅ 完了 | #27   | logger.js作成、軽量版実装                |
@@ -264,16 +264,16 @@
         * useEquipments.js: categoryNameMap/getCategoryName削除（責務分離）
 * ✅ 共通処理の関数分離 (2025-11-27) (#50 完了)
     * **CRUDエラーハンドリング修正**
-      * useEquipments.js: crudError state追加、useUserDataCRUDにsetCrudError渡し
-      * useMissions.js: crudError state追加、useUserDataCRUDにsetCrudError渡し
-      * App.jsx: equipmentsCrudError/missionsCrudError受取、errorMessage統合
-      * エラー種別の分離（マスタデータフェッチエラー vs CRUD操作エラー）
-      * LocalStorage quota超過やJSON serialization失敗を捕捉可能に
+        * useEquipments.js: crudError state追加、useUserDataCRUDにsetCrudError渡し
+        * useMissions.js: crudError state追加、useUserDataCRUDにsetCrudError渡し
+        * App.jsx: equipmentsCrudError/missionsCrudError受取、errorMessage統合
+        * エラー種別の分離（マスタデータフェッチエラー vs CRUD操作エラー）
+        * LocalStorage quota超過やJSON serialization失敗を捕捉可能に
     * **ValidationErrorDisplayコンポーネント実装**
-      * src/components/ValidationErrorDisplay.jsx作成（エラー・警告表示の統一）
-      * EquipmentModal.jsx: 12行削減、ValidationErrorDisplay使用
-      * MissionModal.jsx: 9行削減、ValidationErrorDisplay使用
-      * エラー表示UIの完全統一、保守性向上
+        * src/components/ValidationErrorDisplay.jsx作成（エラー・警告表示の統一）
+        * EquipmentModal.jsx: 12行削減、ValidationErrorDisplay使用
+        * MissionModal.jsx: 9行削減、ValidationErrorDisplay使用
+        * エラー表示UIの完全統一、保守性向上
 * ✅ エラーログ出力の統一 (2025-11-27) (#27 完了, PR #58マージ済み)
     * src/utils/logger.js作成（軽量版エラーロガー実装）
     * エラーログレベル統一（CRITICAL/ERROR/WARNING/INFO）
@@ -289,14 +289,36 @@
     * Priority 1 (High): セキュリティ強化
 * ✅ Global Warning Banner実装 (2025-11-27) (#21 実装完了)
     * **マスタデータフェッチ失敗警告の実装**
-      * src/hooks/useFetchWarning.js作成（dataSource監視、警告メッセージ生成）
-      * App.jsx: 各hookからdataSource受け取り、useFetchWarningで警告検出
-      * GitHub Pagesフェッチ失敗時に警告バナー表示
-      * 「アプリに同梱されたバックアップデータを使用」と明確化
+        * src/hooks/useFetchWarning.js作成（dataSource監視、警告メッセージ生成）
+        * App.jsx: 各hookからdataSource受け取り、useFetchWarningで警告検出
+        * GitHub Pagesフェッチ失敗時に警告バナー表示
+        * 「アプリに同梱されたバックアップデータを使用」と明確化
     * **既存の破損データ警告と併用**
-      * マスタフェッチ失敗警告と破損データ警告を独立表示
-      * 各バナーに[×]ボタンで個別非表示可能
+        * マスタフェッチ失敗警告と破損データ警告を独立表示
+        * 各バナーに[×]ボタンで個別非表示可能
     * Priority 2 (UX改善): issue #21の要求を完全実装
+* ✅ 装備モーダル改善 (2025-11-27) (#60 完了)
+    * **装備追加セクションの折りたたみ機能実装**
+      * ChevronDownアイコンでセクション展開/折りたたみ可能
+      * 折りたたみ時に装備一覧の高さを拡大（max-h-64 → max-h-96）
+      * ユーザビリティ向上、一覧の同時表示数を増加
+    * **装備order番号の体系的な再設計**
+      * マスタ装備Category型: 1, 2, 3...（0番台にまとめる）
+      * マスタ装備Item型: 100番台区切り（小口径主砲: 100-199, 中口径主砲: 200-299...）
+      * ユーザー装備: 0から自動採番（カテゴリ無視の通し番号）
+      * orderフィールドが表示順の唯一の真実（isMaster + order順でソート）
+    * **ユーザー装備の並び替え機能実装**
+      * ↑↓矢印ボタンでユーザー装備の順序を変更可能
+      * マウスホバーで矢印表示、直感的なUI
+      * handleSwapEquipmentOrder関数でorder値を交換
+      * useUserDataCRUD.updateItem関数型更新対応（React状態更新の競合解決）
+    * **保守ドキュメント整備**
+      * docs/maintenance.md新規作成（マスタデータ更新ルール、order番号割り振りルール、デプロイ手順雛形）
+      * docs/schema.md更新（order仕様詳細化）
+      * CLAUDE.md更新（マスタ更新時の注意事項追記）
+    * **関連修正**
+      * src/utils/dataManagement.js: getNextOrder初期値を1→0に変更（ユーザー装備0始まり対応）
+      * src/hooks/useUserDataCRUD.js: updateItem関数型更新に変更（状態更新競合の解決）
 
 ## 次のステップ
 

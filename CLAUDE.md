@@ -231,8 +231,14 @@ The app implements 4-level error classification with comprehensive recovery stra
 4. **Display Order Management**:
    * Each data type has an `order` field (integer) for sort order
    * Data is sorted first by `isMaster` flag (official first), then by `order` ascending
-   * User additions get max(existing order) + 1 within their data source
-   * `order` is independent between official and user data
+   * User additions get max(existing order) + 1 within their data source (auto-increment from 0, category-agnostic)
+   * **Master Equipment Order Rules**:
+     * Category type: 1, 2, 3, 4... (category representative equipment in 0-99 range)
+     * Item type: 100-interval per category (e.g., small guns: 100-199, medium guns: 200-299)
+     * See `docs/maintenance.md` for detailed allocation rules
+   * **Master Mission Order Rules**:
+     * Grouped by `period` (Daily/Weekly/etc.), numbered from 0 within each period
+   * When updating master data, strictly follow the order allocation rules documented in `docs/maintenance.md`
 
 5. **Max Selection Limit**: UI must enforce max 8 simultaneous mission selections (game constraint).
 

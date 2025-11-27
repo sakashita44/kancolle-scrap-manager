@@ -5,11 +5,11 @@
 /**
  * 配列内の最大order値+1を取得する
  * @param {Array} items - order値を持つオブジェクトの配列
- * @returns {number} 次に使用するorder値（配列が空の場合は1）
+ * @returns {number} 次に使用するorder値（配列が空の場合は0）
  */
 export function getNextOrder(items) {
   if (!Array.isArray(items) || items.length === 0) {
-    return 1;
+    return 0;
   }
   const maxOrder = Math.max(...items.map(item => item.order || 0));
   return maxOrder + 1;

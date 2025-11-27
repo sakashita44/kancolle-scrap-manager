@@ -1,15 +1,16 @@
 import { useState, useMemo } from 'react'
-import { Plus, Search, List, Trash2 } from 'lucide-react'
+import { Plus, Search, List, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 import { validateEquipment, validateUniqueName, validateName } from '../utils/validation'
 import { LIMITS } from '../types/schema'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
-const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder, onSave, onDelete, onCancel }) => {
+const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder, onSave, onDelete, onSwapOrder, onCancel }) => {
   const [name, setName] = useState('')
   const [category, setCategory] = useState(categories[0] || '')
   const [type, setType] = useState('Item')
   const [searchText, setSearchText] = useState('')
   const [isNewCategory, setIsNewCategory] = useState(false)
+  const [isAddFormExpanded, setIsAddFormExpanded] = useState(true)
 
   // リアルタイムバリデーション
   const validationErrors = useMemo(() => {
@@ -65,14 +66,43 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
     e.name.includes(searchText) || getCategoryName(e.categoryId).includes(searchText)
   )
 
+  // ユーザー定義装備のみ抽出してソート
+  const userEquipmentsFiltered = filteredEquipments.filter(e => e.id.startsWith('u_')).sort((a, b) => a.order - b.order)
+  const masterEquipmentsFiltered = filteredEquipments.filter(e => !e.id.startsWith('u_'))
+
+  // 並び替え処理
+  const handleMoveUp = (equipmentId) => {
+    const index = userEquipmentsFiltered.findIndex(e => e.id === equipmentId)
+    if (index <= 0) return
+    const current = userEquipmentsFiltered[index]
+    const previous = userEquipmentsFiltered[index - 1]
+    onSwapOrder(current.id, previous.id)
+  }
+
+  const handleMoveDown = (equipmentId) => {
+    const index = userEquipmentsFiltered.findIndex(e => e.id === equipmentId)
+    if (index < 0 || index >= userEquipmentsFiltered.length - 1) return
+    const current = userEquipmentsFiltered[index]
+    const next = userEquipmentsFiltered[index + 1]
+    onSwapOrder(current.id, next.id)
+  }
+
   return (
     <div className="space-y-6">
       {/* 1. 新規追加フォーム */}
       <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-        <h4 className="text-sm font-bold text-slate-700 mb-3 flex items-center">
-          <Plus className="w-4 h-4 mr-1" /> 新規登録
-        </h4>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <button
+          type="button"
+          onClick={() => setIsAddFormExpanded(!isAddFormExpanded)}
+          className="w-full text-left mb-3 flex items-center justify-between hover:text-blue-600 transition-colors"
+        >
+          <h4 className="text-sm font-bold text-slate-700 flex items-center">
+            <Plus className="w-4 h-4 mr-1" /> 新規登録
+          </h4>
+          <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isAddFormExpanded ? 'rotate-0' : '-rotate-90'}`} />
+        </button>
+        {isAddFormExpanded && (
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-500 mb-1">
               装備名
@@ -162,6 +192,7 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
             リストに追加
           </button>
         </form>
+        )}
       </div>
 
       {/* 2. 登録済み一覧 */}
@@ -183,8 +214,22 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
           />
         </div>
 
-        <div className="max-h-48 overflow-y-auto border rounded-lg bg-white divide-y divide-slate-100">
-          {filteredEquipments.map(eq => (
+        <div className={`overflow-y-auto border rounded-lg bg-white divide-y divide-slate-100 ${isAddFormExpanded ? 'max-h-64' : 'max-h-96'}`}>
+          {/* 公式装備 */}
+          {masterEquipmentsFiltered.map(eq => (
+            <div key={eq.id} className="px-3 py-2 flex justify-between items-center hover:bg-slate-50">
+              <div className="flex-1 min-w-0 mr-2">
+                <div className="text-sm font-medium text-slate-700 truncate">{eq.name}</div>
+                <div className="text-xs text-slate-400 flex gap-2">
+                  <span>{getCategoryName(eq.categoryId)}</span>
+                  <span className="bg-slate-100 px-1 rounded text-[10px]">{eq.type}</span>
+                </div>
+              </div>
+              <span className="text-[10px] text-slate-300 select-none">公式</span>
+            </div>
+          ))}
+          {/* ユーザー定義装備 */}
+          {userEquipmentsFiltered.map((eq, index) => (
             <div key={eq.id} className="px-3 py-2 flex justify-between items-center hover:bg-slate-50 group">
               <div className="flex-1 min-w-0 mr-2">
                 <div className="text-sm font-medium text-slate-700 truncate">{eq.name}</div>
@@ -193,18 +238,31 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
                   <span className="bg-slate-100 px-1 rounded text-[10px]">{eq.type}</span>
                 </div>
               </div>
-              {/* ユーザー定義のみ削除可能 */}
-              {eq.id.startsWith('u_') ? (
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() => handleMoveUp(eq.id)}
+                  disabled={index === 0}
+                  className={`p-1 ${index === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                  title="上へ移動"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleMoveDown(eq.id)}
+                  disabled={index === userEquipmentsFiltered.length - 1}
+                  className={`p-1 ${index === userEquipmentsFiltered.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                  title="下へ移動"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </button>
                 <button
                   onClick={() => onDelete(eq.id)}
-                  className="text-slate-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="text-slate-300 hover:text-red-500 p-1"
                   title="削除"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
-              ) : (
-                <span className="text-[10px] text-slate-300 select-none">公式</span>
-              )}
+              </div>
             </div>
           ))}
           {filteredEquipments.length === 0 && (
