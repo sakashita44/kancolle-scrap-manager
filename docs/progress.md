@@ -1,6 +1,6 @@
 # 開発進捗
 
-最終更新: 2025-11-27 (エラーログ出力の統一 + XSS対策の強化実装)
+最終更新: 2025-11-27 (Global Warning Banner実装 - マスタデータフェッチ失敗警告)
 
 ## マイルストーン
 
@@ -106,7 +106,7 @@
 | 選択中任務一覧               | ✅ 完了 | #17     | フィルタ適用時でも選択任務を常に表示         |
 | 削除確認ダイアログ           | ✅ 完了 | #19     | ConfirmDialogコンポーネント、DIP原則適用     |
 | Header設定メニュー           | ✅ 完了 | #20     | 設定ドロップダウン、Aboutモーダル            |
-| Global Warning Banner        | ✅ 完了 | #31     | 破損データ通知、マスタフェッチ警告対応       |
+| Global Warning Banner        | ✅ 完了 | #21, #31 | 破損データ通知、マスタフェッチ失敗警告       |
 | Modal フォームバリデーション | ✅ 完了 | #31     | リアルタイムバリデーション、エラー表示       |
 
 ### その他機能
@@ -280,13 +280,23 @@
     * ログ出力形式の統一（タイムスタンプ、レベル、メッセージ）
     * dataFetch.js, localStorage.js, sessionStorage.js等でlogger使用
     * console.error/warn/logの直接呼び出しを排除
-* ✅ XSS対策の強化 (2025-11-27) (#42 実装完了, PR #59レビュー中)
+* ✅ XSS対策の強化 (2025-11-27) (#42 実装完了, PR #59マージ済み)
     * src/utils/validation.js: isSafeString(), validateName()追加
     * HTMLタグ・スクリプトタグ・イベントハンドラの検出と拒否
     * EquipmentModal.jsx: 装備名・カテゴリ名のXSS検証追加
     * MissionModal.jsx: 任務名のXSS検証追加
     * インポート時バリデーション: validateEquipment/validateMissionでXSS検証
     * Priority 1 (High): セキュリティ強化
+* ✅ Global Warning Banner実装 (2025-11-27) (#21 実装完了)
+    * **マスタデータフェッチ失敗警告の実装**
+      * src/hooks/useFetchWarning.js作成（dataSource監視、警告メッセージ生成）
+      * App.jsx: 各hookからdataSource受け取り、useFetchWarningで警告検出
+      * GitHub Pagesフェッチ失敗時に警告バナー表示
+      * 「アプリに同梱されたバックアップデータを使用」と明確化
+    * **既存の破損データ警告と併用**
+      * マスタフェッチ失敗警告と破損データ警告を独立表示
+      * 各バナーに[×]ボタンで個別非表示可能
+    * Priority 2 (UX改善): issue #21の要求を完全実装
 
 ## 次のステップ
 
