@@ -47,11 +47,13 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
    */
   const updateItem = useCallback((id, updatedItem) => {
     try {
-      const updated = userData.map((item) =>
-        item.id === id ? updatedItem : item
-      );
-      setUserData(updated);
-      saveUserData(updated);
+      setUserData((prevData) => {
+        const updated = prevData.map((item) =>
+          item.id === id ? updatedItem : item
+        );
+        saveUserData(updated);
+        return updated;
+      });
       return true;
     } catch (err) {
       logError(`Failed to update ${dataType}`, {
@@ -63,7 +65,7 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
       setError(err.message);
       return false;
     }
-  }, [userData, setUserData, saveUserData, setError, dataType]);
+  }, [setUserData, saveUserData, setError, dataType]);
 
   /**
    * ユーザーデータを削除
