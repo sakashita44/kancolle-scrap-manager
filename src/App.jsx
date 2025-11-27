@@ -5,6 +5,7 @@ import { useCategories } from './hooks/useCategories'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
 import { useMissionFilter } from './hooks/useMissionFilter'
+import { useFetchWarning } from './hooks/useFetchWarning'
 import { generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
 import Header from './components/Header'
@@ -27,6 +28,7 @@ function App() {
     loading: equipmentsLoading,
     error: equipmentsError,
     crudError: equipmentsCrudError,
+    dataSource: equipmentsDataSource,
     corruptedItems: corruptedEquipments,
     addUserEquipment,
     deleteUserEquipment
@@ -36,6 +38,7 @@ function App() {
     loading: missionsLoading,
     error: missionsError,
     crudError: missionsCrudError,
+    dataSource: missionsDataSource,
     corruptedItems: corruptedMissions,
     addUserMission,
     deleteUserMission,
@@ -46,10 +49,16 @@ function App() {
     categoryNameMap,
     getCategoryName,
     loading: categoriesLoading,
-    error: categoriesError
+    error: categoriesError,
+    dataSource: categoriesDataSource
   } = useCategories()
   const { selectedMissionIds, selectedCount, toggleMission, clearSelection } = useSelectedMissions()
   const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipments, categoryNameMap)
+  const { warningMessage: fetchWarningMessage } = useFetchWarning({
+    equipments: equipmentsDataSource,
+    missions: missionsDataSource,
+    categories: categoriesDataSource
+  })
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
@@ -154,6 +163,14 @@ function App() {
         onExport={handleExport}
         onImport={handleImport}
       />
+
+      {/* マスタデータフェッチ失敗警告バナー */}
+      {fetchWarningMessage && (
+        <GlobalWarningBanner
+          customMessage={fetchWarningMessage}
+          type="warning"
+        />
+      )}
 
       {/* 破損データ警告バナー */}
       <GlobalWarningBanner
