@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { PERIOD, LIMITS } from '../types/schema'
+import { validateName } from '../utils/validation'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
 const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onSave, onCancel }) => {
@@ -34,11 +35,15 @@ const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onS
   const validationErrors = useMemo(() => {
     const errors = {}
 
-    // 任務名の検証
-    if (name.trim() === '') {
-      errors.name = '任務名は必須です'
-    } else if (name.length > LIMITS.MISSION_NAME_MAX) {
-      errors.name = `任務名は${LIMITS.MISSION_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+    // 任務名の検証（XSS対策込み）
+    const nameValidation = validateName(name, LIMITS.MISSION_NAME_MAX)
+    if (!nameValidation.valid) {
+      errors.name = nameValidation.error
+    } else if (name.length > 0) {
+      // 文字数カウンター用のメッセージ（エラーではない）
+      if (name.length > LIMITS.MISSION_NAME_MAX * 0.9) {
+        errors.name = `任務名は${LIMITS.MISSION_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+      }
     }
 
     // 要求装備の検証

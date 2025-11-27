@@ -7,6 +7,38 @@
 import { ID_PREFIX, LIMITS, EQUIPMENT_TYPE, PERIOD } from '../types/schema.js';
 
 /**
+ * 危険な文字列パターンを検出（XSS対策）
+ * @param {string} value - 検証する文字列
+ * @returns {boolean} 安全な場合true
+ */
+export function isSafeString(value) {
+  const dangerousPattern = /<script|<iframe|javascript:|on\w+=/i;
+  return !dangerousPattern.test(value);
+}
+
+/**
+ * 名前フィールドのバリデーション（XSS対策込み）
+ * @param {string} name - 装備名/任務名/カテゴリ名
+ * @param {number} maxLength - 最大文字数
+ * @returns {{ valid: boolean, error?: string }}
+ */
+export function validateName(name, maxLength) {
+  if (!name || name.trim().length === 0) {
+    return { valid: false, error: '名前は必須です' };
+  }
+
+  if (name.length > maxLength) {
+    return { valid: false, error: `名前は${maxLength}文字以内で入力してください` };
+  }
+
+  if (!isSafeString(name)) {
+    return { valid: false, error: 'HTMLタグやスクリプトは使用できません' };
+  }
+
+  return { valid: true };
+}
+
+/**
  * 装備IDが存在するか確認
  * @param {string} equipmentId - 装備ID
  * @param {Object[]} equipments - 装備データ配列
@@ -145,6 +177,14 @@ export function validateEquipment(equipment) {
     errors.push(`categoryId は${LIMITS.CATEGORY_NAME_MAX}文字以内にしてください`);
   }
 
+  // XSS対策チェック
+  if (equipment.name && !isSafeString(equipment.name)) {
+    errors.push('name にHTMLタグやスクリプトは使用できません');
+  }
+  if (equipment.categoryId && !isSafeString(equipment.categoryId)) {
+    errors.push('categoryId にHTMLタグやスクリプトは使用できません');
+  }
+
   // order値チェック
   if (typeof equipment.order === 'number') {
     if (!Number.isInteger(equipment.order)) {
@@ -214,6 +254,11 @@ export function validateMission(mission) {
   // 文字数制限チェック
   if (mission.name && mission.name.length > LIMITS.MISSION_NAME_MAX) {
     errors.push(`name は${LIMITS.MISSION_NAME_MAX}文字以内にしてください`);
+  }
+
+  // XSS対策チェック
+  if (mission.name && !isSafeString(mission.name)) {
+    errors.push('name にHTMLタグやスクリプトは使用できません');
   }
 
   // period値チェック
