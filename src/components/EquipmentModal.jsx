@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Plus, Search, List, Trash2 } from 'lucide-react'
-import { validateEquipment, validateUniqueName } from '../utils/validation'
+import { validateEquipment, validateUniqueName, validateName } from '../utils/validation'
 import { LIMITS } from '../types/schema'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
@@ -15,18 +15,26 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
   const validationErrors = useMemo(() => {
     const errors = {}
 
-    // 名前の検証
-    if (name.trim() === '') {
-      errors.name = '装備名は必須です'
-    } else if (name.length > LIMITS.EQUIPMENT_NAME_MAX) {
-      errors.name = `装備名は${LIMITS.EQUIPMENT_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+    // 名前の検証（XSS対策込み）
+    const nameValidation = validateName(name, LIMITS.EQUIPMENT_NAME_MAX)
+    if (!nameValidation.valid) {
+      errors.name = nameValidation.error
+    } else if (name.length > 0) {
+      // 文字数カウンター用のメッセージ（エラーではない）
+      if (name.length > LIMITS.EQUIPMENT_NAME_MAX * 0.9) {
+        errors.name = `装備名は${LIMITS.EQUIPMENT_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+      }
     }
 
-    // カテゴリの検証
-    if (category.trim() === '') {
-      errors.category = 'カテゴリは必須です'
-    } else if (category.length > LIMITS.CATEGORY_NAME_MAX) {
-      errors.category = `カテゴリは${LIMITS.CATEGORY_NAME_MAX}文字以内で入力してください (現在: ${category.length}文字)`
+    // カテゴリの検証（XSS対策込み）
+    const categoryValidation = validateName(category, LIMITS.CATEGORY_NAME_MAX)
+    if (!categoryValidation.valid) {
+      errors.category = categoryValidation.error
+    } else if (category.length > 0) {
+      // 文字数カウンター用のメッセージ（エラーではない）
+      if (category.length > LIMITS.CATEGORY_NAME_MAX * 0.9) {
+        errors.category = `カテゴリは${LIMITS.CATEGORY_NAME_MAX}文字以内で入力してください (現在: ${category.length}文字)`
+      }
     }
 
     return errors
