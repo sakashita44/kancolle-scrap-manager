@@ -5,7 +5,6 @@ import { useCategories } from './hooks/useCategories'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
 import { useMissionFilter } from './hooks/useMissionFilter'
-import { useFetchWarning } from './hooks/useFetchWarning'
 import { generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
 import Header from './components/Header'
@@ -26,10 +25,7 @@ function App() {
     allEquipments: equipments,
     userEquipments,
     getNextOrder: getNextEquipmentOrder,
-    loading: equipmentsLoading,
-    error: equipmentsError,
     crudError: equipmentsCrudError,
-    dataSource: equipmentsDataSource,
     corruptedItems: corruptedEquipments,
     addUserEquipment,
     updateUserEquipment,
@@ -37,10 +33,7 @@ function App() {
   } = useEquipments()
   const {
     allMissions: missions,
-    loading: missionsLoading,
-    error: missionsError,
     crudError: missionsCrudError,
-    dataSource: missionsDataSource,
     corruptedItems: corruptedMissions,
     addUserMission,
     deleteUserMission,
@@ -49,18 +42,10 @@ function App() {
   const {
     categoryIds: categories,
     categoryNameMap,
-    getCategoryName,
-    loading: categoriesLoading,
-    error: categoriesError,
-    dataSource: categoriesDataSource
+    getCategoryName
   } = useCategories()
   const { selectedMissionIds, selectedCount, toggleMission, clearSelection } = useSelectedMissions()
   const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipments, categoryNameMap)
-  const { warningMessage: fetchWarningMessage } = useFetchWarning({
-    equipments: equipmentsDataSource,
-    missions: missionsDataSource,
-    categories: categoriesDataSource
-  })
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
@@ -88,9 +73,8 @@ function App() {
     setFilterPeriod
   } = useMissionFilter(missions, equipmentMap)
 
-  // ローディング・エラー状態の統合
-  const isLoading = equipmentsLoading || missionsLoading
-  const errorMessage = equipmentsError || missionsError || equipmentsCrudError || missionsCrudError
+  // エラー状態の統合
+  const errorMessage = equipmentsCrudError || missionsCrudError
 
   const handleAboutOpen = () => {
     setIsAboutModalOpen(true)
@@ -178,14 +162,6 @@ function App() {
         onImport={handleImport}
       />
 
-      {/* マスタデータフェッチ失敗警告バナー */}
-      {fetchWarningMessage && (
-        <GlobalWarningBanner
-          customMessage={fetchWarningMessage}
-          type="warning"
-        />
-      )}
-
       {/* 破損データ警告バナー */}
       <GlobalWarningBanner
         corruptedEquipments={corruptedEquipments}
@@ -220,13 +196,10 @@ function App() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 pb-20">
-        {isLoading && (
-          <p className="text-center py-10 text-slate-400">読み込み中...</p>
-        )}
         {errorMessage && (
           <p className="text-center py-10 text-red-600">エラー: {errorMessage}</p>
         )}
-        {!isLoading && !errorMessage && (
+        {!errorMessage && (
           <MissionList
             missions={filteredMissions}
             equipmentMap={equipmentMap}

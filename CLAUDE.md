@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 * **Frontend**: React, Tailwind CSS, Lucide React
 * **Build Tool**: Vite
 * **Hosting**: Static hosting on Lolipop
-* **Master Data**: Hosted on GitHub Pages as JSON (primary), bundled in `public/data/` (fallback)
+* **Master Data**: Bundled in application (`src/data/*.json`)
 * **Data Storage**: Browser LocalStorage (user data), SessionStorage (selected state)
 
 ## Development Commands
@@ -57,30 +57,26 @@ The project uses prefix-based namespacing to prevent data conflicts:
 * Official master data IDs are **immutable** once published (to prevent breaking user data references)
 * Deprecated items should be logically deleted by renaming to "【廃止】..." rather than removing the ID
 * UUIDs are generated using `crypto.randomUUID()`, requiring HTTPS or localhost environment
-* `isMaster` flag is **never stored** in JSON files - it's automatically assigned at runtime based on data source (GitHub Pages/public/data → true, LocalStorage → false)
+* `isMaster` flag is **never stored** in JSON files - it's automatically assigned at runtime based on data source (bundled `src/data/*.json` → true, LocalStorage → false)
 
 ### Data Flow Strategy
 
-The app uses a hybrid fetch strategy with comprehensive validation for master data:
+The app bundles master data directly into the application:
 
-**Fetch Process**:
+**Data Loading**:
 
-1. **Primary**: Fetch from GitHub Pages (`https://<user>.github.io/.../data/{categories,equipments,missions}.json`)
-   * Timeout: 10 seconds with `AbortController`
-   * Retry: 1 attempt after 1 second delay on failure
-   * Validation: Schema validation immediately after successful fetch
-2. **Fallback**: If GitHub Pages fails or validation fails, fetch from local hosting server (`./data/*.json`)
-   * Same validation process applied
-3. **Cache**: If both sources fail, use previously cached data (if available)
-4. **Failure**: Display warning banner, operate with user-defined data only
+1. **Master Data**: JSON files in `src/data/` are imported directly in custom hooks (`useCategories`, `useEquipments`, `useMissions`)
+   * No network requests required
+   * Instant startup with zero latency
+   * App and data versions are always in sync
+2. **User Data**: Loaded from LocalStorage with validation
+   * Merged with master data after loading
+   * Invalid entries are auto-removed with warnings
 
 **Validation on Startup**:
 
-* **Master Data Validation**: All fetched JSON files are validated against schema (required fields, types, ID formats)
 * **LocalStorage Validation**: User-defined data is validated on load, corrupt entries are auto-removed with warning display
 * **Auto-Recovery**: Corrupt data is silently removed from LocalStorage to maintain app stability
-
-Cache busting is implemented via URL query parameters (e.g., `?v=1.0.0`).
 
 ### Storage Locations
 
@@ -101,8 +97,7 @@ Cache busting is implemented via URL query parameters (e.g., `?v=1.0.0`).
 
 **Data Sources**:
 
-* **GitHub Pages**: Official master data (primary source)
-* **`public/data/`**: Backup master data bundled with deployment (copied to `dist/` on build)
+* **`src/data/`**: Official master data bundled directly in application code
 
 ## Core Calculation Logic
 
@@ -138,13 +133,12 @@ See `docs/calculation_logic.md` for detailed implementation with test cases.
 ## Deployment Process
 
 1. Run `npm run build` to generate `dist/` folder
-2. Upload `dist/` contents to Lolipop (updates backup master data)
-3. Push `public/data/` JSON changes to GitHub (updates primary master data)
+2. Upload `dist/` contents to Lolipop
 
-Master data **must** be placed in `public/data/` directory so it's:
+Master data **must** be placed in `src/data/` directory so it's:
 
-* Copied to `dist/` by Vite during build
-* Accessible as GitHub Pages public source
+* Bundled into the application by Vite during build
+* Always in sync with the deployed application version
 
 ## Text and Documentation Conventions
 
@@ -195,12 +189,6 @@ The app implements 4-level error classification with comprehensive recovery stra
 | Info     | No error        | None        | Informational notification only      |
 
 ### Key Error Scenarios
-
-**Network & Data Fetching**:
-
-* GitHub Pages fetch failure → Auto-retry (1 attempt, 1s delay) → Fallback to local files → Cache → User data only mode
-* Master data validation failure → Fallback chain → Display Critical error with cache option if both sources corrupted
-* Timeout handling: 10 seconds with `AbortController`
 
 **Data Integrity**:
 
