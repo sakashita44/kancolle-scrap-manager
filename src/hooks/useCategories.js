@@ -5,21 +5,20 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { fetchCategories } from '../utils/dataFetch.js';
-import { useMasterData } from './useMasterData.js';
+import categoriesData from '../data/categories.json';
 
 /**
  * カテゴリデータを管理するカスタムフック
- * @param {string} [appVersion='1.0.0'] - アプリバージョン
  * @returns {Object} カテゴリデータと操作関数
  */
-export function useCategories(appVersion = '1.0.0') {
-  // マスタデータをフェッチ
-  const { masterData: categories, loading, error, dataSource } = useMasterData(
-    fetchCategories,
-    'categories',
-    appVersion
-  );
+export function useCategories() {
+  // マスタデータをインポート（isMasterフラグを付与）
+  const categories = useMemo(() => {
+    return categoriesData.categories.map(cat => ({
+      ...cat,
+      isMaster: true
+    }));
+  }, []);
 
   // カテゴリIDからカテゴリ名への変換Map（order順にソート済み）
   const categoryNameMap = useMemo(() => {
@@ -46,11 +45,6 @@ export function useCategories(appVersion = '1.0.0') {
     categories,
     categoryNameMap,
     categoryIds,
-
-    // 状態
-    loading,
-    error,
-    dataSource,
 
     // ユーティリティ
     getCategoryName,

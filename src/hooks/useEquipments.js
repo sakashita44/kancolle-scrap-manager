@@ -4,29 +4,28 @@
  * @module hooks/useEquipments
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { fetchEquipments } from '../utils/dataFetch.js';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import equipmentsData from '../data/equipments.json';
 import { loadUserEquipments, saveUserEquipments } from '../utils/localStorage.js';
 import { getNextOrder as getNextOrderUtil, mergeAndSort, createDefaultSortComparator } from '../utils/dataManagement.js';
-import { useMasterData } from './useMasterData.js';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
 
 /**
  * 装備データを管理するカスタムフック
- * @param {string} [appVersion='1.0.0'] - アプリバージョン
  * @returns {Object} 装備データと操作関数
  */
-export function useEquipments(appVersion = '1.0.0') {
+export function useEquipments() {
   const [allEquipments, setAllEquipments] = useState([]);
   const [crudError, setCrudError] = useState(null);
 
-  // マスタデータをフェッチ
-  const { masterData: masterEquipments, loading, error, dataSource } = useMasterData(
-    fetchEquipments,
-    'equipments',
-    appVersion
-  );
+  // マスタデータをインポート（isMasterフラグを付与）
+  const masterEquipments = useMemo(() => {
+    return equipmentsData.equipments.map(eq => ({
+      ...eq,
+      isMaster: true
+    }));
+  }, []);
 
   // ユーザー定義装備をLocalStorageから読込
   const { userData: userEquipments, setUserData: setUserEquipments, corruptedItems } = useUserDataLoader(
@@ -66,10 +65,7 @@ export function useEquipments(appVersion = '1.0.0') {
     allEquipments,
 
     // 状態
-    loading,
-    error,
     crudError,
-    dataSource,
     corruptedItems,
 
     // 操作関数

@@ -4,30 +4,29 @@
  * @module hooks/useMissions
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { fetchMissions } from '../utils/dataFetch.js';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import missionsData from '../data/missions.json';
 import { loadUserMissions, saveUserMissions } from '../utils/localStorage.js';
 import { PERIOD_ORDER } from '../types/schema.js';
 import { getNextOrder as getNextOrderUtil, mergeAndSort, createMissionSortComparator } from '../utils/dataManagement.js';
-import { useMasterData } from './useMasterData.js';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
 
 /**
  * 任務データを管理するカスタムフック
- * @param {string} [appVersion='1.0.0'] - アプリバージョン
  * @returns {Object} 任務データと操作関数
  */
-export function useMissions(appVersion = '1.0.0') {
+export function useMissions() {
   const [allMissions, setAllMissions] = useState([]);
   const [crudError, setCrudError] = useState(null);
 
-  // マスタデータをフェッチ
-  const { masterData: masterMissions, loading, error, dataSource } = useMasterData(
-    fetchMissions,
-    'missions',
-    appVersion
-  );
+  // マスタデータをインポート（isMasterフラグを付与）
+  const masterMissions = useMemo(() => {
+    return missionsData.missions.map(ms => ({
+      ...ms,
+      isMaster: true
+    }));
+  }, []);
 
   // ユーザー定義任務をLocalStorageから読込
   const { userData: userMissions, setUserData: setUserMissions, corruptedItems } = useUserDataLoader(
@@ -78,10 +77,7 @@ export function useMissions(appVersion = '1.0.0') {
     allMissions,
 
     // 状態
-    loading,
-    error,
     crudError,
-    dataSource,
     corruptedItems,
 
     // 操作関数
