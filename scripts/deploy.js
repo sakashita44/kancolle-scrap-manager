@@ -95,12 +95,16 @@ function runBuild() {
 async function deployToFTP() {
   const ftpDeploy = new FtpDeploy()
 
+  // Windows環境のパス区切り文字をスラッシュに正規化
+  const localRootPath = join(__dirname, '..', process.env.FTP_LOCAL_PATH || 'dist')
+  const normalizedLocalRoot = localRootPath.replace(/\\/g, '/')
+
   const config = {
     user: process.env.FTP_USER,
     password: process.env.FTP_PASSWORD,
     host: process.env.FTP_HOST,
     port: FTP_CONFIG.port,
-    localRoot: join(__dirname, '..', process.env.FTP_LOCAL_PATH || 'dist'),
+    localRoot: normalizedLocalRoot,
     remoteRoot: process.env.FTP_REMOTE_PATH,
     include: UPLOAD_SETTINGS.include,
     exclude: UPLOAD_SETTINGS.exclude,
@@ -134,7 +138,7 @@ async function deployToFTP() {
 
     ftpDeploy.on('log', (data) => {
       // 詳細ログが見たい場合はコメントアウトを外す
-      // console.log(`   ℹ️  ${data}`)
+      console.log(`   ℹ️  ${data}`)
     })
 
     await ftpDeploy.deploy(config)
