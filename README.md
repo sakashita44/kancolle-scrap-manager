@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+**[https://app.sk44.jp/kancolle-scrap-manager/](https://app.sk44.jp/kancolle-scrap-manager/)**
+
 艦これで複数の廃棄任務を並列で遂行する際に、廃棄すべき装備のリストを自動計算するWebアプリケーション.
 
 **注意**: 本アプリはAI（Claude Code）を利用して開発されました. ドキュメントもAIにより生成されています.
