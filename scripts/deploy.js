@@ -2,7 +2,8 @@ import { execSync } from 'child_process'
 import FtpDeploy from 'ftp-deploy'
 import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
+import { dirname, join, resolve } from 'path'
+import fs from 'fs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -22,42 +23,15 @@ const FTP_CONFIG = {
   port: 21,
   deleteRemote: false, // trueにするとサーバー上の不要ファイルを削除
   forcePasv: true,
-  secure: true, // FTPS (Explicit) を有効化
+  secure: false, // 通常のFTP接続
 }
 
 /**
  * アップロード対象ファイル設定
  */
 const UPLOAD_SETTINGS = {
-  include: ['*', '**/*'],
-  exclude: [
-    // バージョン管理
-    '.git/**',
-    '.github/**',
-    // 依存関係
-    'node_modules/**',
-    // 環境変数ファイル
-    '.env',
-    '.env.*',
-    '!.env.example', // .env.exampleは除外しない（distには含まれないが念のため）
-    // エディタ・IDE設定
-    '.vscode/**',
-    '.idea/**',
-    '*.swp',
-    '*~',
-    // OS関連
-    '.DS_Store',
-    'Thumbs.db',
-    // ビルド関連
-    '**/*.map',
-    '.cache/**',
-    // ドキュメント（distには含まれないが念のため）
-    'README.md',
-    'docs/**',
-    'CHANGELOG.md',
-    // ログファイル
-    '*.log',
-  ],
+  include: ['**/*'],
+  exclude: [],
 }
 
 // ============================================================
@@ -95,16 +69,23 @@ function runBuild() {
 async function deployToFTP() {
   const ftpDeploy = new FtpDeploy()
 
-  // Windows環境のパス区切り文字をスラッシュに正規化
-  const localRootPath = join(__dirname, '..', process.env.FTP_LOCAL_PATH || 'dist')
-  const normalizedLocalRoot = localRootPath.replace(/\\/g, '/')
+  // パスを生成
+  const relativePath = process.env.FTP_LOCAL_PATH || 'dist'
+  const absolutePath = resolve(process.cwd(), relativePath)
+  const localRoot = absolutePath.replace(/\\/g, '/')
+
+  // ディレクトリの存在確認
+  if (!fs.existsSync(absolutePath)) {
+    console.error(`❌ ディレクトリが存在しません: ${absolutePath}`)
+    process.exit(1)
+  }
 
   const config = {
     user: process.env.FTP_USER,
     password: process.env.FTP_PASSWORD,
     host: process.env.FTP_HOST,
     port: FTP_CONFIG.port,
-    localRoot: normalizedLocalRoot,
+    localRoot: localRoot,
     remoteRoot: process.env.FTP_REMOTE_PATH,
     include: UPLOAD_SETTINGS.include,
     exclude: UPLOAD_SETTINGS.exclude,
@@ -121,7 +102,7 @@ async function deployToFTP() {
     process.exit(1)
   }
 
-  console.log('\n🚀 FTPデプロイを開始します (FTPS)...')
+  console.log('\n🚀 FTPデプロイを開始します...')
   console.log(`   ホスト: ${config.host}`)
   console.log(`   送信先: ${config.remoteRoot}`)
   console.log(`   送信元: ${config.localRoot}`)
@@ -134,11 +115,6 @@ async function deployToFTP() {
 
     ftpDeploy.on('uploaded', (data) => {
       console.log(`   ✅ アップロード完了: ${data.filename}`)
-    })
-
-    ftpDeploy.on('log', (data) => {
-      // 詳細ログが見たい場合はコメントアウトを外す
-      console.log(`   ℹ️  ${data}`)
     })
 
     await ftpDeploy.deploy(config)
@@ -159,7 +135,6 @@ async function main() {
   const currentBranch = getCurrentBranch()
   console.log(`📍 現在のブランチ: ${currentBranch}`)
 
-  // 'unknown'の場合はチェックをスキップするか、エラーにするかはお好みで
   if (currentBranch !== 'main' && currentBranch !== 'unknown') {
     console.error('❌ mainブランチではありません')
     console.error('   事故防止のため、デプロイはmainブランチからのみ実行できます')
