@@ -25,6 +25,15 @@ const AboutModal = ({ isOpen, onClose }) => {
           </p>
         </div>
 
+        {/* ベータ版について */}
+        <div className="bg-amber-50 border border-amber-200 rounded p-3">
+          <h5 className="font-semibold text-amber-800 mb-2">【ベータ版について】</h5>
+          <p className="text-sm text-amber-700 leading-relaxed">
+            本アプリに含まれる任務・装備のマスタデータにはダミーデータが含まれています。
+            必要に応じてご自身で装備・任務を追加してください。
+          </p>
+        </div>
+
         {/* データの取り扱い */}
         <div>
           <h5 className="font-semibold text-slate-700 mb-2">データの取り扱い</h5>

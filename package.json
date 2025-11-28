@@ -1,6 +1,6 @@
 {
   "name": "kancolle-scrap-manager",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "description": "艦これで複数の廃棄任務を並列で遂行する際に，廃棄すべき装備の必要最小限リスト(最適解)を算出し，無駄な廃棄を防ぐことを目的としたWebアプリケーション",
   "type": "module",
   "scripts": {
