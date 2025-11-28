@@ -169,6 +169,12 @@ function App() {
         type="warning"
       />
 
+      {/* ベータ版警告バナー */}
+      <GlobalWarningBanner
+        customMessage="ベータ版です。マスタデータ（任務・装備）にはダミーデータが含まれています。必要に応じてご自身で追加してください。"
+        type="info"
+      />
+
       <StickyDashboard
         scrapList={scrapList}
       />
