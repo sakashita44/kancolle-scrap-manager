@@ -209,6 +209,14 @@ DailyやWeekly（あるいはMonthly...）を複数回実行することで、�
 * **実装内容**: LocalStorage使用不可時の読み取り専用モード
 * **影響範囲**: `src/utils/localStorage.js`, `src/App.jsx`
 
+### UI改善
+
+#### #78: ダークモードの追加
+
+* **Priority**: P3
+* **実装内容**: ダークモード対応、テーマ切り替え機能
+* **影響範囲**: `src/App.jsx`, CSS/Tailwind設定
+
 ## その他
 
 ### #46: キャッシュ戦略の仕様明確化
@@ -239,7 +247,7 @@ DailyやWeekly（あるいはMonthly...）を複数回実行することで、�
 | Phase 3 | #76 | P2 | 大 | #75 | Phase 2完了後 |
 | Phase 4 | #72 | P1 | 小 | Phase 1-3 | Phase 1-3完了後 |
 | Phase 4 | #73, #12, #43 | P2-P3 | 中 | Phase 1-3 | Phase 1-3完了後 |
-| Phase 4 | #11, #10, #9 | P2-P3 | 小-中 | Phase 1-3 | Phase 1-3完了後 |
+| Phase 4 | #11, #10, #9, #78 | P2-P3 | 小-中 | Phase 1-3 | Phase 1-3完了後 |
 | その他 | #46, #30 | P3 | 小-中 | なし | 優先度低 |
 
 ## 備考
