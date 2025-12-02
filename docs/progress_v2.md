@@ -64,25 +64,33 @@ v2.0.0の機能は以下の順序で実装する：
 
 **実装タスク**:
 
-* [ ] データスキーマ更新
-    * [ ] `equipments.json`: カテゴリ代表11個削除
-    * [ ] `missions.json`: `targetType`追加、targetId修正
-* [ ] ランタイムロジック
-    * [ ] `useEquipments`: カテゴリ代表動的生成、`type`付与
-    * [ ] `localStorage`: 保存時に`type`削除
-    * [ ] `validation`: 起動時バリデーション追加
-    * [ ] `calculateScrapList`: `targetType`判定ロジック
-* [ ] UI変更
-    * [ ] `EquipmentModal`: モード切替UI追加（装備追加/カテゴリ追加）
-    * [ ] `App.jsx`: カテゴリ削除処理追加
-* [ ] ドキュメント更新
-    * [ ] `schema.md`: スキーマ仕様更新
-    * [ ] `types/schema.js`: TypeScript型定義更新
+* [x] データスキーマ更新
+    * [x] `equipments.json`: カテゴリ代表11個削除
+    * [x] `missions.json`: `targetType`追加、targetId修正
+* [x] ランタイムロジック
+    * [x] `useEquipments`: カテゴリ代表動的生成、`type`付与
+    * [x] `useCategories`: `categoryMap`追加
+    * [x] `localStorage`: 保存時に`type`削除
+    * [x] `validation`: 現行スキーマベースのバリデーション
+    * [x] `calculateScrapList`: `targetType`判定ロジック
+    * [x] `useScrapCalculation`: 引数変更（equipmentMap, categoryMap）
+    * [x] `MissionModal`: `targetType`自動判定
+* [x] UI変更
+    * [x] `EquipmentModal`: モード切替UI追加（装備追加/カテゴリ追加）
+    * [ ] `App.jsx`: カテゴリ削除処理追加（ユーザーカテゴリ機能保留）
+* [x] ドキュメント更新
+    * [x] `schema.md`: スキーマ仕様更新
+    * [x] `types/schema.js`: TypeScript型定義更新
 * [ ] テスト
     * [ ] 動的生成の動作確認
-    * [ ] 起動時バリデーションの確認
-    * [ ] カテゴリ削除の動作確認
-    * [ ] 任務選択・計算ロジックの確認
+    * [ ] 計算ロジックの確認
+    * [ ] 任務選択・廃棄リスト表示の確認
+
+**進捗**: Phase 0-4完了 (2025-12-03)
+- コミット: e9cdf12（Phase 0-1）
+- Phase 2-4: ランタイムロジック、UI変更の実装完了
+- ユーザーカテゴリ追加機能は今後の課題（別issue推奨）
+- 次: 動作確認とテスト
 
 ## Phase 2: 計算ロジック拡張
 

@@ -5,60 +5,74 @@ import { LIMITS } from '../types/schema'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
 const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder, onSave, onDelete, onSwapOrder, onCancel }) => {
+  const [mode, setMode] = useState('equipment') // 'equipment' | 'category'
   const [name, setName] = useState('')
   const [category, setCategory] = useState(categories[0] || '')
-  const [type, setType] = useState('Item')
   const [searchText, setSearchText] = useState('')
-  const [isNewCategory, setIsNewCategory] = useState(false)
   const [isAddFormExpanded, setIsAddFormExpanded] = useState(true)
 
   // リアルタイムバリデーション
   const validationErrors = useMemo(() => {
     const errors = {}
 
-    // 名前の検証（XSS対策込み）
-    const nameValidation = validateName(name, LIMITS.EQUIPMENT_NAME_MAX)
-    if (!nameValidation.valid) {
-      errors.name = nameValidation.error
-    } else if (name.length > 0) {
-      // 文字数カウンター用のメッセージ（エラーではない）
-      if (name.length > LIMITS.EQUIPMENT_NAME_MAX * 0.9) {
-        errors.name = `装備名は${LIMITS.EQUIPMENT_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+    if (mode === 'equipment') {
+      // 装備モード: 装備名とカテゴリを検証
+      const nameValidation = validateName(name, LIMITS.EQUIPMENT_NAME_MAX)
+      if (!nameValidation.valid) {
+        errors.name = nameValidation.error
+      } else if (name.length > 0) {
+        if (name.length > LIMITS.EQUIPMENT_NAME_MAX * 0.9) {
+          errors.name = `装備名は${LIMITS.EQUIPMENT_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+        }
       }
-    }
 
-    // カテゴリの検証（XSS対策込み）
-    const categoryValidation = validateName(category, LIMITS.CATEGORY_NAME_MAX)
-    if (!categoryValidation.valid) {
-      errors.category = categoryValidation.error
-    } else if (category.length > 0) {
-      // 文字数カウンター用のメッセージ（エラーではない）
-      if (category.length > LIMITS.CATEGORY_NAME_MAX * 0.9) {
-        errors.category = `カテゴリは${LIMITS.CATEGORY_NAME_MAX}文字以内で入力してください (現在: ${category.length}文字)`
+      // カテゴリ選択のチェック
+      if (!category || category.trim() === '') {
+        errors.category = 'カテゴリを選択してください'
+      }
+    } else {
+      // カテゴリモード: カテゴリ名のみ検証
+      const categoryValidation = validateName(name, LIMITS.CATEGORY_NAME_MAX)
+      if (!categoryValidation.valid) {
+        errors.name = categoryValidation.error
+      } else if (name.length > 0) {
+        if (name.length > LIMITS.CATEGORY_NAME_MAX * 0.9) {
+          errors.name = `カテゴリ名は${LIMITS.CATEGORY_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+        }
       }
     }
 
     return errors
-  }, [name, category])
+  }, [mode, name, category])
 
   // 同名チェック（警告）
   const nameWarning = useMemo(() => {
     if (name.trim() !== '' && !validationErrors.name) {
-      const isUnique = validateUniqueName(name, equipments)
-      if (!isUnique) {
-        return '同じ名前の装備が既に存在します'
+      if (mode === 'equipment') {
+        const isUnique = validateUniqueName(name, equipments)
+        if (!isUnique) {
+          return '同じ名前の装備が既に存在します'
+        }
       }
     }
     return null
-  }, [name, equipments, validationErrors.name])
+  }, [mode, name, equipments, validationErrors.name])
 
   // フォームが有効かどうか
-  const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== '' && category.trim() !== ''
+  const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== ''
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!isFormValid) return
-    onSave({ name, categoryId: category, type, order: getNextOrder() })
+
+    if (mode === 'equipment') {
+      // 装備を追加
+      onSave({ name, categoryId: category, order: getNextOrder() })
+    } else {
+      // カテゴリを追加（TODO: カテゴリ追加機能の実装が必要）
+      onSave({ mode: 'category', name, order: getNextOrder() })
+    }
+
     setName('') // 連続追加しやすくするためクリア
   }
 
@@ -103,83 +117,97 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
         </button>
         {isAddFormExpanded && (
           <form onSubmit={handleSubmit} className="space-y-4">
+          {/* モード切替 */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">
-              装備名
-              {name && <span className="ml-1 text-[10px] text-slate-400">({name.length}/{LIMITS.EQUIPMENT_NAME_MAX})</span>}
-            </label>
-            <input
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${
-                validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
-              }`}
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="例: 12.7cm連装砲B型改二"
-              required
-            />
-            <ValidationErrorDisplay
-              error={validationErrors.name}
-              warning={!validationErrors.name ? nameWarning : null}
-            />
-          </div>
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="text-xs font-medium text-slate-500">
-                カテゴリ
-                {category && <span className="ml-1 text-[10px] text-slate-400">({category.length}/{LIMITS.CATEGORY_NAME_MAX})</span>}
+            <label className="block text-xs font-medium text-slate-500 mb-2">追加モード</label>
+            <div className="flex gap-4">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="mode"
+                  value="equipment"
+                  checked={mode === 'equipment'}
+                  onChange={() => setMode('equipment')}
+                  className="mr-2"
+                />
+                <span className="text-sm">装備を追加</span>
               </label>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsNewCategory(!isNewCategory)
-                  if (!isNewCategory) setCategory('')
-                  else setCategory(categories[0] || '')
-                }}
-                className="text-[10px] text-blue-600 hover:text-blue-700 underline"
-              >
-                {isNewCategory ? '既存から選択' : '新規作成'}
-              </button>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="mode"
+                  value="category"
+                  checked={mode === 'category'}
+                  onChange={() => setMode('category')}
+                  className="mr-2"
+                />
+                <span className="text-sm">カテゴリを追加</span>
+              </label>
             </div>
-            {isNewCategory ? (
+          </div>
+
+          {mode === 'equipment' ? (
+            /* 装備追加モード */
+            <>
+              <div>
+                <label className="block text-xs font-medium text-slate-500 mb-1">
+                  装備名 *
+                  {name && <span className="ml-1 text-[10px] text-slate-400">({name.length}/{LIMITS.EQUIPMENT_NAME_MAX})</span>}
+                </label>
+                <input
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${
+                    validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+                  }`}
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="例: 12.7cm連装砲B型改二"
+                  required
+                />
+                <ValidationErrorDisplay
+                  error={validationErrors.name}
+                  warning={!validationErrors.name ? nameWarning : null}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-500 mb-1">カテゴリ *</label>
+                <select
+                  className={`w-full px-3 py-2 border rounded-lg text-sm ${
+                    validationErrors.category ? 'border-red-500' : ''
+                  }`}
+                  value={category}
+                  onChange={e => setCategory(e.target.value)}
+                  required
+                >
+                  {categories.map(c => (
+                    <option key={c} value={c}>{getCategoryName(c)}</option>
+                  ))}
+                </select>
+                <ValidationErrorDisplay error={validationErrors.category} />
+              </div>
+            </>
+          ) : (
+            /* カテゴリ追加モード */
+            <div>
+              <label className="block text-xs font-medium text-slate-500 mb-1">
+                カテゴリ名 *
+                {name && <span className="ml-1 text-[10px] text-slate-400">({name.length}/{LIMITS.CATEGORY_NAME_MAX})</span>}
+              </label>
               <input
-                className={`w-full px-3 py-2 border rounded-lg text-sm ${
-                  validationErrors.category ? 'border-red-500' : ''
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${
+                  validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
                 }`}
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-                placeholder="新しいカテゴリ名を入力"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="例: カスタムカテゴリA"
                 required
               />
-            ) : (
-              <select
-                className={`w-full px-3 py-2 border rounded-lg text-sm ${
-                  validationErrors.category ? 'border-red-500' : ''
-                }`}
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-                required
-              >
-                {categories.map(c => (
-                  <option key={c} value={c}>{getCategoryName(c)}</option>
-                ))}
-              </select>
-            )}
-            <ValidationErrorDisplay error={validationErrors.category} />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">区分</label>
-            <select
-              className="w-full px-3 py-2 border rounded-lg text-sm"
-              value={type}
-              onChange={e => setType(e.target.value)}
-            >
-              <option value="Item">個別装備 (Item)</option>
-              <option value="Category">カテゴリ代表 (「機銃」など)</option>
-            </select>
-            <p className="mt-1 text-[10px] text-slate-500">
-              ℹ️ 個別装備: 具体的な装備名（例: 25mm単装機銃）/ カテゴリ代表: カテゴリ全体を指す（例: 機銃）
-            </p>
-          </div>
+              <ValidationErrorDisplay error={validationErrors.name} />
+              <p className="mt-1 text-[10px] text-slate-500">
+                ℹ️ カテゴリ代表装備が自動で作成されます
+              </p>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={!isFormValid}
@@ -189,7 +217,7 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            リストに追加
+            {mode === 'equipment' ? 'リストに追加' : 'カテゴリを追加'}
           </button>
         </form>
         )}

@@ -77,8 +77,8 @@ function loadAndValidateUserData(storageKey, dataKey, validateFn, saveFn, dataTy
  * @throws {Error} 保存に失敗した場合
  */
 export function saveUserEquipments(equipments) {
-  // isMasterフィールドを除外（仕様: JSONには含まれない）
-  const cleanedEquipments = equipments.map(({ isMaster, ...eq }) => eq);
+  // isMaster, typeフィールドを除外（仕様: JSONには含まれない）
+  const cleanedEquipments = equipments.map(({ isMaster, type, ...eq }) => eq);
 
   const data = {
     version: SCHEMA_VERSION,

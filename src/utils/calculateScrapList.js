@@ -4,17 +4,17 @@
  * @module utils/calculateScrapList
  */
 
-import { EQUIPMENT_TYPE, LIMITS } from '../types/schema.js';
+import { EQUIPMENT_TYPE, LIMITS, TARGET_TYPE } from '../types/schema.js';
 
 /**
  * 廃棄リストを計算
  * @param {string[]} selectedMissionIds - 選択中の任務IDリスト
  * @param {Object[]} allMissions - 全任務データ
- * @param {Object[]} allEquipments - 全装備データ
- * @param {Map} categoryNameMap - カテゴリIDから名前への変換Map
+ * @param {Map} equipmentMap - 装備検索用Map（カテゴリ代表は含まない）
+ * @param {Map} categoryMap - カテゴリ検索用Map
  * @returns {Object} { scrapList: 廃棄リスト, warnings: 警告情報 }
  */
-export function calculateScrapList(selectedMissionIds, allMissions, allEquipments, categoryNameMap) {
+export function calculateScrapList(selectedMissionIds, allMissions, equipmentMap, categoryMap) {
   const warnings = [];
 
   // フェーズ1: 事前チェック
@@ -30,9 +30,6 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
     return { scrapList: [], warnings };
   }
 
-  // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
-  const equipmentMap = new Map(allEquipments.map((eq) => [eq.id, eq]));
-
   // フェーズ2: 要求装備の展開
   const allRequirements = expandRequirements(
     selectedMissionIds,
@@ -44,6 +41,7 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
   const validRequirements = validateRequirements(
     allRequirements,
     equipmentMap,
+    categoryMap,
     warnings
   );
 
@@ -51,11 +49,8 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
     return { scrapList: [], warnings };
   }
 
-  // フェーズ3: 装備種別ごとにグループ化
-  const { itemRequirements, categoryRequirements } = groupByType(
-    validRequirements,
-    equipmentMap
-  );
+  // フェーズ3: 装備種別ごとにグループ化（targetTypeで判定）
+  const { itemRequirements, categoryRequirements } = groupByType(validRequirements);
 
   // フェーズ4: Item要求のMAX集計
   const itemCountMap = aggregateByMax(itemRequirements);
@@ -71,7 +66,7 @@ export function calculateScrapList(selectedMissionIds, allMissions, allEquipment
     itemCountMap,
     categoryCountMap,
     equipmentMap,
-    categoryNameMap
+    categoryMap
   );
 
   return { scrapList, warnings };
@@ -105,6 +100,7 @@ function expandRequirements(selectedMissionIds, allMissions, warnings) {
         missionId: mission.id,
         missionName: mission.name,
         targetId: req.targetId,
+        targetType: req.targetType,
         count: req.count,
       });
     }
@@ -117,18 +113,32 @@ function expandRequirements(selectedMissionIds, allMissions, warnings) {
  * フェーズ2.5: 整合性チェック
  * @private
  */
-function validateRequirements(allRequirements, equipmentMap, warnings) {
+function validateRequirements(allRequirements, equipmentMap, categoryMap, warnings) {
   return allRequirements.filter((req) => {
-    const equipment = equipmentMap.get(req.targetId);
-
-    if (!equipment) {
-      warnings.push({
-        type: 'warning',
-        missionId: req.missionId,
-        missionName: req.missionName,
-        message: `装備ID "${req.targetId}" が存在しません`,
-      });
-      return false;
+    if (req.targetType === TARGET_TYPE.CATEGORY) {
+      // カテゴリMapから検索
+      const category = categoryMap.get(req.targetId);
+      if (!category) {
+        warnings.push({
+          type: 'warning',
+          missionId: req.missionId,
+          missionName: req.missionName,
+          message: `カテゴリID "${req.targetId}" が存在しません`,
+        });
+        return false;
+      }
+    } else {  // targetType === 'item'
+      // 装備Mapから検索
+      const equipment = equipmentMap.get(req.targetId);
+      if (!equipment) {
+        warnings.push({
+          type: 'warning',
+          missionId: req.missionId,
+          missionName: req.missionName,
+          message: `装備ID "${req.targetId}" が存在しません`,
+        });
+        return false;
+      }
     }
 
     return true;
@@ -136,20 +146,18 @@ function validateRequirements(allRequirements, equipmentMap, warnings) {
 }
 
 /**
- * フェーズ3: 装備種別ごとにグループ化
+ * フェーズ3: 装備種別ごとにグループ化（targetTypeで判定）
  * @private
  */
-function groupByType(validRequirements, equipmentMap) {
+function groupByType(validRequirements) {
   const itemRequirements = [];
   const categoryRequirements = [];
 
   for (const req of validRequirements) {
-    const equipment = equipmentMap.get(req.targetId);
-
-    if (equipment.type === EQUIPMENT_TYPE.ITEM) {
-      itemRequirements.push(req);
-    } else if (equipment.type === EQUIPMENT_TYPE.CATEGORY) {
+    if (req.targetType === TARGET_TYPE.CATEGORY) {
       categoryRequirements.push(req);
+    } else {  // targetType === 'item'
+      itemRequirements.push(req);
     }
   }
 
@@ -176,15 +184,8 @@ function aggregateByMax(requirements) {
  * @private
  */
 function resolveInclusion(itemCountMap, categoryCountMap, equipmentMap) {
-  for (const [categoryTargetId, categoryCount] of categoryCountMap) {
-    const categoryEquipment = equipmentMap.get(categoryTargetId);
-
-    if (!categoryEquipment) {
-      continue;
-    }
-
-    const categoryId = categoryEquipment.categoryId;
-
+  // categoryCountMapのキーはカテゴリID
+  for (const [categoryId, categoryCount] of categoryCountMap) {
     // 同じカテゴリのItem要求の合計を計算
     let itemTotalInCategory = 0;
     for (const [itemTargetId, itemCount] of itemCountMap) {
@@ -199,10 +200,10 @@ function resolveInclusion(itemCountMap, categoryCountMap, equipmentMap) {
 
     if (remaining <= 0) {
       // Itemだけで満たされるのでカテゴリ要求は不要
-      categoryCountMap.delete(categoryTargetId);
+      categoryCountMap.delete(categoryId);
     } else {
       // 残数を更新
-      categoryCountMap.set(categoryTargetId, remaining);
+      categoryCountMap.set(categoryId, remaining);
     }
   }
 }
@@ -211,35 +212,35 @@ function resolveInclusion(itemCountMap, categoryCountMap, equipmentMap) {
  * フェーズ7: 廃棄リストの生成
  * @private
  */
-function generateScrapList(itemCountMap, categoryCountMap, equipmentMap, categoryNameMap) {
+function generateScrapList(itemCountMap, categoryCountMap, equipmentMap, categoryMap) {
   const scrapList = [];
 
   // Item要求を追加
   for (const [equipmentId, count] of itemCountMap) {
     const equipment = equipmentMap.get(equipmentId);
     if (equipment) {
-      const categoryName = categoryNameMap.get(equipment.categoryId) || equipment.categoryId;
+      const category = categoryMap.get(equipment.categoryId);
+      const categoryName = category ? category.name : equipment.categoryId;
       scrapList.push({
         equipmentId: equipment.id,
         equipmentName: equipment.name,
         category: categoryName,
         count: count,
-        type: equipment.type,
+        type: EQUIPMENT_TYPE.ITEM,
       });
     }
   }
 
-  // Category要求を追加
-  for (const [equipmentId, count] of categoryCountMap) {
-    const equipment = equipmentMap.get(equipmentId);
-    if (equipment) {
-      const categoryName = categoryNameMap.get(equipment.categoryId) || equipment.categoryId;
+  // Category要求を追加（カテゴリ代表として動的生成）
+  for (const [categoryId, count] of categoryCountMap) {
+    const category = categoryMap.get(categoryId);
+    if (category) {
       scrapList.push({
-        equipmentId: equipment.id,
-        equipmentName: equipment.name,
-        category: categoryName,
+        equipmentId: categoryId,               // カテゴリIDをそのまま使用
+        equipmentName: category.name + '（種別不問）',
+        category: category.name,
         count: count,
-        type: equipment.type,
+        type: EQUIPMENT_TYPE.CATEGORY,
       });
     }
   }

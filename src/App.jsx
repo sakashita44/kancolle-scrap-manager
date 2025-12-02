@@ -22,7 +22,9 @@ import AboutModal from './components/AboutModal'
 
 function App() {
   const {
-    allEquipments: equipments,
+    allEquipmentsForUI: equipments,
+    equipmentMap,
+    categoryMap,
     userEquipments,
     getNextOrder: getNextEquipmentOrder,
     crudError: equipmentsCrudError,
@@ -45,17 +47,12 @@ function App() {
     getCategoryName
   } = useCategories()
   const { selectedMissionIds, selectedCount, toggleMission, clearSelection } = useSelectedMissions()
-  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipments, categoryNameMap)
+  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipmentMap, categoryMap)
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
-
-  // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
-  const equipmentMap = useMemo(() =>
-    new Map(equipments.map(eq => [eq.id, eq]))
-  , [equipments])
 
   // 選択中の任務一覧を取得
   const selectedMissions = useMemo(() =>

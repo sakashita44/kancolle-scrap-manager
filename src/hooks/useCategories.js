@@ -20,6 +20,15 @@ export function useCategories() {
     }));
   }, []);
 
+  // カテゴリID→カテゴリオブジェクトのMap
+  const categoryMap = useMemo(() => {
+    const map = new Map();
+    categories.forEach((cat) => {
+      map.set(cat.id, cat);
+    });
+    return map;
+  }, [categories]);
+
   // カテゴリIDからカテゴリ名への変換Map（order順にソート済み）
   const categoryNameMap = useMemo(() => {
     const map = new Map();
@@ -43,6 +52,7 @@ export function useCategories() {
   return {
     // データ
     categories,
+    categoryMap,
     categoryNameMap,
     categoryIds,
 
