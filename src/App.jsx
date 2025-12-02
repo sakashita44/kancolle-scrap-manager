@@ -206,6 +206,7 @@ function App() {
           <MissionList
             missions={filteredMissions}
             equipmentMap={equipmentMap}
+            categoryMap={categoryMap}
             selectedMissionIds={selectedMissionIds}
             selectedCount={selectedCount}
             onToggle={toggleMission}

@@ -4,6 +4,7 @@ import { LIMITS } from '../types/schema'
 const MissionList = ({
   missions,
   equipmentMap,
+  categoryMap,
   selectedMissionIds,
   selectedCount,
   onToggle,
@@ -28,6 +29,7 @@ const MissionList = ({
             key={mission.id}
             mission={mission}
             equipmentMap={equipmentMap}
+            categoryMap={categoryMap}
             isSelected={isSelected}
             isDisabled={isDisabled}
             onToggle={onToggle}

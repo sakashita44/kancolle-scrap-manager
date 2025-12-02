@@ -1,8 +1,10 @@
 import { Trash2 } from 'lucide-react'
+import { TARGET_TYPE } from '../types/schema'
 
 const MissionCard = ({
   mission,
   equipmentMap,
+  categoryMap,
   isSelected,
   isDisabled = false,
   onToggle,
@@ -37,10 +39,17 @@ const MissionCard = ({
           </div>
           <div className="text-sm text-slate-500 mt-1 flex flex-wrap gap-2">
             {mission.reqs.map((req, i) => {
-              const eq = equipmentMap.get(req.targetId)
+              let name = '削除済み装備'
+              if (req.targetType === TARGET_TYPE.CATEGORY) {
+                const category = categoryMap.get(req.targetId)
+                name = category ? category.name + '（種別不問）' : '削除済みカテゴリ'
+              } else {
+                const eq = equipmentMap.get(req.targetId)
+                name = eq ? eq.name : '削除済み装備'
+              }
               return (
                 <span key={i} className="bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200">
-                  {eq ? eq.name : '削除済み装備'} x{req.count}
+                  {name} x{req.count}
                 </span>
               )
             })}
