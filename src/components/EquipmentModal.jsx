@@ -4,7 +4,7 @@ import { validateEquipment, validateUniqueName, validateName } from '../utils/va
 import { LIMITS } from '../types/schema'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
-const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder, onSave, onDelete, onSwapOrder, onCancel }) => {
+const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder, getNextCategoryOrder, onSave, onDelete, onDeleteCategory, onSwapOrder, onCancel }) => {
   const [mode, setMode] = useState('equipment') // 'equipment' | 'category'
   const [name, setName] = useState('')
   const [category, setCategory] = useState(categories[0] || '')
@@ -38,12 +38,19 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
       } else if (name.length > 0) {
         if (name.length > LIMITS.CATEGORY_NAME_MAX * 0.9) {
           errors.name = `カテゴリ名は${LIMITS.CATEGORY_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+        } else {
+          // カテゴリ名の重複チェック（エラー扱い）
+          const existingCategoryNames = categories.map(catId => getCategoryName(catId))
+          const isDuplicate = existingCategoryNames.some(catName => catName === name.trim())
+          if (isDuplicate) {
+            errors.name = '同じ名前のカテゴリが既に存在します'
+          }
         }
       }
     }
 
     return errors
-  }, [mode, name, category])
+  }, [mode, name, category, categories, getCategoryName])
 
   // 同名チェック（警告）
   const nameWarning = useMemo(() => {
@@ -69,8 +76,8 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
       // 装備を追加
       onSave({ name, categoryId: category, order: getNextOrder() })
     } else {
-      // カテゴリを追加（TODO: カテゴリ追加機能の実装が必要）
-      onSave({ mode: 'category', name, order: getNextOrder() })
+      // カテゴリを追加
+      onSave({ mode: 'category', name, order: getNextCategoryOrder() })
     }
 
     setName('') // 連続追加しやすくするためクリア
@@ -257,42 +264,50 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
             </div>
           ))}
           {/* ユーザー定義装備 */}
-          {userEquipmentsFiltered.map((eq, index) => (
-            <div key={eq.id} className="px-3 py-2 flex justify-between items-center hover:bg-slate-50 group">
-              <div className="flex-1 min-w-0 mr-2">
-                <div className="text-sm font-medium text-slate-700 truncate">{eq.name}</div>
-                <div className="text-xs text-slate-400 flex gap-2">
-                  <span>{getCategoryName(eq.categoryId)}</span>
-                  <span className="bg-slate-100 px-1 rounded text-[10px]">{eq.type}</span>
+          {userEquipmentsFiltered.map((eq, index) => {
+            const isCategory = eq.type === 'category'
+            const canReorder = !isCategory
+            return (
+              <div key={eq.id} className="px-3 py-2 flex justify-between items-center hover:bg-slate-50 group">
+                <div className="flex-1 min-w-0 mr-2">
+                  <div className="text-sm font-medium text-slate-700 truncate">{eq.name}</div>
+                  <div className="text-xs text-slate-400 flex gap-2">
+                    <span>{getCategoryName(eq.categoryId)}</span>
+                    <span className="bg-slate-100 px-1 rounded text-[10px]">{eq.type}</span>
+                  </div>
+                </div>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {canReorder && (
+                    <>
+                      <button
+                        onClick={() => handleMoveUp(eq.id)}
+                        disabled={index === 0}
+                        className={`p-1 ${index === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                        title="上へ移動"
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleMoveDown(eq.id)}
+                        disabled={index === userEquipmentsFiltered.length - 1}
+                        className={`p-1 ${index === userEquipmentsFiltered.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                        title="下へ移動"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={() => isCategory ? onDeleteCategory(eq.id) : onDelete(eq.id)}
+                    className="text-slate-300 hover:text-red-500 p-1"
+                    title="削除"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => handleMoveUp(eq.id)}
-                  disabled={index === 0}
-                  className={`p-1 ${index === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
-                  title="上へ移動"
-                >
-                  <ChevronUp className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleMoveDown(eq.id)}
-                  disabled={index === userEquipmentsFiltered.length - 1}
-                  className={`p-1 ${index === userEquipmentsFiltered.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
-                  title="下へ移動"
-                >
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => onDelete(eq.id)}
-                  className="text-slate-300 hover:text-red-500 p-1"
-                  title="削除"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+            )
+          })}
           {filteredEquipments.length === 0 && (
             <div className="p-4 text-center text-xs text-slate-400">
               該当する装備がありません

@@ -10,19 +10,17 @@ import { loadUserEquipments, saveUserEquipments } from '../utils/localStorage.js
 import { getNextOrder as getNextOrderUtil, mergeAndSort, createDefaultSortComparator } from '../utils/dataManagement.js';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
-import { useCategories } from './useCategories.js';
 import { EQUIPMENT_TYPE } from '../types/schema.js';
 
 /**
  * 装備データを管理するカスタムフック
+ * @param {Array} categories - カテゴリ配列
+ * @param {Map} categoryMap - カテゴリID→カテゴリオブジェクトのMap
  * @returns {Object} 装備データと操作関数
  */
-export function useEquipments() {
+export function useEquipments(categories, categoryMap) {
   const [equipments, setEquipments] = useState([]);
   const [crudError, setCrudError] = useState(null);
-
-  // カテゴリデータを取得
-  const { categories, categoryMap } = useCategories();
 
   // マスタデータをインポート（isMasterフラグを付与）
   const masterEquipments = useMemo(() => {
@@ -95,7 +93,6 @@ export function useEquipments() {
 
   return {
     // データ
-    categories,           // カテゴリ配列
     equipments,           // 装備のみ（カテゴリ代表は含まない）
     allEquipmentsForUI,   // UI表示用（カテゴリ代表 + 装備、typeで区別）
     allEquipments: allEquipmentsForUI, // 後方互換性のため
@@ -103,7 +100,6 @@ export function useEquipments() {
     userEquipments,
 
     // Map（検索用）
-    categoryMap,          // カテゴリ検索用Map
     equipmentMap,         // 装備検索用Map（カテゴリ代表は含まない）
 
     // 状態

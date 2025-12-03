@@ -68,29 +68,31 @@ v2.0.0の機能は以下の順序で実装する：
     * [x] `equipments.json`: カテゴリ代表11個削除
     * [x] `missions.json`: `targetType`追加、targetId修正
 * [x] ランタイムロジック
-    * [x] `useEquipments`: カテゴリ代表動的生成、`type`付与
-    * [x] `useCategories`: `categoryMap`追加
-    * [x] `localStorage`: 保存時に`type`削除
+    * [x] `useEquipments`: カテゴリ代表動的生成、`type`付与、categories引数化
+    * [x] `useCategories`: `categoryMap`追加、ユーザーカテゴリCRUD実装
+    * [x] `localStorage`: 保存時に`type`削除、カテゴリ保存・読込追加
     * [x] `validation`: 現行スキーマベースのバリデーション
     * [x] `calculateScrapList`: `targetType`判定ロジック
     * [x] `useScrapCalculation`: 引数変更（equipmentMap, categoryMap）
     * [x] `MissionModal`: `targetType`自動判定
+    * [x] `idGenerator`: `generateCategoryId`追加
 * [x] UI変更
-    * [x] `EquipmentModal`: モード切替UI追加（装備追加/カテゴリ追加）
-    * [ ] `App.jsx`: カテゴリ削除処理追加（ユーザーカテゴリ機能保留）
+    * [x] `EquipmentModal`: モード切替UI追加（装備追加/カテゴリ追加）、同名カテゴリチェック追加
+    * [x] `App.jsx`: カテゴリ追加・削除処理実装、useEquipments/useCategoriesの呼び出し順変更
 * [x] ドキュメント更新
     * [x] `schema.md`: スキーマ仕様更新
     * [x] `types/schema.js`: TypeScript型定義更新
-* [ ] テスト
-    * [ ] 動的生成の動作確認
-    * [ ] 計算ロジックの確認
-    * [ ] 任務選択・廃棄リスト表示の確認
+* [x] テスト
+    * [x] 動的生成の動作確認
+    * [x] 計算ロジックの確認
+    * [x] 任務選択・廃棄リスト表示の確認
+    * [x] ユーザーカテゴリ追加・削除の動作確認
 
-**進捗**: Phase 0-4完了 (2025-12-03)
-- コミット: e9cdf12（Phase 0-1）
+**進捗**: 完了 (2025-12-03)
+- コミット: e9cdf12（Phase 0-1）、ca8b7d5（MissionCard修正）、c232760（scrapListFormatters修正）
 - Phase 2-4: ランタイムロジック、UI変更の実装完了
-- ユーザーカテゴリ追加機能は今後の課題（別issue推奨）
-- 次: 動作確認とテスト
+- Phase 5: ユーザーカテゴリ機能の実装完了、動作確認OK
+- 今後の課題: データ変換層の導入検討（別issue推奨）
 
 ## Phase 2: 計算ロジック拡張
 
