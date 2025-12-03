@@ -23,14 +23,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Development Flow
 
 1. check current branch status with `git status`
-1. check issue and `progress.md` for next tasks
+1. check issue and `docs/progress_v2.md` for next tasks
     * Must: check comments of related issues for additional context
 1. create branch with rule in `copilot-instructions.md` from main branch
     * `<prefix>/<yyyymm>/sakashita44/<issue-number: if exists>-<short-description>`
     * e.g. `feat/202511/sakashita44/5-add-validation`
 1. implement feature / fix bug
 1. test locally
-1. update `docs/progress.md` if task affects progress
+1. update `docs/progress_v2.md` if task affects progress
 1. commit with rule in `copilot-instructions.md`
 1. push to remote
 1. create pull request
@@ -258,4 +258,5 @@ The app implements 4-level error classification with comprehensive recovery stra
 * `docs/ui_specification.md` - Detailed UI/UX specifications including modal behaviors and filter combinations
 * `docs/error_handling.md` - Error classification (4 levels), recovery strategies, and validation on startup
 * `docs/import_export.md` - Import/export file formats, validation flow, and filename generation rules
-* `docs/progress.md` - Project progress tracking and next steps
+* `docs/progress_v2.md` - v2.0.0 roadmap and progress tracking (current)
+* `docs/progress.md` - v1.0.0 progress tracking (archived)
