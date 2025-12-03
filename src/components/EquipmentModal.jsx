@@ -23,6 +23,12 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
       } else if (name.length > 0) {
         if (name.length > LIMITS.EQUIPMENT_NAME_MAX * 0.9) {
           errors.name = `装備名は${LIMITS.EQUIPMENT_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+        } else {
+          // 装備名の重複チェック（エラー扱い）
+          const isUnique = validateUniqueName(name, equipments)
+          if (!isUnique) {
+            errors.name = '同じ名前の装備が既に存在します'
+          }
         }
       }
 
@@ -52,18 +58,10 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
     return errors
   }, [mode, name, category, categories, getCategoryName])
 
-  // 同名チェック（警告）
+  // 同名チェック（警告） - 現在は使用されていない（validationErrorsでチェック済み）
   const nameWarning = useMemo(() => {
-    if (name.trim() !== '' && !validationErrors.name) {
-      if (mode === 'equipment') {
-        const isUnique = validateUniqueName(name, equipments)
-        if (!isUnique) {
-          return '同じ名前の装備が既に存在します'
-        }
-      }
-    }
     return null
-  }, [mode, name, equipments, validationErrors.name])
+  }, [])
 
   // フォームが有効かどうか
   const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== ''
