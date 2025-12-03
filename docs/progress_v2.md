@@ -1,6 +1,6 @@
 # v2.0.0 ロードマップ
 
-最終更新: 2025-11-29
+最終更新: 2025-12-03
 
 ## 概要
 
@@ -92,7 +92,47 @@ v2.0.0の機能は以下の順序で実装する：
 - コミット: e9cdf12（Phase 0-1）、ca8b7d5（MissionCard修正）、c232760（scrapListFormatters修正）
 - Phase 2-4: ランタイムロジック、UI変更の実装完了
 - Phase 5: ユーザーカテゴリ機能の実装完了、動作確認OK
-- 今後の課題: データ変換層の導入検討（別issue推奨）
+- 今後の課題: コードベースのリファクタが必要（詳細は以下）
+
+### Phase 1完了後のリファクタ検討 (2025-12-03)
+
+Issue74実装後、責務分離が曖昧になった点を調査し、複数のリファクタIssueを起票した。
+
+**調査結果**:
+
+1. **データ変換処理の散在**: `isMaster`付与が4箇所、`type`除外が3箇所に分散
+2. **フック層の責務過多**: 変換 + 状態管理 + CRUD + Map生成を1つのフックで実施
+3. **localStorage層の責務混在**: 永続化とデータ変換の2つの責務を持つ
+4. **App.jxの肥大化**: ビジネスロジックがUI層に混在（344行）
+5. **エラーハンドリングの不統一**: 未使用エラー状態、部分的な統合
+
+**起票したリファクタIssue**:
+
+| Issue | タイトル | 優先度 | 説明 |
+|:------|:---------|:-------|:-----|
+| [#80](https://github.com/sakashita44/kancolle-scrap-manager/issues/80) | データ変換層の導入によるコード責務の明確化 | 高 | 永続化形式とランタイム形式の変換を専用層に集約 |
+| [#83](https://github.com/sakashita44/kancolle-scrap-manager/issues/83) | App.jxのビジネスロジックをドメイン層に分離 | 中 | カテゴリ削除などのビジネスロジックをドメイン層に移動 |
+| [#84](https://github.com/sakashita44/kancolle-scrap-manager/issues/84) | ユーザーデータ管理フックの統合 | 低 | useUserDataLoaderとuseUserDataCRUDを1つに統合 |
+| [#85](https://github.com/sakashita44/kancolle-scrap-manager/issues/85) | エラーハンドリングの統一と一元管理 | 低 | 全てのエラーを統一された方法で管理 |
+| [#86](https://github.com/sakashita44/kancolle-scrap-manager/issues/86) | validation.jsの重複パターンをスキーマベースに共通化 | 低 | スキーマ定義ベースの汎用バリデーション関数を作成 |
+
+**推奨実装順序**:
+
+1. **最優先**: Issue #80（データ変換層の導入） - 他のリファクタの基盤となる
+2. **次点**: Issue #83（App.jxのビジネスロジック分離） - 機能追加前に対処推奨
+3. **その後**: Issue #84, #85, #86 - 必要に応じて実装
+
+**Issue #80の概要**:
+
+新規ファイル `src/utils/dataConverter.js` を作成し、以下を集約：
+- `toRuntimeCategories()`, `toRuntimeEquipments()`, `toRuntimeMissions()` - 永続化形式 → ランタイム形式
+- `toPersistCategories()`, `toPersistEquipments()`, `toPersistMissions()` - ランタイム形式 → 永続化形式
+- `generateCategoryRepresentatives()` - カテゴリ代表装備の動的生成
+- `createCategoryMaps()`, `createEquipmentMap()` - Map生成
+
+命名規則の統一も同時に実施:
+- `allEquipmentsForUI` → `equipmentsForUI`
+- 他のフックも同様に統一
 
 ## Phase 2: 計算ロジック拡張
 
