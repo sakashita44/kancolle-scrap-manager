@@ -3,6 +3,8 @@
  * @module utils/scrapListFormatters
  */
 
+import { EQUIPMENT_TYPE } from '../types/schema.js'
+
 /**
  * 廃棄リストをカテゴリごとにグループ化
  *
@@ -28,7 +30,7 @@ export function groupScrapListByCategory(scrapList) {
     }
 
     const categoryData = categoryMap.get(item.category)
-    if (item.type === 'Item') {
+    if (item.type === EQUIPMENT_TYPE.ITEM) {
       categoryData.items.push({
         name: item.equipmentName,
         count: item.count

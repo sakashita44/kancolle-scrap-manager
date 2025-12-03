@@ -12,8 +12,8 @@ import { logError, logInfo } from '../utils/logger.js';
  * 廃棄リスト計算を管理するカスタムフック
  * @param {string[]} selectedMissionIds - 選択中の任務IDリスト
  * @param {Object[]} allMissions - 全任務データ
- * @param {Object[]} allEquipments - 全装備データ
- * @param {Map} categoryNameMap - カテゴリIDから名前への変換Map
+ * @param {Map} equipmentMap - 装備検索用Map（カテゴリ代表は含まない）
+ * @param {Map} categoryMap - カテゴリ検索用Map
  * @returns {Object} 廃棄リストと警告情報
  * @returns {import('../types/schema').ScrapListItem[]} scrapList - 廃棄リスト（基本形式）
  * @returns {number} totalCount - 廃棄総数
@@ -26,7 +26,7 @@ import { logError, logInfo } from '../utils/logger.js';
  * @returns {boolean} calculating - 計算中フラグ
  * @returns {Function} recalculate - 手動再計算関数
  */
-export function useScrapCalculation(selectedMissionIds, allMissions, allEquipments, categoryNameMap) {
+export function useScrapCalculation(selectedMissionIds, allMissions, equipmentMap, categoryMap) {
   const [scrapList, setScrapList] = useState([]);
   const [warnings, setWarnings] = useState([]);
   const [calculating, setCalculating] = useState(false);
@@ -36,10 +36,10 @@ export function useScrapCalculation(selectedMissionIds, allMissions, allEquipmen
     () => ({
       selectedMissionIds: selectedMissionIds || [],
       allMissions: allMissions || [],
-      allEquipments: allEquipments || [],
-      categoryNameMap: categoryNameMap || new Map(),
+      equipmentMap: equipmentMap || new Map(),
+      categoryMap: categoryMap || new Map(),
     }),
-    [selectedMissionIds, allMissions, allEquipments, categoryNameMap]
+    [selectedMissionIds, allMissions, equipmentMap, categoryMap]
   );
 
   // 計算処理
@@ -50,8 +50,8 @@ export function useScrapCalculation(selectedMissionIds, allMissions, allEquipmen
       const result = calculateScrapList(
         deps.selectedMissionIds,
         deps.allMissions,
-        deps.allEquipments,
-        deps.categoryNameMap
+        deps.equipmentMap,
+        deps.categoryMap
       );
 
       setScrapList(result.scrapList);

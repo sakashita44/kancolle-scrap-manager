@@ -5,7 +5,12 @@
 
 /**
  * 装備区分の列挙型
- * @typedef {'Item' | 'Category'} EquipmentType
+ * @typedef {'item' | 'category'} EquipmentType
+ */
+
+/**
+ * 要求装備の種別列挙型
+ * @typedef {'category' | 'item'} TargetType
  */
 
 /**
@@ -23,13 +28,13 @@
  */
 
 /**
- * 装備データ
+ * 装備データ（ランタイム形式）
  * @typedef {Object} Equipment
  * @property {string} id - 装備ID
  * @property {string} name - 装備名 (1-40文字)
  * @property {string} categoryId - カテゴリID
- * @property {EquipmentType} type - 装備区分
- * @property {number} order - カテゴリ内表示順序
+ * @property {EquipmentType} type - 装備区分 (ランタイム時に自動付与、永続化時に削除)
+ * @property {number} order - 表示順序
  * @property {boolean} isMaster - 公式マスタ(true) or ユーザー定義(false) (データ取得時に自動付与)
  */
 
@@ -44,7 +49,8 @@
  * 要求装備
  * @typedef {Object} Requirement
  * @property {string} id - 要求装備の識別子 (同一任務内で一意)
- * @property {string} targetId - 要求する装備のID
+ * @property {TargetType} targetType - カテゴリ要求(category) or 個別装備要求(item)
+ * @property {string} targetId - 要求するカテゴリID or 装備ID
  * @property {number} count - 必要数 (1-30)
  */
 
@@ -106,8 +112,13 @@
 export const SCHEMA_VERSION = '1.0.0';
 
 export const EQUIPMENT_TYPE = {
-  ITEM: 'Item',
-  CATEGORY: 'Category',
+  ITEM: 'item',
+  CATEGORY: 'category',
+};
+
+export const TARGET_TYPE = {
+  CATEGORY: 'category',
+  ITEM: 'item',
 };
 
 export const PERIOD = {

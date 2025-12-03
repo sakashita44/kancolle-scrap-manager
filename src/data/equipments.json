@@ -2,290 +2,183 @@
   "version": "1.0.0-dummy",
   "equipments": [
     {
-      "id": "m_eq_cat_main_gun_s",
-      "name": "小口径主砲（種別不問）",
-      "categoryId": "m_cat_gun_s",
-      "type": "Category",
-      "order": 1
-    },
-    {
       "id": "m_eq_gun_12cm",
       "name": "12cm単装砲",
       "categoryId": "m_cat_gun_s",
-      "type": "Item",
       "order": 100
     },
     {
       "id": "m_eq_gun_12_7cm",
       "name": "12.7cm連装砲",
       "categoryId": "m_cat_gun_s",
-      "type": "Item",
       "order": 101
     },
     {
       "id": "m_eq_gun_12_7cm_b",
       "name": "12.7cm連装砲B型改二",
       "categoryId": "m_cat_gun_s",
-      "type": "Item",
       "order": 102
     },
     {
       "id": "m_eq_gun_10cm_twin",
       "name": "10cm連装高角砲",
       "categoryId": "m_cat_gun_s",
-      "type": "Item",
       "order": 103
-    },
-    {
-      "id": "m_eq_cat_main_gun_m",
-      "name": "中口径主砲（種別不問）",
-      "categoryId": "m_cat_gun_m",
-      "type": "Category",
-      "order": 2
     },
     {
       "id": "m_eq_gun_14cm",
       "name": "14cm単装砲",
       "categoryId": "m_cat_gun_m",
-      "type": "Item",
       "order": 200
     },
     {
       "id": "m_eq_gun_15_2cm",
       "name": "15.2cm連装砲",
       "categoryId": "m_cat_gun_m",
-      "type": "Item",
       "order": 201
     },
     {
       "id": "m_eq_gun_20_3cm",
       "name": "20.3cm連装砲",
       "categoryId": "m_cat_gun_m",
-      "type": "Item",
       "order": 202
-    },
-    {
-      "id": "m_eq_cat_main_gun_l",
-      "name": "大口径主砲（種別不問）",
-      "categoryId": "m_cat_gun_l",
-      "type": "Category",
-      "order": 3
     },
     {
       "id": "m_eq_gun_35_6cm",
       "name": "35.6cm連装砲",
       "categoryId": "m_cat_gun_l",
-      "type": "Item",
       "order": 300
     },
     {
       "id": "m_eq_gun_41cm",
       "name": "41cm連装砲",
       "categoryId": "m_cat_gun_l",
-      "type": "Item",
       "order": 301
     },
     {
       "id": "m_eq_gun_46cm",
       "name": "46cm三連装砲",
       "categoryId": "m_cat_gun_l",
-      "type": "Item",
       "order": 302
-    },
-    {
-      "id": "m_eq_cat_machine_gun",
-      "name": "機銃（種別不問）",
-      "categoryId": "m_cat_mg",
-      "type": "Category",
-      "order": 4
     },
     {
       "id": "m_eq_mg_7_7mm",
       "name": "7.7mm機銃",
       "categoryId": "m_cat_mg",
-      "type": "Item",
       "order": 400
     },
     {
       "id": "m_eq_mg_25mm_single",
       "name": "25mm単装機銃",
       "categoryId": "m_cat_mg",
-      "type": "Item",
       "order": 401
     },
     {
       "id": "m_eq_mg_25mm_twin",
       "name": "25mm連装機銃",
       "categoryId": "m_cat_mg",
-      "type": "Item",
       "order": 402
     },
     {
       "id": "m_eq_mg_25mm_triple",
       "name": "25mm三連装機銃",
       "categoryId": "m_cat_mg",
-      "type": "Item",
       "order": 403
-    },
-    {
-      "id": "m_eq_cat_torpedo",
-      "name": "魚雷（種別不問）",
-      "categoryId": "m_cat_torpedo",
-      "type": "Category",
-      "order": 5
     },
     {
       "id": "m_eq_torpedo_61cm_triple",
       "name": "61cm三連装魚雷",
       "categoryId": "m_cat_torpedo",
-      "type": "Item",
       "order": 500
     },
     {
       "id": "m_eq_torpedo_61cm_quad",
       "name": "61cm四連装魚雷",
       "categoryId": "m_cat_torpedo",
-      "type": "Item",
       "order": 501
     },
     {
       "id": "m_eq_torpedo_61cm_quint",
       "name": "61cm五連装魚雷",
       "categoryId": "m_cat_torpedo",
-      "type": "Item",
       "order": 502
-    },
-    {
-      "id": "m_eq_cat_depth_charge",
-      "name": "爆雷（種別不問）",
-      "categoryId": "m_cat_dc",
-      "type": "Category",
-      "order": 6
     },
     {
       "id": "m_eq_dc_type94",
       "name": "九四式爆雷投射機",
       "categoryId": "m_cat_dc",
-      "type": "Item",
       "order": 600
     },
     {
       "id": "m_eq_dc_type3",
       "name": "三式爆雷投射機",
       "categoryId": "m_cat_dc",
-      "type": "Item",
       "order": 601
-    },
-    {
-      "id": "m_eq_cat_sonar",
-      "name": "ソナー（種別不問）",
-      "categoryId": "m_cat_sonar",
-      "type": "Category",
-      "order": 7
     },
     {
       "id": "m_eq_sonar_type93",
       "name": "九三式水中聴音機",
       "categoryId": "m_cat_sonar",
-      "type": "Item",
       "order": 700
     },
     {
       "id": "m_eq_sonar_type3",
       "name": "三式水中探信儀",
       "categoryId": "m_cat_sonar",
-      "type": "Item",
       "order": 701
     },
     {
       "id": "m_eq_sonar_type4",
       "name": "四式水中聴音機",
       "categoryId": "m_cat_sonar",
-      "type": "Item",
       "order": 702
-    },
-    {
-      "id": "m_eq_cat_fighter",
-      "name": "艦上戦闘機（種別不問）",
-      "categoryId": "m_cat_fighter",
-      "type": "Category",
-      "order": 8
     },
     {
       "id": "m_eq_fighter_zero21",
       "name": "零式艦戦21型",
       "categoryId": "m_cat_fighter",
-      "type": "Item",
       "order": 800
     },
     {
       "id": "m_eq_fighter_zero52",
       "name": "零式艦戦52型",
       "categoryId": "m_cat_fighter",
-      "type": "Item",
       "order": 801
-    },
-    {
-      "id": "m_eq_cat_bomber",
-      "name": "艦上爆撃機（種別不問）",
-      "categoryId": "m_cat_bomber",
-      "type": "Category",
-      "order": 9
     },
     {
       "id": "m_eq_bomber_type99",
       "name": "九九式艦爆",
       "categoryId": "m_cat_bomber",
-      "type": "Item",
       "order": 900
     },
     {
       "id": "m_eq_bomber_suisei",
       "name": "彗星",
       "categoryId": "m_cat_bomber",
-      "type": "Item",
       "order": 901
-    },
-    {
-      "id": "m_eq_cat_torpedo_bomber",
-      "name": "艦上攻撃機（種別不問）",
-      "categoryId": "m_cat_tb",
-      "type": "Category",
-      "order": 10
     },
     {
       "id": "m_eq_tb_type97",
       "name": "九七式艦攻",
       "categoryId": "m_cat_tb",
-      "type": "Item",
       "order": 1000
     },
     {
       "id": "m_eq_tb_tenzan",
       "name": "天山",
       "categoryId": "m_cat_tb",
-      "type": "Item",
       "order": 1001
-    },
-    {
-      "id": "m_eq_cat_recon",
-      "name": "艦上偵察機（種別不問）",
-      "categoryId": "m_cat_recon",
-      "type": "Category",
-      "order": 11
     },
     {
       "id": "m_eq_recon_type98",
       "name": "九八式水上偵察機",
       "categoryId": "m_cat_recon",
-      "type": "Item",
       "order": 1100
     },
     {
       "id": "m_eq_recon_zero",
       "name": "零式水上偵察機",
       "categoryId": "m_cat_recon",
-      "type": "Item",
       "order": 1101
     }
   ]

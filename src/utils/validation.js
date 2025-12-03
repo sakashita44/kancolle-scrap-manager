@@ -4,7 +4,7 @@
  * @module utils/validation
  */
 
-import { ID_PREFIX, LIMITS, EQUIPMENT_TYPE, PERIOD } from '../types/schema.js';
+import { ID_PREFIX, LIMITS, EQUIPMENT_TYPE, PERIOD, TARGET_TYPE } from '../types/schema.js';
 
 /**
  * 危険な文字列パターンを検出（XSS対策）
@@ -142,9 +142,6 @@ export function validateEquipment(equipment) {
   if (!equipment.categoryId) {
     errors.push('categoryId は必須です');
   }
-  if (!equipment.type) {
-    errors.push('type は必須です');
-  }
   if (typeof equipment.order !== 'number') {
     errors.push('order は数値である必要があります');
   }
@@ -192,12 +189,9 @@ export function validateEquipment(equipment) {
     }
   }
 
-  // type値チェック
-  if (equipment.type) {
-    const validTypes = Object.values(EQUIPMENT_TYPE);
-    if (!validTypes.includes(equipment.type)) {
-      errors.push(`type は ${validTypes.join(' または ')} である必要があります`);
-    }
+  // typeフィールドは永続化データに含めない（ランタイムでのみ使用）
+  if (equipment.hasOwnProperty('type')) {
+    errors.push('type フィールドは保存できません');
   }
 
   return {
@@ -298,6 +292,15 @@ export function validateMission(mission) {
         if (!req.targetId) {
           errors.push(`reqs[${index}].targetId は必須です`);
         }
+        if (!req.targetType) {
+          errors.push(`reqs[${index}].targetType は必須です`);
+        } else {
+          // targetType値チェック
+          const validTargetTypes = Object.values(TARGET_TYPE);
+          if (!validTargetTypes.includes(req.targetType)) {
+            errors.push(`reqs[${index}].targetType は ${validTargetTypes.join(' または ')} である必要があります`);
+          }
+        }
         if (typeof req.count !== 'number') {
           errors.push(`reqs[${index}].count は数値である必要があります`);
         } else {
@@ -369,3 +372,4 @@ export function isValidUserMissionId(missionId) {
   const idPart = missionId.substring(ID_PREFIX.USER_MISSION.length);
   return idPart.length > 0;
 }
+

@@ -58,6 +58,8 @@ The project uses prefix-based namespacing to prevent data conflicts:
 * Deprecated items should be logically deleted by renaming to "【廃止】..." rather than removing the ID
 * UUIDs are generated using `crypto.randomUUID()`, requiring HTTPS or localhost environment
 * `isMaster` flag is **never stored** in JSON files - it's automatically assigned at runtime based on data source (bundled `src/data/*.json` → true, LocalStorage → false)
+* `type` field (equipment only) is **never stored** in JSON files - it's automatically assigned at runtime (`"item"` for individual equipment, `"category"` for category representatives)
+* **Category Representative Equipment**: Dynamically generated at runtime for all categories (both official and user-defined), not stored in JSON files
 
 ### Data Flow Strategy
 
@@ -107,8 +109,13 @@ The calculation algorithm determines the **minimum** equipment to scrap when mul
 
 1. **Pre-check**: Return empty list if no missions selected, error if >8 missions selected
 2. **Expand Requirements**: Extract all requirements from selected missions
-3. **Integrity Check**: Filter out requirements with non-existent equipment IDs, display warnings
-4. **Group by Type**: Separate Item requirements from Category requirements
+3. **Integrity Check**: Filter out requirements based on `targetType`:
+   * `targetType="category"`: Validate category ID exists in category master
+   * `targetType="item"`: Validate equipment ID exists in equipment master
+   * Display warnings for non-existent IDs
+4. **Group by Type**: Separate requirements based on `targetType` field:
+   * `targetType="item"` → Item requirements
+   * `targetType="category"` → Category requirements
 5. **MAX Aggregation (Items)**: For same equipment ID, use maximum count (not sum)
 6. **MAX Aggregation (Categories)**: For same category ID, use maximum count (not sum)
 7. **Inclusion Resolution (OR Condition)**: Subtract Item counts from Category counts within same category
@@ -221,8 +228,8 @@ The app implements 4-level error classification with comprehensive recovery stra
    * Data is sorted first by `isMaster` flag (official first), then by `order` ascending
    * User additions get max(existing order) + 1 within their data source (auto-increment from 0, category-agnostic)
    * **Master Equipment Order Rules**:
-     * Category type: 1, 2, 3, 4... (category representative equipment in 0-99 range)
-     * Item type: 100-interval per category (e.g., small guns: 100-199, medium guns: 200-299)
+     * Individual equipment: 100-interval per category (e.g., small guns: 100-199, medium guns: 200-299)
+     * Category representative equipment: Dynamically generated with `order` inherited from category (1, 2, 3, 4...)
      * See `docs/maintenance.md` for detailed allocation rules
    * **Master Mission Order Rules**:
      * Grouped by `period` (Daily/Weekly/etc.), numbered from 0 within each period
@@ -236,7 +243,12 @@ The app implements 4-level error classification with comprehensive recovery stra
 
 8. **About Modal on First Launch**: Display About modal automatically on first app launch (check `localStorage['ksp_about_shown']`). This serves as disclaimer confirmation. On subsequent launches, only show via settings menu.
 
-9. **Equipment Management Modal**: Equipment addition uses a two-section modal (add form + list) that stays open for continuous additions. Category selection uses datalist for auto-suggestion of existing categories.
+9. **Equipment Management Modal**:
+   * Uses a two-section modal (add form + list) that stays open for continuous additions
+   * **Mode Selection**: Radio buttons toggle between "Add Equipment" and "Add Category" modes
+   * **Add Equipment Mode**: Shows equipment name input and category selection (datalist for auto-suggestion)
+   * **Add Category Mode**: Shows category name input only (category representative equipment is auto-generated at runtime)
+   * Category deletion automatically deletes all equipment in that category (with confirmation dialog)
 
 ## Key Documentation Files
 

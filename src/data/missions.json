@@ -9,7 +9,8 @@
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_main_gun_s",
+          "targetType": "category",
+          "targetId": "m_cat_gun_s",
           "count": 4
         }
       ]
@@ -22,7 +23,8 @@
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_machine_gun",
+          "targetType": "category",
+          "targetId": "m_cat_mg",
           "count": 3
         }
       ]
@@ -35,7 +37,8 @@
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_machine_gun",
+          "targetType": "category",
+          "targetId": "m_cat_mg",
           "count": 6
         }
       ]
@@ -48,12 +51,14 @@
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_main_gun_s",
+          "targetType": "category",
+          "targetId": "m_cat_gun_s",
           "count": 4
         },
         {
           "id": "req_2",
-          "targetId": "m_eq_cat_main_gun_m",
+          "targetType": "category",
+          "targetId": "m_cat_gun_m",
           "count": 3
         }
       ]
@@ -66,7 +71,8 @@
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_torpedo",
+          "targetType": "category",
+          "targetId": "m_cat_torpedo",
           "count": 5
         }
       ]
@@ -79,12 +85,14 @@
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_depth_charge",
+          "targetType": "category",
+          "targetId": "m_cat_dc",
           "count": 3
         },
         {
           "id": "req_2",
-          "targetId": "m_eq_cat_sonar",
+          "targetType": "category",
+          "targetId": "m_cat_sonar",
           "count": 3
         }
       ]
@@ -97,17 +105,20 @@
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_fighter",
+          "targetType": "category",
+          "targetId": "m_cat_fighter",
           "count": 3
         },
         {
           "id": "req_2",
-          "targetId": "m_eq_cat_bomber",
+          "targetType": "category",
+          "targetId": "m_cat_bomber",
           "count": 3
         },
         {
           "id": "req_3",
-          "targetId": "m_eq_cat_torpedo_bomber",
+          "targetType": "category",
+          "targetId": "m_cat_tb",
           "count": 3
         }
       ]
@@ -120,11 +131,13 @@
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_main_gun_l",
+          "targetType": "category",
+          "targetId": "m_cat_gun_l",
           "count": 4
         },
         {
           "id": "req_2",
+          "targetType": "item",
           "targetId": "m_eq_gun_35_6cm",
           "count": 2
         }
@@ -138,22 +151,26 @@
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_main_gun_s",
+          "targetType": "category",
+          "targetId": "m_cat_gun_s",
           "count": 10
         },
         {
           "id": "req_2",
-          "targetId": "m_eq_cat_main_gun_m",
+          "targetType": "category",
+          "targetId": "m_cat_gun_m",
           "count": 8
         },
         {
           "id": "req_3",
-          "targetId": "m_eq_cat_machine_gun",
+          "targetType": "category",
+          "targetId": "m_cat_mg",
           "count": 12
         },
         {
           "id": "req_4",
-          "targetId": "m_eq_cat_torpedo",
+          "targetType": "category",
+          "targetId": "m_cat_torpedo",
           "count": 8
         }
       ]

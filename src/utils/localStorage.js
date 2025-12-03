@@ -1,11 +1,11 @@
 /**
  * LocalStorageユーティリティ
- * ユーザー定義装備・任務の保存/読込を管理
+ * ユーザー定義カテゴリ・装備・任務の保存/読込を管理
  * @module utils/localStorage
  */
 
 import { STORAGE_KEYS, SCHEMA_VERSION } from '../types/schema.js';
-import { validateEquipment, validateMission } from './validation.js';
+import { validateEquipment, validateMission, validateName } from './validation.js';
 import { createStorageHelper } from './storageHelper.js';
 import { logError, logWarning, logInfo } from './logger.js';
 
@@ -72,13 +72,83 @@ function loadAndValidateUserData(storageKey, dataKey, validateFn, saveFn, dataTy
 }
 
 /**
+ * ユーザー定義カテゴリを保存
+ * @param {Array} categories - カテゴリデータの配列
+ * @throws {Error} 保存に失敗した場合
+ */
+export function saveUserCategories(categories) {
+  // isMasterフィールドを除外（仕様: JSONには含まれない）
+  const cleanedCategories = categories.map(({ isMaster, ...cat }) => cat);
+
+  const data = {
+    version: SCHEMA_VERSION,
+    categories: cleanedCategories,
+  };
+  setItem(STORAGE_KEYS.USER_CATEGORIES, data);
+  logInfo('Saved user categories', {
+    function: 'saveUserCategories',
+    count: cleanedCategories.length,
+  });
+}
+
+/**
+ * ユーザー定義カテゴリを読込（起動時バリデーション付き）
+ * @returns {{data: Array, corruptedItems: Array}} カテゴリデータと破損アイテム情報
+ */
+export function loadUserCategories() {
+  const rawData = getItem(STORAGE_KEYS.USER_CATEGORIES);
+  if (!rawData || !rawData.categories) {
+    logInfo('No user categories found', { function: 'loadUserCategories' });
+    return { data: [], corruptedItems: [] };
+  }
+
+  // 簡易バリデーション
+  const validItems = [];
+  const corruptedItems = [];
+
+  rawData.categories.forEach((item) => {
+    // 必須フィールドのチェック
+    if (!item.id || !item.name || typeof item.order !== 'number') {
+      logWarning('Corrupted category detected', {
+        function: 'loadUserCategories',
+        id: item.id || 'unknown',
+      });
+      corruptedItems.push({
+        id: item.id || 'unknown',
+        name: item.name || 'unknown',
+        type: 'category',
+        errors: ['必須フィールドが不足しています'],
+      });
+    } else {
+      // isMaster: false を付与
+      validItems.push({ ...item, isMaster: false });
+    }
+  });
+
+  // 破損データがあれば正常なデータのみで上書き保存
+  if (corruptedItems.length > 0) {
+    logInfo(`Removing ${corruptedItems.length} corrupted category(s)`, {
+      function: 'loadUserCategories',
+      corruptedCount: corruptedItems.length,
+    });
+    saveUserCategories(validItems);
+  }
+
+  logInfo('Loaded user categories', {
+    function: 'loadUserCategories',
+    count: validItems.length,
+  });
+  return { data: validItems, corruptedItems };
+}
+
+/**
  * ユーザー定義装備を保存
  * @param {Array} equipments - 装備データの配列
  * @throws {Error} 保存に失敗した場合
  */
 export function saveUserEquipments(equipments) {
-  // isMasterフィールドを除外（仕様: JSONには含まれない）
-  const cleanedEquipments = equipments.map(({ isMaster, ...eq }) => eq);
+  // isMaster, typeフィールドを除外（仕様: JSONには含まれない）
+  const cleanedEquipments = equipments.map(({ isMaster, type, ...eq }) => eq);
 
   const data = {
     version: SCHEMA_VERSION,
@@ -176,6 +246,7 @@ export function isAboutShown() {
  */
 export function clearUserData() {
   try {
+    removeItem(STORAGE_KEYS.USER_CATEGORIES);
     removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
     removeItem(STORAGE_KEYS.USER_MISSIONS);
     logInfo('Cleared all user data', { function: 'clearUserData' });
@@ -192,6 +263,7 @@ export function clearUserData() {
  */
 export function clearAllData() {
   try {
+    removeItem(STORAGE_KEYS.USER_CATEGORIES);
     removeItem(STORAGE_KEYS.USER_EQUIPMENTS);
     removeItem(STORAGE_KEYS.USER_MISSIONS);
     removeItem(STORAGE_KEYS.APP_VERSION);

@@ -5,7 +5,7 @@ import { useCategories } from './hooks/useCategories'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
 import { useMissionFilter } from './hooks/useMissionFilter'
-import { generateEquipmentId, generateMissionId } from './utils/idGenerator'
+import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
 import Header from './components/Header'
 import StickyDashboard from './components/StickyDashboard'
@@ -22,7 +22,18 @@ import AboutModal from './components/AboutModal'
 
 function App() {
   const {
-    allEquipments: equipments,
+    allCategories,
+    categoryIds: categories,
+    categoryMap,
+    categoryNameMap,
+    getCategoryName,
+    addUserCategory,
+    deleteUserCategory,
+    getNextOrder: getNextCategoryOrder
+  } = useCategories()
+  const {
+    allEquipmentsForUI: equipments,
+    equipmentMap,
     userEquipments,
     getNextOrder: getNextEquipmentOrder,
     crudError: equipmentsCrudError,
@@ -30,7 +41,7 @@ function App() {
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment
-  } = useEquipments()
+  } = useEquipments(allCategories, categoryMap)
   const {
     allMissions: missions,
     crudError: missionsCrudError,
@@ -39,23 +50,13 @@ function App() {
     deleteUserMission,
     getNextOrder: getNextMissionOrder
   } = useMissions()
-  const {
-    categoryIds: categories,
-    categoryNameMap,
-    getCategoryName
-  } = useCategories()
   const { selectedMissionIds, selectedCount, toggleMission, clearSelection } = useSelectedMissions()
-  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipments, categoryNameMap)
+  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipmentMap, categoryMap)
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
-
-  // 装備検索の高速化: Map生成 (O(n) → O(1)アクセス)
-  const equipmentMap = useMemo(() =>
-    new Map(equipments.map(eq => [eq.id, eq]))
-  , [equipments])
 
   // 選択中の任務一覧を取得
   const selectedMissions = useMemo(() =>
@@ -91,11 +92,22 @@ function App() {
   }
 
   const handleAddEquipment = (data) => {
-    const newEquipment = {
-      id: generateEquipmentId(),
-      ...data
+    if (data.mode === 'category') {
+      // カテゴリを追加
+      const newCategory = {
+        id: generateCategoryId(),
+        name: data.name,
+        order: data.order
+      }
+      addUserCategory(newCategory)
+    } else {
+      // 装備を追加
+      const newEquipment = {
+        id: generateEquipmentId(),
+        ...data
+      }
+      addUserEquipment(newEquipment)
     }
-    addUserEquipment(newEquipment)
   }
 
   const handleSwapEquipmentOrder = (id1, id2) => {
@@ -116,6 +128,49 @@ function App() {
       type: 'equipment',
       id,
       message: 'この装備を削除しますか？\n（この装備を使用している任務がある場合、表示がおかしくなる可能性があります）'
+    })
+  }
+
+  const handleDeleteCategory = (categoryId) => {
+    // カテゴリに含まれる装備を検索
+    const affectedEquipments = userEquipments.filter(eq => eq.categoryId === categoryId)
+
+    // カテゴリを参照する任務を検索
+    const affectedMissions = missions.filter(mission =>
+      mission.reqs.some(req => req.targetType === 'category' && req.targetId === categoryId)
+    )
+
+    // 確認メッセージを構築
+    const categoryName = getCategoryName(categoryId)
+    const messageLines = []
+
+    if (affectedEquipments.length > 0) {
+      messageLines.push(`⚠️ このカテゴリ「${categoryName}」に含まれる装備：`)
+      affectedEquipments.forEach(eq => {
+        messageLines.push(`  • ${eq.name}`)
+      })
+      messageLines.push(`  計${affectedEquipments.length}件が削除されます`)
+      messageLines.push('')
+    }
+
+    if (affectedMissions.length > 0) {
+      messageLines.push(`⚠️ このカテゴリを参照する任務：`)
+      affectedMissions.forEach(ms => {
+        messageLines.push(`  • ${ms.name}`)
+      })
+      messageLines.push(`  計${affectedMissions.length}件の任務に影響があります`)
+      messageLines.push(`  （任務は削除されません）`)
+    }
+
+    if (messageLines.length === 0) {
+      messageLines.push(`カテゴリ「${categoryName}」を削除しますか？`)
+    }
+
+    setConfirmDialog({
+      isOpen: true,
+      type: 'category',
+      id: categoryId,
+      message: messageLines.join('\n')
     })
   }
 
@@ -142,6 +197,14 @@ function App() {
       deleteUserEquipment(confirmDialog.id)
     } else if (confirmDialog.type === 'mission') {
       deleteUserMission(confirmDialog.id)
+    } else if (confirmDialog.type === 'category') {
+      // カテゴリに含まれる装備を全て削除（カスケード削除）
+      const affectedEquipments = userEquipments.filter(eq => eq.categoryId === confirmDialog.id)
+      affectedEquipments.forEach(eq => {
+        deleteUserEquipment(eq.id)
+      })
+      // カテゴリを削除
+      deleteUserCategory(confirmDialog.id)
     }
     setConfirmDialog({ isOpen: false, type: null, id: null, message: '' })
   }
@@ -209,6 +272,7 @@ function App() {
           <MissionList
             missions={filteredMissions}
             equipmentMap={equipmentMap}
+            categoryMap={categoryMap}
             selectedMissionIds={selectedMissionIds}
             selectedCount={selectedCount}
             onToggle={toggleMission}
@@ -229,9 +293,11 @@ function App() {
           categories={categories}
           getCategoryName={getCategoryName}
           getNextOrder={getNextEquipmentOrder}
+          getNextCategoryOrder={getNextCategoryOrder}
           onSave={handleAddEquipment}
           onSwapOrder={handleSwapEquipmentOrder}
           onDelete={handleDeleteEquipment}
+          onDeleteCategory={handleDeleteCategory}
           onCancel={() => setActiveModal(null)}
         />
       </Modal>
@@ -253,7 +319,11 @@ function App() {
 
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
-        title={confirmDialog.type === 'equipment' ? '装備の削除' : '任務の削除'}
+        title={
+          confirmDialog.type === 'equipment' ? '装備の削除' :
+          confirmDialog.type === 'mission' ? '任務の削除' :
+          'カテゴリの削除'
+        }
         message={confirmDialog.message}
         confirmText="削除"
         cancelText="キャンセル"

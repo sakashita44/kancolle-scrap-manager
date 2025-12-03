@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
-import { PERIOD, LIMITS } from '../types/schema'
+import { PERIOD, LIMITS, TARGET_TYPE } from '../types/schema'
 import { validateName } from '../utils/validation'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
@@ -76,11 +76,19 @@ const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onS
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!isFormValid) return
-    // 複数の装備要求に対応
+    // 複数の装備要求に対応（targetTypeを自動判定）
     onSave({
       name,
       period,
-      reqs: reqs.map(req => ({ targetId: req.targetId, count: parseInt(req.count) })),
+      reqs: reqs.map(req => {
+        const equipment = equipments.find(e => e.id === req.targetId)
+        const targetType = equipment?.type === 'category' ? TARGET_TYPE.CATEGORY : TARGET_TYPE.ITEM
+        return {
+          targetId: req.targetId,
+          targetType,
+          count: parseInt(req.count)
+        }
+      }),
       order: getNextOrder()
     })
   }

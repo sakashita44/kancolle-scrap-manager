@@ -24,6 +24,9 @@
 
 * `isMaster`フィールドは**含まれない**
 * 改竄防止のため,公式/ユーザー判定情報は保存しない
+* **装備データ**: `type`フィールドは**含まれない**
+  * カテゴリ代表装備は保存せず、ランタイムで動的生成する
+  * 個別装備のみを保存し、`type`情報は保存しない
 
 ### ランタイム形式（内部スキーマ）
 
@@ -31,6 +34,10 @@
 
 * `isMaster`フィールドが**自動付与される**
 * データ取得元（公式マスタ/LocalStorage）に基づいて判定
+* **装備データ**: `type`フィールドが**自動付与される** (`"item"` or `"category"`)
+  * 個別装備には`"item"`を付与
+  * カテゴリ代表装備（動的生成）には`"category"`を付与
+* **カテゴリ代表装備**: 全カテゴリに対して動的生成され、equipments配列に追加される
 * hooks、UIコンポーネントはこの形式を使用
 
 **重要**: 本仕様書の型定義（`@typedef`）は**ランタイム形式**を記述している.JSONファイルの実例は**永続化形式**を示している.
@@ -70,19 +77,24 @@
 
 **公式マスタ装備**:
 
-* **Category型**: 1, 2, 3, 4...（カテゴリ代表装備を0番台にまとめる）
-* **Item型**: カテゴリごとに100番台区切り
+* カテゴリごとに100番台区切り
     * 小口径主砲: 100, 101, 102...
     * 中口径主砲: 200, 201, 202...
     * 大口径主砲: 300, 301, 302...
     * 機銃: 400, 401, 402...
     * 以降同様に100刻みで区切る
 
+**カテゴリ代表装備（動的生成）**:
+
+* ランタイムで各カテゴリに対して自動生成される
+* `order`はカテゴリの`order`を使用（1, 2, 3...）
+* `type="Category"`を付与
+
 **ユーザー定義装備**:
 
 * 0から順に自動採番（カテゴリに関係なく通し番号）
 
-**表示順序**: `isMaster` → `order` の順でソートされるため,公式Category型 → 公式Item型 → ユーザー装備の順に表示される.
+**表示順序**: `isMaster` → `order` の順でソートされるため、公式カテゴリ代表 → 公式個別装備 → ユーザー装備の順に表示される.
 
 詳細は `docs/maintenance.md` を参照.
 
@@ -98,14 +110,22 @@
 * 0から順に自動採番（期間に関係なく通し番号）
 * 同一period内での順序のみ意味を持つ
 
-### isMasterフラグの自動付与
+### isMasterフラグとtypeフィールドの自動付与
 
-JSONファイルには`isMaster`フィールドは含まれない. データ取得時にシステムが自動的に付与する:
+JSONファイルには`isMaster`と`type`フィールドは含まれない. データ取得時にシステムが自動的に付与する:
+
+**isMasterフィールド（全データ）**:
 
 * **公式マスタデータ** (`dataFetch.js`): フェッチ後に`isMaster: true`を付与
 * **LocalStorageデータ** (`localStorage.js`): ロード後に`isMaster: false`を付与
 
-これによりユーザーが`isMaster`を改竄することを防ぎ,データ整合性を保証する.
+**typeフィールド（装備データのみ）**:
+
+* **個別装備**: `type: "item"`を付与
+* **カテゴリ代表装備**: 動的生成時に`type: "category"`を付与
+* **保存時**: `type`フィールドは削除され、JSONファイル/LocalStorageには含まれない
+
+これによりユーザーが`isMaster`や`type`を改竄することを防ぎ,データ整合性を保証する.
 
 ### ソートロジック例
 
@@ -163,18 +183,16 @@ items.sort((a, b) => {
   "version": "1.0.0",
   "equipments": [
     {
-      "id": "m_eq_12cm_gun",
+      "id": "m_eq_gun_12cm",
       "name": "12cm単装砲",
       "categoryId": "m_cat_gun_s",
-      "type": "Item",
-      "order": 1
+      "order": 100
     },
     {
-      "id": "m_eq_cat_gun_s",
-      "name": "小口径主砲",
+      "id": "m_eq_gun_12_7cm",
+      "name": "12.7cm連装砲",
       "categoryId": "m_cat_gun_s",
-      "type": "Category",
-      "order": 0
+      "order": 101
     }
   ]
 }
@@ -187,22 +205,42 @@ items.sort((a, b) => {
 | `version`    | String | ○    | スキーマバージョン |
 | `equipments` | Array  | ○    | 装備データの配列   |
 
-#### Equipment オブジェクト
+#### Equipment オブジェクト（永続化形式）
 
-| フィールド   | 型     | 必須 | 制約                     | 説明                                         |
-| :----------- | :----- | :--- | :----------------------- | :------------------------------------------- |
-| `id`         | String | ○    | 一意                     | 装備ID                                       |
-| `name`       | String | ○    | 1〜40文字                | 装備名                                       |
-| `categoryId` | String | ○    | カテゴリIDに対応         | 所属カテゴリのID(`categories.json`内)        |
-| `type`       | Enum   | ○    | `"Item"` or `"Category"` | 具体装備(`Item`) or カテゴリ代表(`Category`) |
-| `order`      | Number | ○    | 整数                     | カテゴリ内表示順序                           |
+| フィールド   | 型     | 必須 | 制約             | 説明                              |
+| :----------- | :----- | :--- | :--------------- | :-------------------------------- |
+| `id`         | String | ○    | 一意             | 装備ID                            |
+| `name`       | String | ○    | 1〜40文字        | 装備名                            |
+| `categoryId` | String | ○    | カテゴリIDに対応 | 所属カテゴリのID(`categories.json`内) |
+| `order`      | Number | ○    | 整数             | 表示順序                          |
 
-#### type の使い分け
+#### Equipment オブジェクト（ランタイム形式）
 
-* `Item`: 具体的な装備(例: "12cm単装砲", "25mm単装機銃")
-* `Category`: カテゴリを代表するエントリ(例: "小口径主砲", "機銃")
-    * 任務の要求装備で「機銃×3」のようにカテゴリ指定する場合に使用
-    * `order: 0`で同カテゴリ内の先頭に配置
+ランタイムでは以下のフィールドが追加される：
+
+| フィールド | 型      | 説明                                   |
+| :--------- | :------ | :------------------------------------- |
+| `isMaster` | Boolean | データ取得元による自動付与（true/false） |
+| `type`     | Enum    | `"item"` (個別装備) or `"category"` (カテゴリ代表) |
+
+#### カテゴリ代表装備の動的生成
+
+カテゴリ代表装備はJSONファイルには含まれず、ランタイムで以下のように動的生成される：
+
+```javascript
+// カテゴリ代表の生成例
+{
+  id: "m_cat_gun_s",               // カテゴリIDをそのまま使用
+  name: "小口径主砲（種別不問）",     // カテゴリ名 + "（種別不問）"
+  categoryId: "m_cat_gun_s",       // 自身のID
+  isMaster: true,                  // カテゴリのisMasterを継承
+  type: "category",                // 動的生成時に付与
+  order: 1                         // カテゴリのorderを使用
+}
+```
+
+* 全カテゴリ（公式+ユーザー）に対して自動生成される
+* 任務の要求装備で「機銃×3」のようにカテゴリ指定する場合に使用される
 
 ### 3. 任務マスタデータ (missions.json)
 
@@ -218,12 +256,14 @@ items.sort((a, b) => {
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_cat_gun_s",
+          "targetType": "category",
+          "targetId": "m_cat_gun_s",
           "count": 2
         },
         {
           "id": "req_2",
-          "targetId": "m_eq_12cm_gun",
+          "targetType": "item",
+          "targetId": "m_eq_gun_12cm",
           "count": 1
         }
       ]
@@ -264,16 +304,28 @@ items.sort((a, b) => {
 
 #### Requirement オブジェクト
 
-| フィールド | 型     | 必須 | 制約             | 説明                                  |
-| :--------- | :----- | :--- | :--------------- | :------------------------------------ |
-| `id`       | String | ○    | 同一任務内で一意 | 要求装備の識別子(UI表示順序の保持用)  |
-| `targetId` | String | ○    | 装備IDに対応     | 要求する装備のID(`equipments.json`内) |
-| `count`    | Number | ○    | 1〜30の整数      | 必要数                                |
+| フィールド   | 型     | 必須 | 制約                       | 説明                                                        |
+| :----------- | :----- | :--- | :------------------------- | :---------------------------------------------------------- |
+| `id`         | String | ○    | 同一任務内で一意           | 要求装備の識別子(UI表示順序の保持用)                         |
+| `targetType` | Enum   | ○    | `"category"` or `"item"`   | カテゴリ要求(`category`) or 個別装備要求(`item`)             |
+| `targetId`   | String | ○    | カテゴリID or 装備IDに対応 | 要求するカテゴリID(`categories.json`内) or 装備ID(`equipments.json`内) |
+| `count`      | Number | ○    | 1〜30の整数                | 必要数                                                      |
+
+#### targetTypeの使い分け
+
+* `category`: カテゴリ指定（例: 「小口径主砲×4」）
+  * `targetId`にカテゴリID（例: `m_cat_gun_s`）を指定
+  * カテゴリ内のどの装備を廃棄してもよい（種別不問）
+* `item`: 個別装備指定（例: 「12cm単装砲×2」）
+  * `targetId`に装備ID（例: `m_eq_gun_12cm`）を指定
+  * 指定した装備のみを廃棄
 
 #### 注意事項
 
-* `reqs`配列内で同じ`targetId`が複数回出現してはならない(同じ装備を複数回要求する場合は`count`を加算する)
-* `targetId`が存在しない装備IDを参照している場合,計算時に警告を表示し,その要求は無視される
+* `reqs`配列内で同じ`targetType`と`targetId`の組み合わせが複数回出現してはならない
+* `targetType="category"`の場合、`targetId`がカテゴリマスタに存在しない場合は警告表示
+* `targetType="item"`の場合、`targetId`が装備マスタに存在しない場合は警告表示
+* 存在しないIDを参照している場合,計算時に警告を表示し,その要求は無視される
 
 ### 4. ユーザーデータ (LocalStorage)
 
@@ -320,14 +372,13 @@ items.sort((a, b) => {
       "id": "u_eq_123e4567-e89b-12d3-a456-426614174001",
       "name": "カスタム砲",
       "categoryId": "m_cat_gun_s",
-      "type": "Item",
       "order": 1
     }
   ]
 }
 ```
 
-構造は`equipments.json`と同一.
+構造は`equipments.json`と同一（`type`フィールドは含まれない）.
 
 #### 4.4 ksp_user_missions
 
@@ -343,7 +394,8 @@ items.sort((a, b) => {
       "reqs": [
         {
           "id": "req_1",
-          "targetId": "m_eq_12cm_gun",
+          "targetType": "item",
+          "targetId": "m_eq_gun_12cm",
           "count": 3
         }
       ]
@@ -394,14 +446,13 @@ items.sort((a, b) => {
       "id": "u_eq_abc-123",
       "name": "カスタム砲",
       "categoryId": "u_cat_custom",
-      "type": "Item",
       "order": 1
     }
   ]
 }
 ```
 
-`categories`配列と`equipments`配列を含む.
+`categories`配列と`equipments`配列を含む（`type`フィールドは含まれない）.
 
 #### 5.2 任務エクスポートデータ (kancolle_scrap_missions_YYYYMMDD.json)
 

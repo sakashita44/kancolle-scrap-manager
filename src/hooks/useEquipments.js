@@ -10,13 +10,16 @@ import { loadUserEquipments, saveUserEquipments } from '../utils/localStorage.js
 import { getNextOrder as getNextOrderUtil, mergeAndSort, createDefaultSortComparator } from '../utils/dataManagement.js';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
+import { EQUIPMENT_TYPE } from '../types/schema.js';
 
 /**
  * 装備データを管理するカスタムフック
+ * @param {Array} categories - カテゴリ配列
+ * @param {Map} categoryMap - カテゴリID→カテゴリオブジェクトのMap
  * @returns {Object} 装備データと操作関数
  */
-export function useEquipments() {
-  const [allEquipments, setAllEquipments] = useState([]);
+export function useEquipments(categories, categoryMap) {
+  const [equipments, setEquipments] = useState([]);
   const [crudError, setCrudError] = useState(null);
 
   // マスタデータをインポート（isMasterフラグを付与）
@@ -33,11 +36,41 @@ export function useEquipments() {
     'equipment'
   );
 
-  // 公式マスタとユーザー定義をマージしてソート
+  // 公式マスタとユーザー定義をマージしてソート（装備のみ、カテゴリ代表は含まない）
   useEffect(() => {
     const merged = mergeAndSort(masterEquipments, userEquipments, createDefaultSortComparator());
-    setAllEquipments(merged);
+    setEquipments(merged);
   }, [masterEquipments, userEquipments]);
+
+  // 装備検索用Map（カテゴリ代表は含まない）
+  const equipmentMap = useMemo(() => {
+    return new Map(equipments.map(eq => [eq.id, eq]));
+  }, [equipments]);
+
+  // UI表示用にカテゴリ代表を動的生成してマージ
+  const allEquipmentsForUI = useMemo(() => {
+    // カテゴリ代表を動的生成
+    const categoryReps = categories.map(cat => ({
+      id: cat.id,                    // カテゴリIDをそのまま使用
+      name: cat.name + '（種別不問）',
+      categoryId: cat.id,
+      isMaster: cat.isMaster,
+      type: EQUIPMENT_TYPE.CATEGORY,
+      order: cat.order
+    }));
+
+    // 装備にtypeフィールドを付与
+    const equipmentsWithType = equipments.map(eq => ({
+      ...eq,
+      type: EQUIPMENT_TYPE.ITEM
+    }));
+
+    // マージしてソート
+    return [...categoryReps, ...equipmentsWithType].sort((a, b) => {
+      if (a.isMaster !== b.isMaster) return b.isMaster ? 1 : -1;
+      return a.order - b.order;
+    });
+  }, [categories, equipments]);
 
   // CRUD操作を取得
   const { addItem: addUserEquipment, updateItem: updateUserEquipment, deleteItem: deleteUserEquipment } = useUserDataCRUD(
@@ -48,10 +81,10 @@ export function useEquipments() {
     'equipment'
   );
 
-  // IDで装備を検索
+  // IDで装備を検索（UI表示用リストから検索）
   const findEquipmentById = useCallback((equipmentId) => {
-    return allEquipments.find((eq) => eq.id === equipmentId) || null;
-  }, [allEquipments]);
+    return allEquipmentsForUI.find((eq) => eq.id === equipmentId) || null;
+  }, [allEquipmentsForUI]);
 
   // ユーザー定義装備の次の order 値を取得
   const getNextOrder = useCallback(() => {
@@ -60,9 +93,14 @@ export function useEquipments() {
 
   return {
     // データ
+    equipments,           // 装備のみ（カテゴリ代表は含まない）
+    allEquipmentsForUI,   // UI表示用（カテゴリ代表 + 装備、typeで区別）
+    allEquipments: allEquipmentsForUI, // 後方互換性のため
     masterEquipments,
     userEquipments,
-    allEquipments,
+
+    // Map（検索用）
+    equipmentMap,         // 装備検索用Map（カテゴリ代表は含まない）
 
     // 状態
     crudError,
