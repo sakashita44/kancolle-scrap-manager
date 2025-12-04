@@ -369,3 +369,62 @@ export function isValidUserMissionId(missionId) {
   return idPart.length > 0;
 }
 
+/**
+ * 選択中任務データの妥当性を検証
+ * @param {any} data - 検証するデータ
+ * @returns {Object} { valid: boolean, errors: string[] }
+ */
+export function validateSelectedMissions(data) {
+  const errors = [];
+
+  // データが存在しない場合は有効（初期値として扱う）
+  if (!data) {
+    return { valid: true, errors: [] };
+  }
+
+  // データがオブジェクトであることを確認
+  if (typeof data !== 'object' || Array.isArray(data)) {
+    errors.push('選択中任務データはオブジェクトである必要があります');
+    return { valid: false, errors };
+  }
+
+  // baseMission のバリデーション
+  if (data.baseMission !== null && data.baseMission !== undefined) {
+    if (typeof data.baseMission !== 'object' || Array.isArray(data.baseMission)) {
+      errors.push('baseMission はオブジェクトまたはnullである必要があります');
+    } else {
+      if (typeof data.baseMission.missionId !== 'string') {
+        errors.push('baseMission.missionId は文字列である必要があります');
+      }
+      if (typeof data.baseMission.count !== 'number') {
+        errors.push('baseMission.count は数値である必要があります');
+      }
+    }
+  }
+
+  // auxiliaryMissions のバリデーション
+  if (data.auxiliaryMissions !== undefined) {
+    if (!Array.isArray(data.auxiliaryMissions)) {
+      errors.push('auxiliaryMissions は配列である必要があります');
+    } else {
+      data.auxiliaryMissions.forEach((mission, index) => {
+        if (typeof mission !== 'object' || mission === null || Array.isArray(mission)) {
+          errors.push(`auxiliaryMissions[${index}] はオブジェクトである必要があります`);
+        } else {
+          if (typeof mission.missionId !== 'string') {
+            errors.push(`auxiliaryMissions[${index}].missionId は文字列である必要があります`);
+          }
+          if (typeof mission.count !== 'number') {
+            errors.push(`auxiliaryMissions[${index}].count は数値である必要があります`);
+          }
+        }
+      });
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
