@@ -7,6 +7,11 @@ import { useScrapCalculation } from './hooks/useScrapCalculation'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
+import {
+  analyzeCategoryDeletionImpact,
+  buildCategoryDeletionMessage,
+  executeCategoryDeletion
+} from './domain/categoryOperations'
 import Header from './components/Header'
 import StickyDashboard from './components/StickyDashboard'
 import SelectedMissionsSummary from './components/SelectedMissionsSummary'
@@ -132,45 +137,14 @@ function App() {
   }
 
   const handleDeleteCategory = (categoryId) => {
-    // カテゴリに含まれる装備を検索
-    const affectedEquipments = userEquipments.filter(eq => eq.categoryId === categoryId)
-
-    // カテゴリを参照する任務を検索
-    const affectedMissions = missions.filter(mission =>
-      mission.reqs.some(req => req.targetType === 'category' && req.targetId === categoryId)
-    )
-
-    // 確認メッセージを構築
-    const categoryName = getCategoryName(categoryId)
-    const messageLines = []
-
-    if (affectedEquipments.length > 0) {
-      messageLines.push(`⚠️ このカテゴリ「${categoryName}」に含まれる装備：`)
-      affectedEquipments.forEach(eq => {
-        messageLines.push(`  • ${eq.name}`)
-      })
-      messageLines.push(`  計${affectedEquipments.length}件が削除されます`)
-      messageLines.push('')
-    }
-
-    if (affectedMissions.length > 0) {
-      messageLines.push(`⚠️ このカテゴリを参照する任務：`)
-      affectedMissions.forEach(ms => {
-        messageLines.push(`  • ${ms.name}`)
-      })
-      messageLines.push(`  計${affectedMissions.length}件の任務に影響があります`)
-      messageLines.push(`  （任務は削除されません）`)
-    }
-
-    if (messageLines.length === 0) {
-      messageLines.push(`カテゴリ「${categoryName}」を削除しますか？`)
-    }
+    const impact = analyzeCategoryDeletionImpact(categoryId, userEquipments, missions, getCategoryName)
+    const message = buildCategoryDeletionMessage(impact)
 
     setConfirmDialog({
       isOpen: true,
       type: 'category',
       id: categoryId,
-      message: messageLines.join('\n')
+      message
     })
   }
 
@@ -198,13 +172,12 @@ function App() {
     } else if (confirmDialog.type === 'mission') {
       deleteUserMission(confirmDialog.id)
     } else if (confirmDialog.type === 'category') {
-      // カテゴリに含まれる装備を全て削除（カスケード削除）
-      const affectedEquipments = userEquipments.filter(eq => eq.categoryId === confirmDialog.id)
-      affectedEquipments.forEach(eq => {
-        deleteUserEquipment(eq.id)
-      })
-      // カテゴリを削除
-      deleteUserCategory(confirmDialog.id)
+      executeCategoryDeletion(
+        confirmDialog.id,
+        userEquipments,
+        deleteUserEquipment,
+        deleteUserCategory
+      )
     }
     setConfirmDialog({ isOpen: false, type: null, id: null, message: '' })
   }
