@@ -9,28 +9,28 @@ import { WarningCollector } from '../utils/warningCollector.js'
 
 /**
  * 廃棄リストを計算
- * @param {string[]} selectedMissionIds - 選択中の任務IDリスト
+ * @param {Array<{missionId: string, count: number}>} selectedMissions - 選択中の任務リスト（実行回数含む）
  * @param {Object[]} allMissions - 全任務データ
  * @param {Map} equipmentMap - 装備検索用Map（カテゴリ代表は含まない）
  * @param {Map} categoryMap - カテゴリ検索用Map
  * @returns {Object} { scrapList: 廃棄リスト, warnings: 警告情報 }
  */
-export function calculateScrapList(selectedMissionIds, allMissions, equipmentMap, categoryMap) {
+export function calculateScrapList(selectedMissions, allMissions, equipmentMap, categoryMap) {
   const collector = new WarningCollector()
 
   // フェーズ1: 事前チェック
-  if (!selectedMissionIds || selectedMissionIds.length === 0) {
+  if (!selectedMissions || selectedMissions.length === 0) {
     return { scrapList: [], warnings: [] }
   }
 
-  if (selectedMissionIds.length > LIMITS.SELECTED_MISSIONS_MAX) {
+  if (selectedMissions.length > LIMITS.SELECTED_MISSIONS_MAX) {
     collector.addError(`選択可能な任務数は最大${LIMITS.SELECTED_MISSIONS_MAX}件です`)
     return { scrapList: [], warnings: collector.getWarnings() }
   }
 
   // フェーズ2: 要求装備の展開
   const allRequirements = expandRequirements(
-    selectedMissionIds,
+    selectedMissions,
     allMissions,
     collector
   )
@@ -74,14 +74,14 @@ export function calculateScrapList(selectedMissionIds, allMissions, equipmentMap
  * フェーズ2: 要求装備の展開
  * @private
  */
-function expandRequirements(selectedMissionIds, allMissions, collector) {
+function expandRequirements(selectedMissions, allMissions, collector) {
   const allRequirements = []
 
-  for (const missionId of selectedMissionIds) {
-    const mission = allMissions.find((m) => m.id === missionId)
+  for (const selected of selectedMissions) {
+    const mission = allMissions.find((m) => m.id === selected.missionId)
 
     if (!mission) {
-      collector.addWarning(`任務ID "${missionId}" が見つかりません`, { missionId })
+      collector.addWarning(`任務ID "${selected.missionId}" が見つかりません`, { missionId: selected.missionId })
       continue
     }
 
@@ -95,7 +95,7 @@ function expandRequirements(selectedMissionIds, allMissions, collector) {
         missionName: mission.name,
         targetId: req.targetId,
         targetType: req.targetType,
-        count: req.count,
+        count: req.count * selected.count, // 実行回数を乗算
       })
     }
   }

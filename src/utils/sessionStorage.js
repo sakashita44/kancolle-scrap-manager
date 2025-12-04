@@ -12,37 +12,55 @@ import { logError, logInfo } from './logger.js';
 const { getItem, setItem, removeItem } = createStorageHelper(sessionStorage, 'SessionStorage');
 
 /**
- * 選択中の任務IDリストを保存
- * @param {string[]} missionIds - 任務IDの配列（最大8件）
+ * 選択中の任務リストを保存
+ * @param {Array<{missionId: string, count: number}>} selectedMissions - 任務IDと実行回数の配列（最大8件）
  * @throws {Error} 保存に失敗した場合
  */
-export function saveSelectedMissions(missionIds) {
+export function saveSelectedMissions(selectedMissions) {
   const data = {
     version: SCHEMA_VERSION,
-    selectedMissionIds: missionIds,
+    selectedMissions: selectedMissions,
   };
   setItem(STORAGE_KEYS.SELECTED_MISSIONS, data);
   logInfo('Saved selected missions', {
     function: 'saveSelectedMissions',
-    count: missionIds.length,
+    count: selectedMissions.length,
   });
 }
 
 /**
- * 選択中の任務IDリストを読込
- * @returns {string[]} 任務IDの配列（存在しない場合は空配列）
+ * 選択中の任務リストを読込（マイグレーション対応）
+ * @returns {Array<{missionId: string, count: number}>} 任務IDと実行回数の配列（存在しない場合は空配列）
  */
 export function loadSelectedMissions() {
   const data = getItem(STORAGE_KEYS.SELECTED_MISSIONS);
-  if (!data || !data.selectedMissionIds) {
+  if (!data) {
     logInfo('No selected missions found', { function: 'loadSelectedMissions' });
     return [];
   }
+
+  // マイグレーション: 旧形式（string[]）から新形式（{missionId, count}[]）への変換
+  if (Array.isArray(data.selectedMissionIds)) {
+    logInfo('Migrating selected missions from old format', { function: 'loadSelectedMissions' });
+    const migrated = data.selectedMissionIds.map((id) => ({
+      missionId: id,
+      count: 1,
+    }));
+    // 新形式で保存し直す
+    saveSelectedMissions(migrated);
+    return migrated;
+  }
+
+  if (!data.selectedMissions) {
+    logInfo('No selected missions found', { function: 'loadSelectedMissions' });
+    return [];
+  }
+
   logInfo('Loaded selected missions', {
     function: 'loadSelectedMissions',
-    count: data.selectedMissionIds.length,
+    count: data.selectedMissions.length,
   });
-  return data.selectedMissionIds;
+  return data.selectedMissions;
 }
 
 /**

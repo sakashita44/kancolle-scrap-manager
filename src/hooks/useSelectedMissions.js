@@ -15,16 +15,16 @@ import { logError, logWarning } from '../utils/logger.js';
 
 /**
  * 選択任務を管理するカスタムフック
- * @returns {Object} 選択任務IDリストと操作関数
+ * @returns {Object} 選択任務リストと操作関数
  */
 export function useSelectedMissions() {
-  const [selectedMissionIds, setSelectedMissionIds] = useState([]);
+  const [selectedMissions, setSelectedMissions] = useState([]);
 
   // 初回マウント時にSessionStorageから読込
   useEffect(() => {
     try {
       const loaded = loadSelectedMissions();
-      setSelectedMissionIds(loaded);
+      setSelectedMissions(loaded);
     } catch (err) {
       logError('Failed to load selected missions', {
         function: 'useSelectedMissions',
@@ -36,20 +36,20 @@ export function useSelectedMissions() {
   // 選択状態が変更されたらSessionStorageに保存
   useEffect(() => {
     try {
-      saveSelectedMissions(selectedMissionIds);
+      saveSelectedMissions(selectedMissions);
     } catch (err) {
       logError('Failed to save selected missions', {
         function: 'useSelectedMissions',
         error: err,
       });
     }
-  }, [selectedMissionIds]);
+  }, [selectedMissions]);
 
   // 任務を選択
   const selectMission = useCallback((missionId) => {
-    setSelectedMissionIds((prev) => {
+    setSelectedMissions((prev) => {
       // 既に選択済みの場合は何もしない
-      if (prev.includes(missionId)) {
+      if (prev.some((m) => m.missionId === missionId)) {
         return prev;
       }
 
@@ -62,21 +62,21 @@ export function useSelectedMissions() {
         return prev;
       }
 
-      return [...prev, missionId];
+      return [...prev, { missionId, count: 1 }];
     });
   }, []);
 
   // 任務の選択を解除
   const deselectMission = useCallback((missionId) => {
-    setSelectedMissionIds((prev) => prev.filter((id) => id !== missionId));
+    setSelectedMissions((prev) => prev.filter((m) => m.missionId !== missionId));
   }, []);
 
   // 任務の選択状態をトグル
   const toggleMission = useCallback((missionId) => {
-    setSelectedMissionIds((prev) => {
+    setSelectedMissions((prev) => {
       // 選択解除
-      if (prev.includes(missionId)) {
-        return prev.filter((id) => id !== missionId);
+      if (prev.some((m) => m.missionId === missionId)) {
+        return prev.filter((m) => m.missionId !== missionId);
       }
 
       // 最大数チェック
@@ -89,39 +89,50 @@ export function useSelectedMissions() {
       }
 
       // 選択
-      return [...prev, missionId];
+      return [...prev, { missionId, count: 1 }];
+    });
+  }, []);
+
+  // 任務の実行回数を更新
+  const updateMissionCount = useCallback((missionId, count) => {
+    setSelectedMissions((prev) => {
+      return prev.map((m) =>
+        m.missionId === missionId ? { ...m, count: Math.max(1, Math.min(99, count)) } : m
+      );
     });
   }, []);
 
   // 全ての選択を解除
   const clearSelection = useCallback(() => {
-    setSelectedMissionIds([]);
+    setSelectedMissions([]);
     clearSelectedMissions();
   }, []);
 
   // 任務が選択されているかチェック
   const isSelected = useCallback(
     (missionId) => {
-      return selectedMissionIds.includes(missionId);
+      return selectedMissions.some((m) => m.missionId === missionId);
     },
-    [selectedMissionIds]
+    [selectedMissions]
   );
 
   // 選択可能かチェック（最大数に達していないか）
   const canSelect = useCallback(() => {
-    return selectedMissionIds.length < LIMITS.SELECTED_MISSIONS_MAX;
-  }, [selectedMissionIds]);
+    return selectedMissions.length < LIMITS.SELECTED_MISSIONS_MAX;
+  }, [selectedMissions]);
 
   return {
     // データ
-    selectedMissionIds,
-    selectedCount: selectedMissionIds.length,
+    selectedMissions,
+    selectedMissionIds: selectedMissions.map((m) => m.missionId),
+    selectedCount: selectedMissions.length,
     maxSelections: LIMITS.SELECTED_MISSIONS_MAX,
 
     // 操作関数
     selectMission,
     deselectMission,
     toggleMission,
+    updateMissionCount,
     clearSelection,
 
     // ユーティリティ

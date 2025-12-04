@@ -10,7 +10,7 @@ import { logError, logInfo } from '../utils/logger.js';
 
 /**
  * 廃棄リスト計算を管理するカスタムフック
- * @param {string[]} selectedMissionIds - 選択中の任務IDリスト
+ * @param {Array<{missionId: string, count: number}>} selectedMissions - 選択中の任務リスト（実行回数含む）
  * @param {Object[]} allMissions - 全任務データ
  * @param {Map} equipmentMap - 装備検索用Map（カテゴリ代表は含まない）
  * @param {Map} categoryMap - カテゴリ検索用Map
@@ -26,7 +26,7 @@ import { logError, logInfo } from '../utils/logger.js';
  * @returns {boolean} calculating - 計算中フラグ
  * @returns {Function} recalculate - 手動再計算関数
  */
-export function useScrapCalculation(selectedMissionIds, allMissions, equipmentMap, categoryMap) {
+export function useScrapCalculation(selectedMissions, allMissions, equipmentMap, categoryMap) {
   const [scrapList, setScrapList] = useState([]);
   const [warnings, setWarnings] = useState([]);
   const [calculating, setCalculating] = useState(false);
@@ -34,12 +34,12 @@ export function useScrapCalculation(selectedMissionIds, allMissions, equipmentMa
   // 依存データの変更を検知してメモ化
   const deps = useMemo(
     () => ({
-      selectedMissionIds: selectedMissionIds || [],
+      selectedMissions: selectedMissions || [],
       allMissions: allMissions || [],
       equipmentMap: equipmentMap || new Map(),
       categoryMap: categoryMap || new Map(),
     }),
-    [selectedMissionIds, allMissions, equipmentMap, categoryMap]
+    [selectedMissions, allMissions, equipmentMap, categoryMap]
   );
 
   // 計算処理
@@ -48,7 +48,7 @@ export function useScrapCalculation(selectedMissionIds, allMissions, equipmentMa
 
     try {
       const result = calculateScrapList(
-        deps.selectedMissionIds,
+        deps.selectedMissions,
         deps.allMissions,
         deps.equipmentMap,
         deps.categoryMap
@@ -59,7 +59,7 @@ export function useScrapCalculation(selectedMissionIds, allMissions, equipmentMa
 
       logInfo('Scrap list calculated', {
         function: 'useScrapCalculation',
-        selectedCount: deps.selectedMissionIds.length,
+        selectedCount: deps.selectedMissions.length,
         scrapListCount: result.scrapList.length,
         warningsCount: result.warnings.length,
       });
