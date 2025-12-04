@@ -10,7 +10,7 @@ import { loadUserEquipments, saveUserEquipments } from '../utils/localStorage.js
 import { getNextOrder as getNextOrderUtil, mergeAndSort, createDefaultSortComparator } from '../utils/dataManagement.js';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
-import { EQUIPMENT_TYPE } from '../types/schema.js';
+import { toRuntimeEquipments, generateCategoryRepresentatives, addEquipmentType, createEquipmentMap } from '../utils/dataConverter.js';
 
 /**
  * 装備データを管理するカスタムフック
@@ -24,10 +24,7 @@ export function useEquipments(categories, categoryMap) {
 
   // マスタデータをインポート（isMasterフラグを付与）
   const masterEquipments = useMemo(() => {
-    return equipmentsData.equipments.map(eq => ({
-      ...eq,
-      isMaster: true
-    }));
+    return toRuntimeEquipments(equipmentsData.equipments, true);
   }, []);
 
   // ユーザー定義装備をLocalStorageから読込
@@ -44,26 +41,16 @@ export function useEquipments(categories, categoryMap) {
 
   // 装備検索用Map（カテゴリ代表は含まない）
   const equipmentMap = useMemo(() => {
-    return new Map(equipments.map(eq => [eq.id, eq]));
+    return createEquipmentMap(equipments);
   }, [equipments]);
 
   // UI表示用にカテゴリ代表を動的生成してマージ
-  const allEquipmentsForUI = useMemo(() => {
+  const equipmentsForUI = useMemo(() => {
     // カテゴリ代表を動的生成
-    const categoryReps = categories.map(cat => ({
-      id: cat.id,                    // カテゴリIDをそのまま使用
-      name: cat.name + '（種別不問）',
-      categoryId: cat.id,
-      isMaster: cat.isMaster,
-      type: EQUIPMENT_TYPE.CATEGORY,
-      order: cat.order
-    }));
+    const categoryReps = generateCategoryRepresentatives(categories);
 
     // 装備にtypeフィールドを付与
-    const equipmentsWithType = equipments.map(eq => ({
-      ...eq,
-      type: EQUIPMENT_TYPE.ITEM
-    }));
+    const equipmentsWithType = addEquipmentType(equipments);
 
     // マージしてソート
     return [...categoryReps, ...equipmentsWithType].sort((a, b) => {
@@ -83,8 +70,8 @@ export function useEquipments(categories, categoryMap) {
 
   // IDで装備を検索（UI表示用リストから検索）
   const findEquipmentById = useCallback((equipmentId) => {
-    return allEquipmentsForUI.find((eq) => eq.id === equipmentId) || null;
-  }, [allEquipmentsForUI]);
+    return equipmentsForUI.find((eq) => eq.id === equipmentId) || null;
+  }, [equipmentsForUI]);
 
   // ユーザー定義装備の次の order 値を取得
   const getNextOrder = useCallback(() => {
@@ -94,8 +81,8 @@ export function useEquipments(categories, categoryMap) {
   return {
     // データ
     equipments,           // 装備のみ（カテゴリ代表は含まない）
-    allEquipmentsForUI,   // UI表示用（カテゴリ代表 + 装備、typeで区別）
-    allEquipments: allEquipmentsForUI, // 後方互換性のため
+    equipmentsForUI,      // UI表示用（カテゴリ代表 + 装備、typeで区別）
+    allEquipments: equipmentsForUI, // 後方互換性のため
     masterEquipments,
     userEquipments,
 

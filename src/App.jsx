@@ -32,7 +32,7 @@ function App() {
     getNextOrder: getNextCategoryOrder
   } = useCategories()
   const {
-    allEquipmentsForUI: equipments,
+    equipmentsForUI: equipments,
     equipmentMap,
     userEquipments,
     getNextOrder: getNextEquipmentOrder,

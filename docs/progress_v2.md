@@ -108,31 +108,47 @@ Issue74実装後、責務分離が曖昧になった点を調査し、複数の�
 
 **起票したリファクタIssue**:
 
-| Issue | タイトル | 優先度 | 説明 |
-|:------|:---------|:-------|:-----|
-| [#80](https://github.com/sakashita44/kancolle-scrap-manager/issues/80) | データ変換層の導入によるコード責務の明確化 | 高 | 永続化形式とランタイム形式の変換を専用層に集約 |
-| [#83](https://github.com/sakashita44/kancolle-scrap-manager/issues/83) | App.jxのビジネスロジックをドメイン層に分離 | 中 | カテゴリ削除などのビジネスロジックをドメイン層に移動 |
-| [#84](https://github.com/sakashita44/kancolle-scrap-manager/issues/84) | ユーザーデータ管理フックの統合 | 低 | useUserDataLoaderとuseUserDataCRUDを1つに統合 |
-| [#85](https://github.com/sakashita44/kancolle-scrap-manager/issues/85) | エラーハンドリングの統一と一元管理 | 低 | 全てのエラーを統一された方法で管理 |
-| [#86](https://github.com/sakashita44/kancolle-scrap-manager/issues/86) | validation.jsの重複パターンをスキーマベースに共通化 | 低 | スキーマ定義ベースの汎用バリデーション関数を作成 |
+| Issue | タイトル | 優先度 | 説明 | ステータス |
+|:------|:---------|:-------|:-----|:-----------|
+| [#80](https://github.com/sakashita44/kancolle-scrap-manager/issues/80) | データ変換層の導入によるコード責務の明確化 | 高 | 永続化形式とランタイム形式の変換を専用層に集約 | ✅ 完了 |
+| [#83](https://github.com/sakashita44/kancolle-scrap-manager/issues/83) | App.jxのビジネスロジックをドメイン層に分離 | 中 | カテゴリ削除などのビジネスロジックをドメイン層に移動 | 未着手 |
+| [#84](https://github.com/sakashita44/kancolle-scrap-manager/issues/84) | ユーザーデータ管理フックの統合 | 低 | useUserDataLoaderとuseUserDataCRUDを1つに統合 | 未着手 |
+| [#85](https://github.com/sakashita44/kancolle-scrap-manager/issues/85) | エラーハンドリングの統一と一元管理 | 低 | 全てのエラーを統一された方法で管理 | 未着手 |
+| [#86](https://github.com/sakashita44/kancolle-scrap-manager/issues/86) | validation.jsの重複パターンをスキーマベースに共通化 | 低 | スキーマ定義ベースの汎用バリデーション関数を作成 | 未着手 |
 
 **推奨実装順序**:
 
-1. **最優先**: Issue #80（データ変換層の導入） - 他のリファクタの基盤となる
+1. **最優先**: Issue #80（データ変換層の導入） - 他のリファクタの基盤となる ✅ 完了
 2. **次点**: Issue #83（App.jxのビジネスロジック分離） - 機能追加前に対処推奨
 3. **その後**: Issue #84, #85, #86 - 必要に応じて実装
 
-**Issue #80の概要**:
+### Issue #80: データ変換層の導入 (2025-12-03)
+
+**実装内容**:
 
 新規ファイル `src/utils/dataConverter.js` を作成し、以下を集約：
 - `toRuntimeCategories()`, `toRuntimeEquipments()`, `toRuntimeMissions()` - 永続化形式 → ランタイム形式
 - `toPersistCategories()`, `toPersistEquipments()`, `toPersistMissions()` - ランタイム形式 → 永続化形式
 - `generateCategoryRepresentatives()` - カテゴリ代表装備の動的生成
+- `addEquipmentType()` - 装備にtypeフィールドを付与
 - `createCategoryMaps()`, `createEquipmentMap()` - Map生成
 
 命名規則の統一も同時に実施:
 - `allEquipmentsForUI` → `equipmentsForUI`
-- 他のフックも同様に統一
+- `App.jsx`での使用箇所も更新
+
+**リファクタした箇所**:
+- `src/hooks/useCategories.js`: `toRuntimeCategories()`, `createCategoryMaps()`を使用
+- `src/hooks/useEquipments.js`: `toRuntimeEquipments()`, `generateCategoryRepresentatives()`, `addEquipmentType()`, `createEquipmentMap()`を使用
+- `src/hooks/useMissions.js`: `toRuntimeMissions()`を使用
+- `src/utils/localStorage.js`: `toPersist*()`, `toRuntime*()`を使用して変換処理を集約
+
+**効果**:
+- データ変換処理の重複を解消（4箇所 → 1箇所）
+- 責務の明確化（永続化層、変換層、フック層の分離）
+- 保守性とテスタビリティの向上
+
+**ステータス**: 完了 (2025-12-03)
 
 ## Phase 2: 計算ロジック拡張
 
