@@ -10,6 +10,7 @@ import { loadUserCategories, saveUserCategories } from '../utils/localStorage.js
 import { getNextOrder as getNextOrderUtil, mergeAndSort, createDefaultSortComparator } from '../utils/dataManagement.js';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
+import { toRuntimeCategories, createCategoryMaps } from '../utils/dataConverter.js';
 
 /**
  * カテゴリデータを管理するカスタムフック
@@ -21,10 +22,7 @@ export function useCategories() {
 
   // マスタデータをインポート（isMasterフラグを付与）
   const masterCategories = useMemo(() => {
-    return categoriesData.categories.map(cat => ({
-      ...cat,
-      isMaster: true
-    }));
+    return toRuntimeCategories(categoriesData.categories, true);
   }, []);
 
   // ユーザー定義カテゴリをLocalStorageから読込
@@ -51,34 +49,15 @@ export function useCategories() {
   // categories配列（後方互換性のため）
   const categories = useMemo(() => allCategories, [allCategories]);
 
-  // カテゴリID→カテゴリオブジェクトのMap
-  const categoryMap = useMemo(() => {
-    const map = new Map();
-    categories.forEach((cat) => {
-      map.set(cat.id, cat);
-    });
-    return map;
-  }, [categories]);
-
-  // カテゴリIDからカテゴリ名への変換Map（order順にソート済み）
-  const categoryNameMap = useMemo(() => {
-    const map = new Map();
-    // categoriesは既にorder順にソート済み（isMaster: trueで取得）
-    categories.forEach((cat) => {
-      map.set(cat.id, cat.name);
-    });
-    return map;
+  // カテゴリ関連のMap生成
+  const { categoryMap, categoryNameMap, categoryIds } = useMemo(() => {
+    return createCategoryMaps(categories);
   }, [categories]);
 
   // カテゴリIDからカテゴリ名を取得
   const getCategoryName = useCallback((categoryId) => {
     return categoryNameMap.get(categoryId) || categoryId;
   }, [categoryNameMap]);
-
-  // カテゴリIDのリストを取得（order順）
-  const categoryIds = useMemo(() => {
-    return categories.map(cat => cat.id);
-  }, [categories]);
 
   // ユーザー定義カテゴリの次の order 値を取得
   const getNextOrder = useCallback(() => {

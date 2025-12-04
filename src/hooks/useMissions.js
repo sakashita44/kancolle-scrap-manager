@@ -11,6 +11,7 @@ import { PERIOD_ORDER } from '../types/schema.js';
 import { getNextOrder as getNextOrderUtil, mergeAndSort, createMissionSortComparator } from '../utils/dataManagement.js';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
+import { toRuntimeMissions } from '../utils/dataConverter.js';
 
 /**
  * 任務データを管理するカスタムフック
@@ -22,10 +23,7 @@ export function useMissions() {
 
   // マスタデータをインポート（isMasterフラグを付与）
   const masterMissions = useMemo(() => {
-    return missionsData.missions.map(ms => ({
-      ...ms,
-      isMaster: true
-    }));
+    return toRuntimeMissions(missionsData.missions, true);
   }, []);
 
   // ユーザー定義任務をLocalStorageから読込
