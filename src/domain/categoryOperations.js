@@ -5,6 +5,29 @@
  */
 
 /**
+ * カテゴリのorder値を交換
+ *
+ * @param {string} id1 - カテゴリID 1
+ * @param {string} id2 - カテゴリID 2
+ * @param {Array} allCategories - 全カテゴリ配列
+ * @param {Function} updateCategory - カテゴリ更新関数
+ */
+export function swapCategoryOrder(id1, id2, allCategories, updateCategory) {
+  const cat1 = allCategories.find(c => c.id === id1)
+  const cat2 = allCategories.find(c => c.id === id2)
+
+  if (!cat1 || !cat2) {
+    console.warn('カテゴリが見つかりません', { id1, id2 })
+    return
+  }
+
+  const tempOrder = cat1.order
+
+  updateCategory({ ...cat1, order: cat2.order })
+  updateCategory({ ...cat2, order: tempOrder })
+}
+
+/**
  * カテゴリ削除の影響分析
  *
  * @param {string} categoryId - カテゴリID

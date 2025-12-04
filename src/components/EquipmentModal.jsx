@@ -1,15 +1,28 @@
 import { useState, useMemo } from 'react'
-import { Plus, Search, List, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Search, List, Trash2, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
 import { validateEquipment, validateUniqueName, validateName } from '../utils/validation'
 import { LIMITS } from '../types/schema'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
-const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder, getNextCategoryOrder, onSave, onDelete, onDeleteCategory, onSwapOrder, onCancel }) => {
+const EquipmentModal = ({
+  equipments,
+  categories,
+  getCategoryName,
+  getNextOrder,
+  getNextCategoryOrder,
+  onSave,
+  onDelete,
+  onDeleteCategory,
+  onSwapOrder,
+  onSwapCategoryOrder,
+  onCancel
+}) => {
   const [mode, setMode] = useState('equipment') // 'equipment' | 'category'
   const [name, setName] = useState('')
   const [category, setCategory] = useState(categories[0] || '')
   const [searchText, setSearchText] = useState('')
   const [isAddFormExpanded, setIsAddFormExpanded] = useState(true)
+  const [expandedCategories, setExpandedCategories] = useState(new Set()) // デフォルトクローズ
 
   // リアルタイムバリデーション
   const validationErrors = useMemo(() => {
@@ -56,7 +69,7 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
     }
 
     return errors
-  }, [mode, name, category, categories, getCategoryName])
+  }, [mode, name, category, categories, getCategoryName, equipments])
 
   // 同名チェック（警告） - 現在は使用されていない（validationErrorsでチェック済み）
   const nameWarning = useMemo(() => {
@@ -76,34 +89,85 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
     } else {
       // カテゴリを追加
       onSave({ mode: 'category', name, order: getNextCategoryOrder() })
+      // 新しく追加されたカテゴリを展開状態にする
+      setTimeout(() => {
+        const newCategoryId = categories[categories.length - 1]
+        setExpandedCategories(prev => new Set([...prev, newCategoryId]))
+      }, 0)
     }
 
     setName('') // 連続追加しやすくするためクリア
   }
 
-  const filteredEquipments = equipments.filter(e =>
-    e.name.includes(searchText) || getCategoryName(e.categoryId).includes(searchText)
-  )
+  // カテゴリ別に装備をグループ化（検索フィルタリング後）
+  const groupedEquipments = useMemo(() => {
+    const filtered = equipments.filter(e =>
+      e.name.includes(searchText) || getCategoryName(e.categoryId).includes(searchText)
+    )
 
-  // ユーザー定義装備のみ抽出してソート
-  const userEquipmentsFiltered = filteredEquipments.filter(e => e.id.startsWith('u_')).sort((a, b) => a.order - b.order)
-  const masterEquipmentsFiltered = filteredEquipments.filter(e => !e.id.startsWith('u_'))
+    const groups = new Map()
+    categories.forEach(catId => {
+      const categoryEquipments = filtered.filter(e => e.categoryId === catId)
+      if (categoryEquipments.length > 0) {
+        groups.set(catId, categoryEquipments.sort((a, b) => {
+          // カテゴリ代表を先頭に
+          if (a.type === 'category' && b.type !== 'category') return -1
+          if (a.type !== 'category' && b.type === 'category') return 1
+          return a.order - b.order
+        }))
+      }
+    })
+    return groups
+  }, [equipments, categories, searchText, getCategoryName])
 
-  // 並び替え処理
-  const handleMoveUp = (equipmentId) => {
-    const index = userEquipmentsFiltered.findIndex(e => e.id === equipmentId)
-    if (index <= 0) return
-    const current = userEquipmentsFiltered[index]
-    const previous = userEquipmentsFiltered[index - 1]
-    onSwapOrder(current.id, previous.id)
+  // 表示されるユーザー定義カテゴリのリスト（groupedEquipmentsの表示順序に従う）
+  const visibleUserCategories = useMemo(() => {
+    return Array.from(groupedEquipments.keys()).filter(catId => catId.startsWith('u_cat_'))
+  }, [groupedEquipments])
+
+  // カテゴリの展開/折りたたみトグル
+  const toggleCategory = (categoryId) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(categoryId)) {
+        next.delete(categoryId)
+      } else {
+        next.add(categoryId)
+      }
+      return next
+    })
   }
 
-  const handleMoveDown = (equipmentId) => {
-    const index = userEquipmentsFiltered.findIndex(e => e.id === equipmentId)
-    if (index < 0 || index >= userEquipmentsFiltered.length - 1) return
-    const current = userEquipmentsFiltered[index]
-    const next = userEquipmentsFiltered[index + 1]
-    onSwapOrder(current.id, next.id)
+  // カテゴリの並び替え（ユーザー定義のみ）
+  const handleMoveCategoryUp = (categoryId) => {
+    const index = visibleUserCategories.findIndex(c => c === categoryId)
+    if (index <= 0) return
+    onSwapCategoryOrder(visibleUserCategories[index], visibleUserCategories[index - 1])
+  }
+
+  const handleMoveCategoryDown = (categoryId) => {
+    const index = visibleUserCategories.findIndex(c => c === categoryId)
+    if (index < 0 || index >= visibleUserCategories.length - 1) return
+    onSwapCategoryOrder(visibleUserCategories[index], visibleUserCategories[index + 1])
+  }
+
+  // カテゴリ内装備の並び替え（カテゴリ代表を除く）
+  const handleMoveEquipmentUp = (categoryId, equipmentId) => {
+    const categoryEquipments = groupedEquipments.get(categoryId).filter(e =>
+      e.type !== 'category' && e.id.startsWith('u_')
+    )
+    const index = categoryEquipments.findIndex(e => e.id === equipmentId)
+    if (index <= 0) return
+    onSwapOrder(categoryEquipments[index].id, categoryEquipments[index - 1].id)
+  }
+
+  const handleMoveEquipmentDown = (categoryId, equipmentId) => {
+    const categoryEquipments = groupedEquipments.get(categoryId).filter(e =>
+      e.type !== 'category' && e.id.startsWith('u_')
+    )
+    const index = categoryEquipments.findIndex(e => e.id === equipmentId)
+    if (index < 0 || index >= categoryEquipments.length - 1) return
+    onSwapOrder(categoryEquipments[index].id, categoryEquipments[index + 1].id)
   }
 
   return (
@@ -232,7 +296,7 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
       <div>
         <h4 className="text-sm font-bold text-slate-700 mb-2 flex items-center justify-between">
           <span className="flex items-center"><List className="w-4 h-4 mr-1" /> 登録済み一覧</span>
-          <span className="text-xs font-normal text-slate-500">{filteredEquipments.length}件</span>
+          <span className="text-xs font-normal text-slate-500">{equipments.length}件</span>
         </h4>
 
         {/* 簡易検索 */}
@@ -247,70 +311,127 @@ const EquipmentModal = ({ equipments, categories, getCategoryName, getNextOrder,
           />
         </div>
 
-        <div className={`overflow-y-auto border rounded-lg bg-white divide-y divide-slate-100 ${isAddFormExpanded ? 'max-h-64' : 'max-h-96'}`}>
-          {/* 公式装備 */}
-          {masterEquipmentsFiltered.map(eq => (
-            <div key={eq.id} className="px-3 py-2 flex justify-between items-center hover:bg-slate-50">
-              <div className="flex-1 min-w-0 mr-2">
-                <div className="text-sm font-medium text-slate-700 truncate">{eq.name}</div>
-                <div className="text-xs text-slate-400 flex gap-2">
-                  <span>{getCategoryName(eq.categoryId)}</span>
-                  <span className="bg-slate-100 px-1 rounded text-[10px]">{eq.type}</span>
-                </div>
-              </div>
-              <span className="text-[10px] text-slate-300 select-none">公式</span>
-            </div>
-          ))}
-          {/* ユーザー定義装備 */}
-          {userEquipmentsFiltered.map((eq, index) => {
-            const isCategory = eq.type === 'category'
-            const canReorder = !isCategory
-            return (
-              <div key={eq.id} className="px-3 py-2 flex justify-between items-center hover:bg-slate-50 group">
-                <div className="flex-1 min-w-0 mr-2">
-                  <div className="text-sm font-medium text-slate-700 truncate">{eq.name}</div>
-                  <div className="text-xs text-slate-400 flex gap-2">
-                    <span>{getCategoryName(eq.categoryId)}</span>
-                    <span className="bg-slate-100 px-1 rounded text-[10px]">{eq.type}</span>
-                  </div>
-                </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {canReorder && (
-                    <>
-                      <button
-                        onClick={() => handleMoveUp(eq.id)}
-                        disabled={index === 0}
-                        className={`p-1 ${index === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
-                        title="上へ移動"
-                      >
-                        <ChevronUp className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleMoveDown(eq.id)}
-                        disabled={index === userEquipmentsFiltered.length - 1}
-                        className={`p-1 ${index === userEquipmentsFiltered.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
-                        title="下へ移動"
-                      >
-                        <ChevronDown className="w-4 h-4" />
-                      </button>
-                    </>
-                  )}
-                  <button
-                    onClick={() => isCategory ? onDeleteCategory(eq.id) : onDelete(eq.id)}
-                    className="text-slate-300 hover:text-red-500 p-1"
-                    title="削除"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )
-          })}
-          {filteredEquipments.length === 0 && (
+        <div className={`overflow-y-auto border rounded-lg bg-white ${isAddFormExpanded ? 'max-h-96' : 'max-h-[32rem]'}`}>
+          {groupedEquipments.size === 0 && (
             <div className="p-4 text-center text-xs text-slate-400">
               該当する装備がありません
             </div>
           )}
+
+          {Array.from(groupedEquipments.entries()).map(([categoryId, categoryEquipments]) => {
+            const isExpanded = expandedCategories.has(categoryId)
+            const isUserCategory = categoryId.startsWith('u_cat_')
+            const categoryIndex = visibleUserCategories.findIndex(c => c === categoryId)
+            const userEquipmentList = categoryEquipments.filter(e =>
+              e.type !== 'category' && e.id.startsWith('u_')
+            )
+
+            return (
+              <div key={categoryId} className="border-b border-slate-100 last:border-b-0">
+                {/* カテゴリヘッダー */}
+                <div className="bg-slate-50 hover:bg-slate-100 transition-colors group">
+                  <div className="px-3 py-2 flex items-center justify-between">
+                    <button
+                      onClick={() => toggleCategory(categoryId)}
+                      className="flex-1 flex items-center text-left"
+                    >
+                      {isExpanded ? (
+                        <ChevronDown className="w-4 h-4 text-slate-500 mr-1" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-slate-500 mr-1" />
+                      )}
+                      <span className="text-sm font-bold text-slate-700">{getCategoryName(categoryId)}</span>
+                      <span className="ml-2 text-xs text-slate-400">({categoryEquipments.length})</span>
+                    </button>
+                    {isUserCategory && (
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleMoveCategoryUp(categoryId)}
+                          disabled={categoryIndex === 0}
+                          className={`p-1 ${categoryIndex === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                          title="カテゴリを上へ"
+                        >
+                          <ChevronUp className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleMoveCategoryDown(categoryId)}
+                          disabled={categoryIndex === visibleUserCategories.length - 1}
+                          className={`p-1 ${categoryIndex === visibleUserCategories.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                          title="カテゴリを下へ"
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => onDeleteCategory(categoryId)}
+                          className="text-slate-300 hover:text-red-500 p-1"
+                          title="カテゴリを削除"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* カテゴリ内装備リスト */}
+                {isExpanded && (
+                  <div className="divide-y divide-slate-100">
+                    {categoryEquipments.map((eq) => {
+                      const isCategoryRep = eq.type === 'category'
+                      const isUserEquipment = eq.id.startsWith('u_')
+                      const equipmentIndex = userEquipmentList.findIndex(e => e.id === eq.id)
+                      const canReorder = !isCategoryRep && isUserEquipment
+
+                      return (
+                        <div key={eq.id} className="px-3 py-2 flex justify-between items-center hover:bg-slate-50 group">
+                          <div className="flex-1 min-w-0 mr-2">
+                            <div className="text-sm font-medium text-slate-700 truncate">
+                              {eq.name}
+                            </div>
+                            <div className="text-xs text-slate-400 flex gap-2">
+                              <span className="bg-slate-100 px-1 rounded text-[10px]">{eq.type}</span>
+                              {!isUserEquipment && <span className="text-[10px] text-slate-300">公式</span>}
+                            </div>
+                          </div>
+                          {isUserEquipment && (
+                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              {canReorder && (
+                                <>
+                                  <button
+                                    onClick={() => handleMoveEquipmentUp(categoryId, eq.id)}
+                                    disabled={equipmentIndex === 0}
+                                    className={`p-1 ${equipmentIndex === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                                    title="上へ移動"
+                                  >
+                                    <ChevronUp className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleMoveEquipmentDown(categoryId, eq.id)}
+                                    disabled={equipmentIndex === userEquipmentList.length - 1}
+                                    className={`p-1 ${equipmentIndex === userEquipmentList.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                                    title="下へ移動"
+                                  >
+                                    <ChevronDown className="w-4 h-4" />
+                                  </button>
+                                </>
+                              )}
+                              <button
+                                onClick={() => isCategoryRep ? onDeleteCategory(categoryId) : onDelete(eq.id)}
+                                className="text-slate-300 hover:text-red-500 p-1"
+                                title="削除"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>

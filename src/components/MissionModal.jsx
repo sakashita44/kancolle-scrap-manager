@@ -4,7 +4,7 @@ import { PERIOD, LIMITS, TARGET_TYPE } from '../types/schema'
 import { validateName } from '../utils/validation'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
-const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onSave, onCancel }) => {
+const MissionModal = ({ equipments, categories, missions, getCategoryName, getNextOrder, onSave, onCancel }) => {
   const [name, setName] = useState('')
   const [period, setPeriod] = useState('Weekly')
   // 複数の要求装備を管理（最初の1枠は必須）
@@ -30,6 +30,23 @@ const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onS
   const updateReq = (id, field, value) => {
     setReqs(reqs.map(req => req.id === id ? { ...req, [field]: value } : req))
   }
+
+  // カテゴリ別に装備をグループ化
+  const groupedEquipments = useMemo(() => {
+    const groups = new Map()
+    categories.forEach(catId => {
+      const categoryEquipments = equipments.filter(e => e.categoryId === catId)
+      if (categoryEquipments.length > 0) {
+        groups.set(catId, categoryEquipments.sort((a, b) => {
+          // カテゴリ代表を先頭に
+          if (a.type === 'category' && b.type !== 'category') return -1
+          if (a.type !== 'category' && b.type === 'category') return 1
+          return a.order - b.order
+        }))
+      }
+    })
+    return groups
+  }, [equipments, categories])
 
   // リアルタイムバリデーション
   const validationErrors = useMemo(() => {
@@ -139,10 +156,14 @@ const MissionModal = ({ equipments, missions, getCategoryName, getNextOrder, onS
                 value={req.targetId}
                 onChange={e => updateReq(req.id, 'targetId', e.target.value)}
               >
-                {equipments.map(e => (
-                  <option key={e.id} value={e.id}>
-                    {getCategoryName(e.categoryId)} - {e.name}
-                  </option>
+                {Array.from(groupedEquipments.entries()).map(([categoryId, categoryEquipments]) => (
+                  <optgroup key={categoryId} label={getCategoryName(categoryId)}>
+                    {categoryEquipments.map(e => (
+                      <option key={e.id} value={e.id}>
+                        {e.name} ({e.type === 'category' ? '種別不問' : '個別装備'})
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
               <input
