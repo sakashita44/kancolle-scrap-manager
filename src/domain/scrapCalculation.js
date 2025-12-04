@@ -4,7 +4,8 @@
  * @module domain/scrapCalculation
  */
 
-import { EQUIPMENT_TYPE, LIMITS, TARGET_TYPE } from '../types/schema.js';
+import { EQUIPMENT_TYPE, LIMITS, TARGET_TYPE } from '../types/schema.js'
+import { WarningCollector } from '../utils/warningCollector.js'
 
 /**
  * 廃棄リストを計算
@@ -15,38 +16,35 @@ import { EQUIPMENT_TYPE, LIMITS, TARGET_TYPE } from '../types/schema.js';
  * @returns {Object} { scrapList: 廃棄リスト, warnings: 警告情報 }
  */
 export function calculateScrapList(selectedMissionIds, allMissions, equipmentMap, categoryMap) {
-  const warnings = [];
+  const collector = new WarningCollector()
 
   // フェーズ1: 事前チェック
   if (!selectedMissionIds || selectedMissionIds.length === 0) {
-    return { scrapList: [], warnings: [] };
+    return { scrapList: [], warnings: [] }
   }
 
   if (selectedMissionIds.length > LIMITS.SELECTED_MISSIONS_MAX) {
-    warnings.push({
-      type: 'error',
-      message: `選択可能な任務数は最大${LIMITS.SELECTED_MISSIONS_MAX}件です`,
-    });
-    return { scrapList: [], warnings };
+    collector.addError(`選択可能な任務数は最大${LIMITS.SELECTED_MISSIONS_MAX}件です`)
+    return { scrapList: [], warnings: collector.getWarnings() }
   }
 
   // フェーズ2: 要求装備の展開
   const allRequirements = expandRequirements(
     selectedMissionIds,
     allMissions,
-    warnings
-  );
+    collector
+  )
 
   // フェーズ2.5: 整合性チェック
   const validRequirements = validateRequirements(
     allRequirements,
     equipmentMap,
     categoryMap,
-    warnings
-  );
+    collector
+  )
 
   if (validRequirements.length === 0) {
-    return { scrapList: [], warnings };
+    return { scrapList: [], warnings: collector.getWarnings() }
   }
 
   // フェーズ3: 装備種別ごとにグループ化（targetTypeで判定）
@@ -67,32 +65,28 @@ export function calculateScrapList(selectedMissionIds, allMissions, equipmentMap
     categoryCountMap,
     equipmentMap,
     categoryMap
-  );
+  )
 
-  return { scrapList, warnings };
+  return { scrapList, warnings: collector.getWarnings() }
 }
 
 /**
  * フェーズ2: 要求装備の展開
  * @private
  */
-function expandRequirements(selectedMissionIds, allMissions, warnings) {
-  const allRequirements = [];
+function expandRequirements(selectedMissionIds, allMissions, collector) {
+  const allRequirements = []
 
   for (const missionId of selectedMissionIds) {
-    const mission = allMissions.find((m) => m.id === missionId);
+    const mission = allMissions.find((m) => m.id === missionId)
 
     if (!mission) {
-      warnings.push({
-        type: 'warning',
-        missionId,
-        message: `任務ID "${missionId}" が見つかりません`,
-      });
-      continue;
+      collector.addWarning(`任務ID "${missionId}" が見つかりません`, { missionId })
+      continue
     }
 
     if (!mission.reqs || mission.reqs.length === 0) {
-      continue;
+      continue
     }
 
     for (const req of mission.reqs) {
@@ -102,47 +96,43 @@ function expandRequirements(selectedMissionIds, allMissions, warnings) {
         targetId: req.targetId,
         targetType: req.targetType,
         count: req.count,
-      });
+      })
     }
   }
 
-  return allRequirements;
+  return allRequirements
 }
 
 /**
  * フェーズ2.5: 整合性チェック
  * @private
  */
-function validateRequirements(allRequirements, equipmentMap, categoryMap, warnings) {
+function validateRequirements(allRequirements, equipmentMap, categoryMap, collector) {
   return allRequirements.filter((req) => {
     if (req.targetType === TARGET_TYPE.CATEGORY) {
       // カテゴリMapから検索
-      const category = categoryMap.get(req.targetId);
+      const category = categoryMap.get(req.targetId)
       if (!category) {
-        warnings.push({
-          type: 'warning',
-          missionId: req.missionId,
-          missionName: req.missionName,
-          message: `カテゴリID "${req.targetId}" が存在しません`,
-        });
-        return false;
+        collector.addWarning(
+          `カテゴリID "${req.targetId}" が存在しません`,
+          { missionId: req.missionId, missionName: req.missionName }
+        )
+        return false
       }
     } else {  // targetType === 'item'
       // 装備Mapから検索
-      const equipment = equipmentMap.get(req.targetId);
+      const equipment = equipmentMap.get(req.targetId)
       if (!equipment) {
-        warnings.push({
-          type: 'warning',
-          missionId: req.missionId,
-          missionName: req.missionName,
-          message: `装備ID "${req.targetId}" が存在しません`,
-        });
-        return false;
+        collector.addWarning(
+          `装備ID "${req.targetId}" が存在しません`,
+          { missionId: req.missionId, missionName: req.missionName }
+        )
+        return false
       }
     }
 
-    return true;
-  });
+    return true
+  })
 }
 
 /**
