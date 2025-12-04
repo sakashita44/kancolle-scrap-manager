@@ -392,7 +392,7 @@ const EquipmentModal = ({
                               {!isUserEquipment && <span className="text-[10px] text-slate-300">公式</span>}
                             </div>
                           </div>
-                          {isUserEquipment && (
+                          {isUserEquipment && !isCategoryRep && (
                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               {canReorder && (
                                 <>
@@ -415,7 +415,7 @@ const EquipmentModal = ({
                                 </>
                               )}
                               <button
-                                onClick={() => isCategoryRep ? onDeleteCategory(categoryId) : onDelete(eq.id)}
+                                onClick={() => onDelete(eq.id)}
                                 className="text-slate-300 hover:text-red-500 p-1"
                                 title="削除"
                               >
