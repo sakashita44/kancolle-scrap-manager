@@ -41,6 +41,10 @@ const MissionModal = ({ equipments, categories, missions, getCategoryName, getNe
           // カテゴリ代表を先頭に
           if (a.type === 'category' && b.type !== 'category') return -1
           if (a.type !== 'category' && b.type === 'category') return 1
+          // 公式→ユーザーの順（isMasterフラグ）
+          if (a.isMaster && !b.isMaster) return -1
+          if (!a.isMaster && b.isMaster) return 1
+          // 同じタイプ内ではorder順
           return a.order - b.order
         }))
       }

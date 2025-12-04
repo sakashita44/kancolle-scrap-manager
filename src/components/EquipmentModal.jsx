@@ -89,11 +89,6 @@ const EquipmentModal = ({
     } else {
       // カテゴリを追加
       onSave({ mode: 'category', name, order: getNextCategoryOrder() })
-      // 新しく追加されたカテゴリを展開状態にする
-      setTimeout(() => {
-        const newCategoryId = categories[categories.length - 1]
-        setExpandedCategories(prev => new Set([...prev, newCategoryId]))
-      }, 0)
     }
 
     setName('') // 連続追加しやすくするためクリア
@@ -113,6 +108,10 @@ const EquipmentModal = ({
           // カテゴリ代表を先頭に
           if (a.type === 'category' && b.type !== 'category') return -1
           if (a.type !== 'category' && b.type === 'category') return 1
+          // 公式→ユーザーの順（isMasterフラグ）
+          if (a.isMaster && !b.isMaster) return -1
+          if (!a.isMaster && b.isMaster) return 1
+          // 同じタイプ内ではorder順
           return a.order - b.order
         }))
       }
