@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { Check, X, ChevronUp, ChevronDown } from 'lucide-react'
 import { LIMITS } from '../types/schema'
+import { useToggle } from '../hooks/useToggle'
 
 /**
  * 選択中の任務一覧を表示する折り畳み可能なコンポーネント
@@ -12,7 +12,7 @@ import { LIMITS } from '../types/schema'
  * @param {Function} props.onClearSelection - 全選択解除ハンドラ
  */
 const SelectedMissionsSummary = ({ selectedMissions, selectedCount, onToggleMission, onClearSelection }) => {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, { toggle }] = useToggle(true)
 
   // 選択中の任務が0件の場合は表示しない
   if (selectedCount === 0) {
@@ -24,7 +24,7 @@ const SelectedMissionsSummary = ({ selectedMissions, selectedCount, onToggleMiss
       <div className="max-w-3xl mx-auto px-4 py-2">
         <div
           className="flex items-center gap-2 cursor-pointer py-1 select-none"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggle}
         >
           <Check className="w-5 h-5 text-blue-500" />
           <h3 className="font-semibold text-slate-700 text-sm">選択中の任務</h3>
