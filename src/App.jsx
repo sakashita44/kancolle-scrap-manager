@@ -8,10 +8,12 @@ import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
 import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
+import { saveUserEquipments } from './utils/localStorage'
 import {
   analyzeCategoryDeletionImpact,
   buildCategoryDeletionMessage,
-  executeCategoryDeletion
+  executeCategoryDeletion,
+  swapCategoryOrder
 } from './domain/categoryOperations'
 import { swapEquipmentOrder } from './domain/equipmentOperations'
 import Header from './components/Header'
@@ -35,6 +37,7 @@ function App() {
     categoryNameMap,
     getCategoryName,
     addUserCategory,
+    updateUserCategory,
     deleteUserCategory,
     getNextOrder: getNextCategoryOrder
   } = useCategories()
@@ -47,7 +50,8 @@ function App() {
     corruptedItems: corruptedEquipments,
     addUserEquipment,
     updateUserEquipment,
-    deleteUserEquipment
+    deleteUserEquipment,
+    setUserEquipments
   } = useEquipments(allCategories, categoryMap)
   const {
     allMissions: missions,
@@ -118,6 +122,10 @@ function App() {
     swapEquipmentOrder(id1, id2, userEquipments, updateUserEquipment)
   }
 
+  const handleSwapCategoryOrder = (id1, id2) => {
+    swapCategoryOrder(id1, id2, allCategories, updateUserCategory)
+  }
+
   const handleDeleteEquipment = (id) => {
     setConfirmDialog({
       isOpen: true,
@@ -166,7 +174,8 @@ function App() {
       executeCategoryDeletion(
         confirmDialog.id,
         userEquipments,
-        deleteUserEquipment,
+        setUserEquipments,
+        saveUserEquipments,
         deleteUserCategory
       )
     }
@@ -260,6 +269,7 @@ function App() {
           getNextCategoryOrder={getNextCategoryOrder}
           onSave={handleAddEquipment}
           onSwapOrder={handleSwapEquipmentOrder}
+          onSwapCategoryOrder={handleSwapCategoryOrder}
           onDelete={handleDeleteEquipment}
           onDeleteCategory={handleDeleteCategory}
           onCancel={() => setActiveModal(null)}
@@ -273,6 +283,7 @@ function App() {
       >
         <MissionModal
           equipments={equipments}
+          categories={categories}
           missions={missions}
           getCategoryName={getCategoryName}
           getNextOrder={getNextMissionOrder}

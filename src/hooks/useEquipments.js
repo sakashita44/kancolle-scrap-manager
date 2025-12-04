@@ -97,6 +97,7 @@ export function useEquipments(categories, categoryMap) {
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment,
+    setUserEquipments,    // カテゴリ削除時の一括処理用
 
     // ユーティリティ
     findEquipmentById,

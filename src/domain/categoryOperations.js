@@ -5,6 +5,29 @@
  */
 
 /**
+ * カテゴリのorder値を交換
+ *
+ * @param {string} id1 - カテゴリID 1
+ * @param {string} id2 - カテゴリID 2
+ * @param {Array} allCategories - 全カテゴリ配列
+ * @param {Function} updateCategory - カテゴリ更新関数
+ */
+export function swapCategoryOrder(id1, id2, allCategories, updateCategory) {
+  const cat1 = allCategories.find(c => c.id === id1)
+  const cat2 = allCategories.find(c => c.id === id2)
+
+  if (!cat1 || !cat2) {
+    console.warn('カテゴリが見つかりません', { id1, id2 })
+    return
+  }
+
+  const tempOrder = cat1.order
+
+  updateCategory({ ...cat1, order: cat2.order })
+  updateCategory({ ...cat2, order: tempOrder })
+}
+
+/**
  * カテゴリ削除の影響分析
  *
  * @param {string} categoryId - カテゴリID
@@ -74,15 +97,20 @@ export function buildCategoryDeletionMessage(impact) {
  *
  * @param {string} categoryId - カテゴリID
  * @param {Array} userEquipments - ユーザー装備配列
- * @param {Function} deleteEquipment - 装備削除関数
+ * @param {Function} setUserEquipments - 装備状態更新関数
+ * @param {Function} saveUserEquipments - 装備保存関数
  * @param {Function} deleteCategory - カテゴリ削除関数
  */
-export function executeCategoryDeletion(categoryId, userEquipments, deleteEquipment, deleteCategory) {
-  // カテゴリに含まれる装備を全て削除
-  const affectedEquipments = userEquipments.filter(eq => eq.categoryId === categoryId)
-  affectedEquipments.forEach(eq => {
-    deleteEquipment(eq.id)
-  })
+export function executeCategoryDeletion(categoryId, userEquipments, setUserEquipments, saveUserEquipments, deleteCategory) {
+  // カテゴリに含まれる装備IDを収集
+  const equipmentIdsToDelete = userEquipments
+    .filter(eq => eq.categoryId === categoryId)
+    .map(eq => eq.id)
+
+  // 一括で装備を削除（フィルタリングして残すべき装備のみ保持）
+  const updatedEquipments = userEquipments.filter(eq => !equipmentIdsToDelete.includes(eq.id))
+  setUserEquipments(updatedEquipments)
+  saveUserEquipments(updatedEquipments)
 
   // カテゴリを削除
   deleteCategory(categoryId)
