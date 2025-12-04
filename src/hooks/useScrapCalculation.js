@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { calculateScrapList } from '../utils/calculateScrapList.js';
+import { calculateScrapList } from '../domain/scrapCalculation.js';
 import { logError, logInfo } from '../utils/logger.js';
 
 /**
