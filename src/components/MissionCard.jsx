@@ -1,4 +1,4 @@
-import { Trash2, Target } from 'lucide-react'
+import { Trash2, Target, Edit2 } from 'lucide-react'
 import { TARGET_TYPE } from '../types/schema'
 
 const MissionCard = ({
@@ -9,7 +9,8 @@ const MissionCard = ({
   isBaseMission = false,
   isDisabled = false,
   onToggle,
-  onDelete
+  onDelete,
+  onEdit
 }) => {
   const isUserDefined = mission.id.startsWith('u_')
 
@@ -64,17 +65,30 @@ const MissionCard = ({
           </div>
         </div>
 
-        {/* ユーザー定義削除ボタン */}
+        {/* ユーザー定義の編集・削除ボタン */}
         {isUserDefined && (
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              onDelete(mission.id)
-            }}
-            className="text-slate-300 hover:text-red-500 p-1"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          <div className="flex gap-1">
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                onEdit(mission)
+              }}
+              className="text-slate-300 hover:text-blue-500 p-1"
+              title="編集"
+            >
+              <Edit2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                onDelete(mission.id)
+              }}
+              className="text-slate-300 hover:text-red-500 p-1"
+              title="削除"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
         )}
       </div>
     </label>

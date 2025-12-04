@@ -58,6 +58,7 @@ function App() {
     crudError: missionsCrudError,
     corruptedItems: corruptedMissions,
     addUserMission,
+    updateUserMission,
     deleteUserMission,
     getNextOrder: getNextMissionOrder
   } = useMissions()
@@ -92,6 +93,7 @@ function App() {
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
+  const [editingMission, setEditingMission] = useState(null) // 編集中の任務
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
 
   // フィルタリング
@@ -174,6 +176,27 @@ function App() {
     }
     addUserMission(newMission)
     setActiveModal(null)
+  }
+
+  const handleEditMission = (mission) => {
+    setEditingMission(mission)
+    setActiveModal('mission')
+  }
+
+  const handleSaveMission = (data) => {
+    if (data.id) {
+      // 編集モード: 既存の任務を更新
+      updateUserMission(data.id, data)
+    } else {
+      // 追加モード: 新規任務を追加
+      const newMission = {
+        ...data,
+        id: generateMissionId() // dataを先に展開してからidで上書き
+      }
+      addUserMission(newMission)
+    }
+    setActiveModal(null)
+    setEditingMission(null)
   }
 
   const handleDeleteMission = (id) => {
@@ -282,6 +305,7 @@ function App() {
             isBaseMission={isBaseMission}
             onToggle={toggleMission}
             onDelete={handleDeleteMission}
+            onEdit={handleEditMission}
           />
         )}
       </div>
@@ -310,17 +334,24 @@ function App() {
 
       <Modal
         isOpen={activeModal === 'mission'}
-        title="任務を追加"
-        onClose={() => setActiveModal(null)}
+        title={editingMission ? '任務を編集' : '任務を追加'}
+        onClose={() => {
+          setActiveModal(null)
+          setEditingMission(null)
+        }}
       >
         <MissionModal
+          editingMission={editingMission}
           equipments={equipments}
           categories={categories}
           missions={missions}
           getCategoryName={getCategoryName}
           getNextOrder={getNextMissionOrder}
-          onSave={handleAddMission}
-          onCancel={() => setActiveModal(null)}
+          onSave={handleSaveMission}
+          onCancel={() => {
+            setActiveModal(null)
+            setEditingMission(null)
+          }}
         />
       </Modal>
 

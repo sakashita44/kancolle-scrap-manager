@@ -9,7 +9,8 @@ const MissionList = ({
   selectedCount,
   isBaseMission,
   onToggle,
-  onDelete
+  onDelete,
+  onEdit
 }) => {
   const isMaxSelected = selectedCount >= LIMITS.SELECTED_MISSIONS_MAX
   if (missions.length === 0) {
@@ -37,6 +38,7 @@ const MissionList = ({
             isDisabled={isDisabled}
             onToggle={onToggle}
             onDelete={onDelete}
+            onEdit={onEdit}
           />
         )
       })}
