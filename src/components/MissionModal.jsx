@@ -105,6 +105,7 @@ const MissionModal = ({ equipments, categories, missions, getCategoryName, getNe
         const equipment = equipments.find(e => e.id === req.targetId)
         const targetType = equipment?.type === 'category' ? TARGET_TYPE.CATEGORY : TARGET_TYPE.ITEM
         return {
+          id: req.id,
           targetId: req.targetId,
           targetType,
           count: parseInt(req.count)
