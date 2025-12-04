@@ -414,7 +414,32 @@ DailyやWeekly（あるいはMonthly...）を複数回実行することで、�
 
 * **Priority**: P2
 * **実装内容**: 既存任務の編集モーダル、MissionCardに編集ボタン追加
-* **影響範囲**: `src/components/MissionModal.jsx`, `src/components/MissionCard.jsx`, `src/App.jsx`
+* **影響範囲**: `src/components/MissionModal.jsx`, `src/components/MissionCard.jsx`, `src/components/MissionList.jsx`, `src/App.jsx`
+* **ステータス**: 完了 (2025-12-05)
+
+**実装詳細**:
+
+1. **MissionModalの編集モード対応**:
+   - `editingMission`プロップを追加（編集対象の任務、追加時はnull）
+   - 編集時は既存の任務データを初期値として設定
+   - 保存時に`id`と`order`を保持（編集時は既存値、追加時は新規生成）
+   - ボタンテキストを「追加」「更新」に切り替え
+
+2. **MissionCardの編集ボタン追加**:
+   - ユーザー定義任務に編集ボタンを追加（Edit2アイコン）
+   - 編集ボタンと削除ボタンを横並びで配置
+   - 編集ボタンクリック時に`onEdit(mission)`を呼び出し
+
+3. **App.jxの編集ロジック実装**:
+   - `updateUserMission`を`useMissions`フックから取得
+   - `editingMission`ステートを追加（編集中の任務を管理）
+   - `handleEditMission`: 編集対象の任務を設定してモーダルを開く
+   - `handleSaveMission`: 追加・編集を統合処理（`data.id`の有無で判定）
+   - モーダルを閉じる際に`editingMission`をリセット
+   - `MissionList`に`onEdit`プロップを渡す
+
+4. **MissionListのプロップス追加**:
+   - `onEdit`プロップを追加し、`MissionCard`に渡す
 
 #### #12: インポート/エクスポート処理
 
@@ -503,7 +528,8 @@ DailyやWeekly（あるいはMonthly...）を複数回実行することで、�
   - Issue #76: ベース任務と補助任務の分離 - 完了
 * ⏳ **Phase 4**: バグ修正・小規模改善 - 一部完了
   - Issue #72: 完了
-  - その他（#73, #12, #43, #11, #10, #9, #78, #100）: 未着手
+  - Issue #73: 完了
+  - その他（#12, #43, #11, #10, #9, #78, #100）: 未着手
 
 ### 次のステップ
 
@@ -511,7 +537,7 @@ Phase 3 が完了したため、v2.0.0 のコア機能が完成した。次は P
 
 **推奨実装順序**:
 
-1. **Issue #73**: 任務編集機能（P2）- 基本機能の拡充
+1. ~~**Issue #73**: 任務編集機能（P2）- 基本機能の拡充~~ ✅ 完了
 2. **Issue #12**: インポート/エクスポート（P2）- データ管理機能の強化
 3. **Issue #100**: データ初期化機能（P2）- データ管理機能の強化
 4. **Issue #9**: プライベートモード検出（P2）- エラー処理の強化

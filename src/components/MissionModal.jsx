@@ -4,13 +4,26 @@ import { PERIOD, LIMITS, TARGET_TYPE } from '../types/schema'
 import { validateName } from '../utils/validation'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
-const MissionModal = ({ equipments, categories, missions, getCategoryName, getNextOrder, onSave, onCancel }) => {
-  const [name, setName] = useState('')
-  const [period, setPeriod] = useState('Weekly')
+const MissionModal = ({
+  editingMission = null, // 編集対象の任務（追加時はnull）
+  equipments,
+  categories,
+  missions,
+  getCategoryName,
+  getNextOrder,
+  onSave,
+  onCancel
+}) => {
+  const isEditMode = editingMission !== null
+
+  const [name, setName] = useState(editingMission?.name || '')
+  const [period, setPeriod] = useState(editingMission?.period || 'Weekly')
   // 複数の要求装備を管理（最初の1枠は必須）
-  const [reqs, setReqs] = useState([
-    { id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 }
-  ])
+  const [reqs, setReqs] = useState(
+    editingMission?.reqs?.length > 0
+      ? editingMission.reqs.map(req => ({ ...req, id: crypto.randomUUID() }))
+      : [{ id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 }]
+  )
 
   // 装備追加
   const addReq = () => {
@@ -99,6 +112,7 @@ const MissionModal = ({ equipments, categories, missions, getCategoryName, getNe
     if (!isFormValid) return
     // 複数の装備要求に対応（targetTypeを自動判定）
     onSave({
+      id: isEditMode ? editingMission.id : undefined, // 編集時は既存ID、追加時は未定義
       name,
       period,
       reqs: reqs.map(req => {
@@ -111,7 +125,7 @@ const MissionModal = ({ equipments, categories, missions, getCategoryName, getNe
           count: parseInt(req.count)
         }
       }),
-      order: getNextOrder()
+      order: isEditMode ? editingMission.order : getNextOrder() // 編集時は既存order、追加時は新規order
     })
   }
 
@@ -228,7 +242,7 @@ const MissionModal = ({ equipments, categories, missions, getCategoryName, getNe
               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
           }`}
         >
-          追加
+          {isEditMode ? '更新' : '追加'}
         </button>
       </div>
     </form>
