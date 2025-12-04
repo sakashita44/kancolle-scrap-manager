@@ -74,20 +74,22 @@ export function useSelectedMissions() {
   // 任務の選択状態をトグル
   const toggleMission = useCallback((missionId) => {
     setSelectedMissionIds((prev) => {
+      // 選択解除
       if (prev.includes(missionId)) {
-        // 選択解除
         return prev.filter((id) => id !== missionId);
-      } else {
-        // 選択
-        if (prev.length >= LIMITS.SELECTED_MISSIONS_MAX) {
-          logWarning('Maximum missions can be selected', {
-            function: 'useSelectedMissions.toggleMission',
-            maxSelections: LIMITS.SELECTED_MISSIONS_MAX,
-          });
-          return prev;
-        }
-        return [...prev, missionId];
       }
+
+      // 最大数チェック
+      if (prev.length >= LIMITS.SELECTED_MISSIONS_MAX) {
+        logWarning('Maximum missions can be selected', {
+          function: 'useSelectedMissions.toggleMission',
+          maxSelections: LIMITS.SELECTED_MISSIONS_MAX,
+        });
+        return prev;
+      }
+
+      // 選択
+      return [...prev, missionId];
     });
   }, []);
 

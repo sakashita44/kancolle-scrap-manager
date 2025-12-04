@@ -111,7 +111,10 @@ Issue74実装後、責務分離が曖昧になった点を調査し、複数の�
 | Issue | タイトル | 優先度 | 説明 | ステータス |
 |:------|:---------|:-------|:-----|:-----------|
 | [#80](https://github.com/sakashita44/kancolle-scrap-manager/issues/80) | データ変換層の導入によるコード責務の明確化 | 高 | 永続化形式とランタイム形式の変換を専用層に集約 | ✅ 完了 |
-| [#83](https://github.com/sakashita44/kancolle-scrap-manager/issues/83) | App.jxのビジネスロジックをドメイン層に分離 | 中 | カテゴリ削除などのビジネスロジックをドメイン層に移動 | 未着手 |
+| [#83](https://github.com/sakashita44/kancolle-scrap-manager/issues/83) | App.jxのビジネスロジックをドメイン層に分離 | 中 | カテゴリ削除などのビジネスロジックをドメイン層に移動 | ✅ 完了 |
+| [#89](https://github.com/sakashita44/kancolle-scrap-manager/issues/89) | ID Map生成ユーティリティの作成 | 中 | Map生成パターンを共通化 | 未着手 |
+| [#90](https://github.com/sakashita44/kancolle-scrap-manager/issues/90) | useSelectedMissionsのロジック簡素化 | 中 | toggleMissionの重複ロジックを削減 | 未着手 |
+| [#91](https://github.com/sakashita44/kancolle-scrap-manager/issues/91) | 小規模リファクタリングの実施 | 低 | useMemo最適化、フィルタ統合など | 未着手 |
 | [#84](https://github.com/sakashita44/kancolle-scrap-manager/issues/84) | ユーザーデータ管理フックの統合 | 低 | useUserDataLoaderとuseUserDataCRUDを1つに統合 | 未着手 |
 | [#85](https://github.com/sakashita44/kancolle-scrap-manager/issues/85) | エラーハンドリングの統一と一元管理 | 低 | 全てのエラーを統一された方法で管理 | 未着手 |
 | [#86](https://github.com/sakashita44/kancolle-scrap-manager/issues/86) | validation.jsの重複パターンをスキーマベースに共通化 | 低 | スキーマ定義ベースの汎用バリデーション関数を作成 | 未着手 |
@@ -119,8 +122,9 @@ Issue74実装後、責務分離が曖昧になった点を調査し、複数の�
 **推奨実装順序**:
 
 1. **最優先**: Issue #80（データ変換層の導入） - 他のリファクタの基盤となる ✅ 完了
-2. **次点**: Issue #83（App.jxのビジネスロジック分離） - 機能追加前に対処推奨
-3. **その後**: Issue #84, #85, #86 - 必要に応じて実装
+2. **次点**: Issue #83（App.jxのビジネスロジック分離） - 機能追加前に対処推奨 ✅ 完了
+3. **その後**: Issue #89, #90（中優先度、即効性あり）
+4. **その後**: Issue #91, #84, #85, #86 - 必要に応じて実装
 
 ### Issue #80: データ変換層の導入 (2025-12-03)
 
@@ -149,6 +153,36 @@ Issue74実装後、責務分離が曖昧になった点を調査し、複数の�
 - 保守性とテスタビリティの向上
 
 **ステータス**: 完了 (2025-12-03)
+
+### Issue #83: App.jxのビジネスロジックをドメイン層に分離 (2025-12-03)
+
+**実装内容**:
+
+3段階のステップでビジネスロジックをドメイン層に分離:
+
+**Step 1: カテゴリ操作の分離**
+- `src/domain/categoryOperations.js` を新規作成
+- `analyzeCategoryDeletionImpact()`: カテゴリ削除の影響分析
+- `buildCategoryDeletionMessage()`: 確認メッセージ構築
+- `executeCategoryDeletion()`: カスケード削除実行
+- App.jxの`handleDeleteCategory`: 42行 → 9行に削減
+
+**Step 2: 計算ロジックの移行**
+- `src/utils/calculateScrapList.js` → `src/domain/scrapCalculation.js` に移動
+- 純粋なビジネスロジックをutilsからdomainに移行
+
+**Step 3: 装備操作の移行**
+- `src/domain/equipmentOperations.js` を新規作成
+- `swapEquipmentOrder()`: 装備のorder値交換ロジック
+- App.jxの`handleSwapEquipmentOrder`: 11行 → 3行に削減
+
+**効果**:
+- App.jxの行数削減: 約50行
+- 責務の明確化: UI層/ドメイン層/utils層の役割が明確に
+- テスタビリティ向上: ドメインロジックを独立してテスト可能
+
+**ステータス**: 完了 (2025-12-03)
+- PR #92: マージ済み
 
 ## Phase 2: 計算ロジック拡張
 
