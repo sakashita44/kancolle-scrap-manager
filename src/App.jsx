@@ -5,6 +5,7 @@ import { useCategories } from './hooks/useCategories'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapCalculation } from './hooks/useScrapCalculation'
 import { useMissionFilter } from './hooks/useMissionFilter'
+import { useAboutModal } from './hooks/useAboutModal'
 import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
 import {
@@ -58,11 +59,11 @@ function App() {
   } = useMissions()
   const { selectedMissionIds, selectedCount, toggleMission, clearSelection } = useSelectedMissions()
   const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipmentMap, categoryMap)
+  const { isAboutModalOpen, openAboutModal, closeAboutModal } = useAboutModal()
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
-  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
 
   // 選択中の任務一覧を取得
   const selectedMissions = useMemo(() =>
@@ -83,9 +84,6 @@ function App() {
   // エラー状態の統合
   const errorMessage = equipmentsCrudError || missionsCrudError
 
-  const handleAboutOpen = () => {
-    setIsAboutModalOpen(true)
-  }
 
   const handleExport = () => {
     // TODO: issue #12で実装予定
@@ -186,7 +184,7 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans relative">
       <Header
-        onAboutOpen={handleAboutOpen}
+        onAboutOpen={openAboutModal}
         onExport={handleExport}
         onImport={handleImport}
       />
@@ -300,7 +298,7 @@ function App() {
 
       <AboutModal
         isOpen={isAboutModalOpen}
-        onClose={() => setIsAboutModalOpen(false)}
+        onClose={closeAboutModal}
       />
     </div>
   )
