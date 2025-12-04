@@ -170,17 +170,13 @@ export function validateEquipment(equipment) {
   if (equipment.name && equipment.name.length > LIMITS.EQUIPMENT_NAME_MAX) {
     errors.push(`name は${LIMITS.EQUIPMENT_NAME_MAX}文字以内にしてください`);
   }
-  if (equipment.categoryId && equipment.categoryId.length > LIMITS.CATEGORY_NAME_MAX) {
-    errors.push(`categoryId は${LIMITS.CATEGORY_NAME_MAX}文字以内にしてください`);
-  }
+  // categoryId は ID なので長さ制限チェックは不要（プレフィックスの形式チェックで十分）
 
   // XSS対策チェック
   if (equipment.name && !isSafeString(equipment.name)) {
     errors.push('name にHTMLタグやスクリプトは使用できません');
   }
-  if (equipment.categoryId && !isSafeString(equipment.categoryId)) {
-    errors.push('categoryId にHTMLタグやスクリプトは使用できません');
-  }
+  // categoryId は ID なので XSS チェックは不要
 
   // order値チェック
   if (typeof equipment.order === 'number') {
