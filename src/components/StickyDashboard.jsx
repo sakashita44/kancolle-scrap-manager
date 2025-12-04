@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Trash2, ChevronUp, ChevronDown } from 'lucide-react'
 import { groupScrapListByCategory } from '../utils/scrapListFormatters'
+import { useToggle } from '../hooks/useToggle'
 
 /**
  * 廃棄リストを表示するスティッキーダッシュボード
@@ -8,7 +9,7 @@ import { groupScrapListByCategory } from '../utils/scrapListFormatters'
  * @param {import('../types/schema').ScrapListItem[]} props.scrapList - 廃棄リスト（基本形式）
  */
 const StickyDashboard = ({ scrapList }) => {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, { toggle }] = useToggle(true)
 
   // 廃棄リストをカテゴリ別にグループ化
   const categoryGroups = useMemo(
@@ -21,7 +22,7 @@ const StickyDashboard = ({ scrapList }) => {
       <div className="max-w-3xl mx-auto px-4 py-2">
         <div
           className="flex items-center gap-2 cursor-pointer py-1 select-none"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggle}
         >
           <Trash2 className="w-5 h-5 text-red-500" />
           <h2 className="font-bold text-slate-700">廃棄リスト</h2>

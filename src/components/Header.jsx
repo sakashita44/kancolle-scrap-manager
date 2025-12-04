@@ -1,8 +1,9 @@
 import { Anchor, Settings, Download, Upload, Info, ExternalLink } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
+import { useToggle } from '../hooks/useToggle'
 
 const Header = ({ onAboutOpen, onExport, onImport }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, { toggle, setFalse }] = useToggle(false)
   const menuRef = useRef(null)
   const buttonRef = useRef(null)
 
@@ -15,13 +16,13 @@ const Header = ({ onAboutOpen, onExport, onImport }) => {
         buttonRef.current &&
         !buttonRef.current.contains(event.target)
       ) {
-        setIsMenuOpen(false)
+        setFalse()
       }
     }
 
     const handleEscape = (event) => {
       if (event.key === 'Escape') {
-        setIsMenuOpen(false)
+        setFalse()
       }
     }
 
@@ -34,10 +35,10 @@ const Header = ({ onAboutOpen, onExport, onImport }) => {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
     }
-  }, [isMenuOpen])
+  }, [isMenuOpen, setFalse])
 
   const handleMenuItemClick = (action) => {
-    setIsMenuOpen(false)
+    setFalse()
     action()
   }
 
@@ -55,7 +56,7 @@ const Header = ({ onAboutOpen, onExport, onImport }) => {
         <div className="relative">
           <button
             ref={buttonRef}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={toggle}
             className="p-2 rounded-full hover:bg-slate-700 transition-colors"
             title="設定・データ管理"
           >
