@@ -7,6 +7,7 @@ const MissionList = ({
   categoryMap,
   selectedMissionIds,
   selectedCount,
+  isBaseMission,
   onToggle,
   onDelete
 }) => {
@@ -23,6 +24,7 @@ const MissionList = ({
     <div className="space-y-2">
       {missions.map(mission => {
         const isSelected = selectedMissionIds.includes(mission.id)
+        const isMissionBaseMission = isBaseMission(mission.id)
         const isDisabled = isMaxSelected && !isSelected
         return (
           <MissionCard
@@ -31,6 +33,7 @@ const MissionList = ({
             equipmentMap={equipmentMap}
             categoryMap={categoryMap}
             isSelected={isSelected}
+            isBaseMission={isMissionBaseMission}
             isDisabled={isDisabled}
             onToggle={onToggle}
             onDelete={onDelete}
