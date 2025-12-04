@@ -22,22 +22,27 @@ export function useSelectedMissions() {
     baseMission: null,
     auxiliaryMissions: [],
   });
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // 初回マウント時にSessionStorageから読込
   useEffect(() => {
     try {
       const loaded = loadSelectedMissions();
       setSelectedMissions(loaded);
+      setIsInitialized(true);
     } catch (err) {
       logError('Failed to load selected missions', {
         function: 'useSelectedMissions',
         error: err,
       });
+      setIsInitialized(true);
     }
   }, []);
 
-  // 選択状態が変更されたらSessionStorageに保存
+  // 選択状態が変更されたらSessionStorageに保存（初回読み込み完了後のみ）
   useEffect(() => {
+    if (!isInitialized) return;
+
     try {
       saveSelectedMissions(selectedMissions);
     } catch (err) {
@@ -46,7 +51,7 @@ export function useSelectedMissions() {
         error: err,
       });
     }
-  }, [selectedMissions]);
+  }, [selectedMissions, isInitialized]);
 
   // ベース任務を選択（既存のベース任務を置き換え）
   const selectBaseMission = useCallback((missionId) => {
