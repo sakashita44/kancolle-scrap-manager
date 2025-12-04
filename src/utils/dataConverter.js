@@ -5,6 +5,7 @@
  */
 
 import { EQUIPMENT_TYPE } from '../types/schema.js';
+import { createIdMap } from './dataManagement.js';
 
 /**
  * 永続化形式 → ランタイム形式: カテゴリ
@@ -79,11 +80,10 @@ export function addEquipmentType(equipments) {
  * @returns {Object} categoryMap, categoryNameMap, categoryIds を含むオブジェクト
  */
 export function createCategoryMaps(categories) {
-  const categoryMap = new Map();
+  const categoryMap = createIdMap(categories);
   const categoryNameMap = new Map();
 
   categories.forEach((cat) => {
-    categoryMap.set(cat.id, cat);
     categoryNameMap.set(cat.id, cat.name);
   });
 
@@ -102,7 +102,7 @@ export function createCategoryMaps(categories) {
  * @returns {Map} equipmentMap
  */
 export function createEquipmentMap(equipments) {
-  return new Map(equipments.map(eq => [eq.id, eq]));
+  return createIdMap(equipments);
 }
 
 /**
