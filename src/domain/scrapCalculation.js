@@ -1,7 +1,7 @@
 /**
  * 廃棄リスト計算ロジック
  * 選択された任務から必要最小限の廃棄装備リストを算出
- * @module utils/calculateScrapList
+ * @module domain/scrapCalculation
  */
 
 import { EQUIPMENT_TYPE, LIMITS, TARGET_TYPE } from '../types/schema.js';

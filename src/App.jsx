@@ -12,6 +12,7 @@ import {
   buildCategoryDeletionMessage,
   executeCategoryDeletion
 } from './domain/categoryOperations'
+import { swapEquipmentOrder } from './domain/equipmentOperations'
 import Header from './components/Header'
 import StickyDashboard from './components/StickyDashboard'
 import SelectedMissionsSummary from './components/SelectedMissionsSummary'
@@ -116,15 +117,7 @@ function App() {
   }
 
   const handleSwapEquipmentOrder = (id1, id2) => {
-    // 2つの装備のorder値を一度に交換する
-    const eq1 = userEquipments.find(e => e.id === id1)
-    const eq2 = userEquipments.find(e => e.id === id2)
-
-    if (!eq1 || !eq2) return
-
-    const tempOrder = eq1.order
-    updateUserEquipment(id1, { ...eq1, order: eq2.order })
-    updateUserEquipment(id2, { ...eq2, order: tempOrder })
+    swapEquipmentOrder(id1, id2, userEquipments, updateUserEquipment)
   }
 
   const handleDeleteEquipment = (id) => {
