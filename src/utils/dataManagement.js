@@ -3,6 +3,18 @@
  */
 
 /**
+ * ID→オブジェクトのMapを作成する
+ * @param {Array} items - id プロパティを持つオブジェクトの配列
+ * @returns {Map} id → オブジェクトのMap
+ */
+export function createIdMap(items) {
+  if (!Array.isArray(items)) {
+    return new Map();
+  }
+  return new Map(items.map(item => [item.id, item]));
+}
+
+/**
  * 配列内の最大order値+1を取得する
  * @param {Array} items - order値を持つオブジェクトの配列
  * @returns {number} 次に使用するorder値（配列が空の場合は0）
