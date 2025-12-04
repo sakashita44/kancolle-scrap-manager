@@ -3,7 +3,7 @@ import { useEquipments } from './hooks/useEquipments'
 import { useMissions } from './hooks/useMissions'
 import { useCategories } from './hooks/useCategories'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
-import { useScrapCalculation } from './hooks/useScrapCalculation'
+import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
 import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
@@ -61,8 +61,33 @@ function App() {
     deleteUserMission,
     getNextOrder: getNextMissionOrder
   } = useMissions()
-  const { selectedMissions, selectedMissionIds, selectedCount, toggleMission, updateMissionCount, clearSelection } = useSelectedMissions()
-  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissions, missions, equipmentMap, categoryMap)
+  const {
+    selectedMissions,
+    baseMission,
+    auxiliaryMissions,
+    selectedCount,
+    selectBaseMission,
+    deselectBaseMission,
+    updateBaseMissionCount,
+    selectAuxiliaryMission,
+    deselectAuxiliaryMission,
+    updateAuxiliaryMissionCount,
+    toggleMission,
+    clearSelection,
+    isSelected,
+    isBaseMission,
+    isAuxiliaryMission,
+    getAllSelectedIds,
+    getAllSelectedMissions
+  } = useSelectedMissions()
+  const {
+    baseRequirements,
+    auxiliaryScrapList,
+    allScrapList,
+    comparison,
+    hasBaseMission,
+    hasAuxiliaryMissions
+  } = useScrapComparison(selectedMissions, missions, equipmentMap, categoryMap)
   const { isAboutModalOpen, openAboutModal, closeAboutModal } = useAboutModal()
 
   const [errors, setErrors] = useState([])
@@ -207,17 +232,24 @@ function App() {
       />
 
       <StickyDashboard
-        scrapList={scrapList}
+        scrapList={allScrapList}
+        comparison={comparison}
+        hasBaseMission={hasBaseMission}
       />
 
       <SelectedMissionsSummary
-        selectedMissions={selectedMissions}
+        baseMission={baseMission}
+        auxiliaryMissions={auxiliaryMissions}
         missions={missions}
         equipmentMap={equipmentMap}
         categoryMap={categoryMap}
         selectedCount={selectedCount}
+        onSelectBaseMission={selectBaseMission}
+        onDeselectBaseMission={deselectBaseMission}
+        onDeselectAuxiliaryMission={deselectAuxiliaryMission}
         onToggleMission={toggleMission}
-        onUpdateMissionCount={updateMissionCount}
+        onUpdateBaseMissionCount={updateBaseMissionCount}
+        onUpdateAuxiliaryMissionCount={updateAuxiliaryMissionCount}
         onClearSelection={clearSelection}
       />
 
@@ -245,8 +277,9 @@ function App() {
             missions={filteredMissions}
             equipmentMap={equipmentMap}
             categoryMap={categoryMap}
-            selectedMissionIds={selectedMissionIds}
+            selectedMissionIds={getAllSelectedIds()}
             selectedCount={selectedCount}
+            isBaseMission={isBaseMission}
             onToggle={toggleMission}
             onDelete={handleDeleteMission}
           />

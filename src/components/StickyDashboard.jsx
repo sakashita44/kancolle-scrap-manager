@@ -1,14 +1,16 @@
 import { useMemo } from 'react'
-import { Trash2, ChevronUp, ChevronDown } from 'lucide-react'
+import { Trash2, ChevronUp, ChevronDown, TrendingUp, TrendingDown, Check, AlertTriangle } from 'lucide-react'
 import { groupScrapListByCategory } from '../utils/scrapListFormatters'
 import { useToggle } from '../hooks/useToggle'
 
 /**
- * 廃棄リストを表示するスティッキーダッシュボード
+ * 廃棄リストとベース任務達成状況を表示するスティッキーダッシュボード
  * @param {Object} props
  * @param {import('../types/schema').ScrapListItem[]} props.scrapList - 廃棄リスト（基本形式）
+ * @param {Array} props.comparison - 過不足比較データ
+ * @param {boolean} props.hasBaseMission - ベース任務が選択されているか
  */
-const StickyDashboard = ({ scrapList }) => {
+const StickyDashboard = ({ scrapList, comparison, hasBaseMission }) => {
   const [isOpen, { toggle }] = useToggle(true)
 
   // 廃棄リストをカテゴリ別にグループ化
@@ -36,7 +38,8 @@ const StickyDashboard = ({ scrapList }) => {
 
         {/* 開閉するコンテンツエリア */}
         {isOpen && (
-          <div className="mt-2 pb-2 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="mt-2 pb-2 animate-in fade-in slide-in-from-top-2 duration-200 space-y-3">
+            {/* 廃棄リスト */}
             {categoryGroups.length === 0 ? (
               <div className="text-center py-4 text-slate-400 text-sm bg-slate-50 rounded-lg border border-dashed border-slate-300">
                 下の一覧から任務を選択してください
@@ -67,6 +70,107 @@ const StickyDashboard = ({ scrapList }) => {
                     </ul>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* ベース任務達成状況 */}
+            {hasBaseMission && comparison && comparison.length > 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <h3 className="font-bold text-slate-700 mb-2 flex items-center gap-2 text-sm">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  ベース任務の達成状況
+                </h3>
+
+                <div className="space-y-2">
+                  {comparison.map((item, index) => {
+                    const isInsufficient = item.status === 'insufficient'
+                    const isSufficient = item.difference === 0
+                    const isNotRequiredByBase = item.baseCount === 0
+
+                    return (
+                      <div
+                        key={index}
+                        className={`p-2 rounded border text-xs ${
+                          isNotRequiredByBase
+                            ? 'bg-slate-100 border-slate-300'
+                            : isInsufficient
+                            ? 'bg-red-50 border-red-200'
+                            : isSufficient
+                            ? 'bg-green-50 border-green-200'
+                            : 'bg-blue-50 border-blue-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-1.5">
+                              {!isNotRequiredByBase && isInsufficient && <TrendingDown className="w-3.5 h-3.5 text-red-600" />}
+                              {!isNotRequiredByBase && isSufficient && <Check className="w-3.5 h-3.5 text-green-600" />}
+                              {!isNotRequiredByBase && !isInsufficient && !isSufficient && <TrendingUp className="w-3.5 h-3.5 text-blue-600" />}
+                              {isNotRequiredByBase && <TrendingUp className="w-3.5 h-3.5 text-slate-400" />}
+                              <span className={`font-semibold ${isNotRequiredByBase ? 'text-slate-500' : 'text-slate-700'}`}>
+                                {item.equipmentName}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="text-right flex items-center gap-2">
+                            <div className="text-xs">
+                              <span className="text-slate-500">ベース </span>
+                              <span className={`font-semibold ${isNotRequiredByBase ? 'text-slate-400' : 'text-slate-700'}`}>{item.baseCount}</span>
+                            </div>
+                            <div className="text-xs">
+                              <span className="text-slate-500">補助 </span>
+                              <span className={`font-semibold ${isNotRequiredByBase ? 'text-slate-400' : 'text-slate-700'}`}>{item.auxiliaryCount}</span>
+                            </div>
+                            <div className="text-xs min-w-[60px] text-right">
+                              <span className={`font-medium ${
+                                isNotRequiredByBase ? 'text-slate-500' :
+                                isInsufficient ? 'text-red-600' : 'text-blue-600'
+                              }`}>
+                                {isInsufficient ? '不足' : '余剰'}{' '}
+                              </span>
+                              <span className={`font-bold ${
+                                isNotRequiredByBase ? 'text-slate-600' :
+                                isInsufficient ? 'text-red-700' : 'text-blue-700'
+                              }`}>
+                                {item.difference > 0 ? '+' : ''}{item.difference}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* サマリー */}
+                <div className="mt-2 pt-2 border-t border-amber-200">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-600">全{comparison.length}種類</span>
+                    <div className="flex gap-3">
+                      {comparison.filter((i) => i.status === 'insufficient').length > 0 && (
+                        <span className="text-red-600">
+                          不足: {comparison.filter((i) => i.status === 'insufficient').length}種
+                        </span>
+                      )}
+                      {comparison.filter((i) => i.difference === 0).length > 0 && (
+                        <span className="text-green-600">
+                          過不足なし: {comparison.filter((i) => i.difference === 0).length}種
+                        </span>
+                      )}
+                      {comparison.filter((i) => i.difference > 0 && i.status !== 'excess').length > 0 && (
+                        <span className="text-blue-600">
+                          余剰: {comparison.filter((i) => i.difference > 0 && i.status !== 'excess').length}種
+                        </span>
+                      )}
+                      {comparison.filter((i) => i.status === 'excess').length > 0 && (
+                        <span className="text-slate-500">
+                          ベース不要: {comparison.filter((i) => i.status === 'excess').length}種
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>

@@ -13,54 +13,77 @@ const { getItem, setItem, removeItem } = createStorageHelper(sessionStorage, 'Se
 
 /**
  * 選択中の任務リストを保存
- * @param {Array<{missionId: string, count: number}>} selectedMissions - 任務IDと実行回数の配列（最大8件）
+ * @param {{baseMission: {missionId: string, count: number} | null, auxiliaryMissions: Array<{missionId: string, count: number}>}} selectedMissions - ベース任務と補助任務（合計最大8件）
  * @throws {Error} 保存に失敗した場合
  */
 export function saveSelectedMissions(selectedMissions) {
   const data = {
     version: SCHEMA_VERSION,
-    selectedMissions: selectedMissions,
+    baseMission: selectedMissions.baseMission,
+    auxiliaryMissions: selectedMissions.auxiliaryMissions,
   };
   setItem(STORAGE_KEYS.SELECTED_MISSIONS, data);
+  const totalCount = (selectedMissions.baseMission ? 1 : 0) + selectedMissions.auxiliaryMissions.length;
   logInfo('Saved selected missions', {
     function: 'saveSelectedMissions',
-    count: selectedMissions.length,
+    totalCount,
+    baseCount: selectedMissions.baseMission ? 1 : 0,
+    auxiliaryCount: selectedMissions.auxiliaryMissions.length,
   });
 }
 
 /**
  * 選択中の任務リストを読込（マイグレーション対応）
- * @returns {Array<{missionId: string, count: number}>} 任務IDと実行回数の配列（存在しない場合は空配列）
+ * @returns {{baseMission: {missionId: string, count: number} | null, auxiliaryMissions: Array<{missionId: string, count: number}>}} ベース任務と補助任務（存在しない場合は空）
  */
 export function loadSelectedMissions() {
   const data = getItem(STORAGE_KEYS.SELECTED_MISSIONS);
   if (!data) {
     logInfo('No selected missions found', { function: 'loadSelectedMissions' });
-    return [];
+    return { baseMission: null, auxiliaryMissions: [] };
   }
 
-  // マイグレーション: 旧形式（string[]）から新形式（{missionId, count}[]）への変換
+  // マイグレーション1: 旧形式（string[]）から{missionId, count}[]への変換
   if (Array.isArray(data.selectedMissionIds)) {
-    logInfo('Migrating selected missions from old format', { function: 'loadSelectedMissions' });
-    const migrated = data.selectedMissionIds.map((id) => ({
-      missionId: id,
-      count: 1,
-    }));
+    logInfo('Migrating selected missions from v1 format (string[])', { function: 'loadSelectedMissions' });
+    const migrated = {
+      baseMission: null,
+      auxiliaryMissions: data.selectedMissionIds.map((id) => ({
+        missionId: id,
+        count: 1,
+      })),
+    };
     // 新形式で保存し直す
     saveSelectedMissions(migrated);
     return migrated;
   }
 
-  if (!data.selectedMissions) {
-    logInfo('No selected missions found', { function: 'loadSelectedMissions' });
-    return [];
+  // マイグレーション2: 旧形式（{missionId, count}[]）からベース/補助分離形式への変換
+  if (Array.isArray(data.selectedMissions)) {
+    logInfo('Migrating selected missions from v2 format ({missionId, count}[])', { function: 'loadSelectedMissions' });
+    const migrated = {
+      baseMission: null,
+      auxiliaryMissions: data.selectedMissions,
+    };
+    // 新形式で保存し直す
+    saveSelectedMissions(migrated);
+    return migrated;
   }
 
+  // 新形式の読み込み
+  const result = {
+    baseMission: data.baseMission || null,
+    auxiliaryMissions: data.auxiliaryMissions || [],
+  };
+
+  const totalCount = (result.baseMission ? 1 : 0) + result.auxiliaryMissions.length;
   logInfo('Loaded selected missions', {
     function: 'loadSelectedMissions',
-    count: data.selectedMissions.length,
+    totalCount,
+    baseCount: result.baseMission ? 1 : 0,
+    auxiliaryCount: result.auxiliaryMissions.length,
   });
-  return data.selectedMissions;
+  return result;
 }
 
 /**

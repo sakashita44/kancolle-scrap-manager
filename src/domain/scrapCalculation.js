@@ -8,7 +8,7 @@ import { EQUIPMENT_TYPE, LIMITS, TARGET_TYPE } from '../types/schema.js'
 import { WarningCollector } from '../utils/warningCollector.js'
 
 /**
- * 廃棄リストを計算
+ * 廃棄リストを計算（従来の計算ロジック、補助任務用）
  * @param {Array<{missionId: string, count: number}>} selectedMissions - 選択中の任務リスト（実行回数含む）
  * @param {Object[]} allMissions - 全任務データ
  * @param {Map} equipmentMap - 装備検索用Map（カテゴリ代表は含まない）
@@ -239,4 +239,164 @@ function generateScrapList(itemCountMap, categoryCountMap, equipmentMap, categor
   scrapList.sort((a, b) => a.category.localeCompare(b.category, 'ja'));
 
   return scrapList;
+}
+
+/**
+ * ベース任務と補助任務の過不足を計算
+ * @param {{baseMission: {missionId: string, count: number} | null, auxiliaryMissions: Array<{missionId: string, count: number}>}} selectedMissions - 選択中の任務（ベース/補助分離）
+ * @param {Object[]} allMissions - 全任務データ
+ * @param {Map} equipmentMap - 装備検索用Map（カテゴリ代表は含まない）
+ * @param {Map} categoryMap - カテゴリ検索用Map
+ * @returns {Object} { baseRequirements: ベース任務の必要数, auxiliaryScrapList: 補助任務の廃棄リスト, comparison: 過不足, warnings: 警告情報 }
+ */
+export function calculateScrapComparison(selectedMissions, allMissions, equipmentMap, categoryMap) {
+  const warnings = [];
+
+  // ベース任務がない場合
+  if (!selectedMissions.baseMission) {
+    // 補助任務のみの廃棄リストを計算
+    const auxiliaryResult = calculateScrapList(
+      selectedMissions.auxiliaryMissions,
+      allMissions,
+      equipmentMap,
+      categoryMap
+    );
+
+    return {
+      baseRequirements: [],
+      auxiliaryScrapList: auxiliaryResult.scrapList,
+      comparison: [],
+      warnings: auxiliaryResult.warnings,
+    };
+  }
+
+  // ベース任務の必要数を計算
+  const baseResult = calculateScrapList(
+    [selectedMissions.baseMission],
+    allMissions,
+    equipmentMap,
+    categoryMap
+  );
+
+  // 補助任務の廃棄リストを計算
+  const auxiliaryResult = calculateScrapList(
+    selectedMissions.auxiliaryMissions,
+    allMissions,
+    equipmentMap,
+    categoryMap
+  );
+
+  // 過不足を計算
+  const comparison = calculateDifference(
+    baseResult.scrapList,
+    auxiliaryResult.scrapList,
+    equipmentMap
+  );
+
+  // 警告をマージ
+  const allWarnings = [...baseResult.warnings, ...auxiliaryResult.warnings];
+
+  return {
+    baseRequirements: baseResult.scrapList,
+    auxiliaryScrapList: auxiliaryResult.scrapList,
+    comparison,
+    warnings: allWarnings,
+  };
+}
+
+/**
+ * ベース任務と補助任務の過不足を計算
+ * @private
+ * @param {Array} baseRequirements - ベース任務の必要数
+ * @param {Array} auxiliaryScrapList - 補助任務の廃棄リスト
+ * @param {Map} equipmentMap - 装備検索用Map
+ * @returns {Array} 過不足リスト
+ */
+function calculateDifference(baseRequirements, auxiliaryScrapList, equipmentMap) {
+  const comparison = [];
+
+  // ベース任務の各要求に対して、補助任務での廃棄数を比較
+  for (const baseReq of baseRequirements) {
+    // 同じ装備IDの補助任務廃棄数を検索
+    let auxiliaryCount = 0;
+
+    if (baseReq.type === EQUIPMENT_TYPE.ITEM) {
+      // Item要求の場合、同じ装備IDを探す
+      const auxItem = auxiliaryScrapList.find((aux) => aux.equipmentId === baseReq.equipmentId);
+      if (auxItem) {
+        auxiliaryCount = auxItem.count;
+      }
+    } else {
+      // Category要求の場合、同じカテゴリIDまたは同じカテゴリ内のアイテムの合計を計算
+      const categoryId = baseReq.equipmentId; // カテゴリ代表のequipmentIdはカテゴリID
+
+      // 同じカテゴリの代表を探す
+      const auxCategory = auxiliaryScrapList.find(
+        (aux) => aux.type === EQUIPMENT_TYPE.CATEGORY && aux.equipmentId === categoryId
+      );
+      if (auxCategory) {
+        auxiliaryCount += auxCategory.count;
+      }
+
+      // 同じカテゴリ内のItem要求の合計を加算
+      for (const auxItem of auxiliaryScrapList) {
+        if (auxItem.type === EQUIPMENT_TYPE.ITEM) {
+          const equipment = equipmentMap.get(auxItem.equipmentId);
+          if (equipment && equipment.categoryId === categoryId) {
+            auxiliaryCount += auxItem.count;
+          }
+        }
+      }
+    }
+
+    // 過不足を計算
+    const difference = auxiliaryCount - baseReq.count;
+
+    comparison.push({
+      equipmentId: baseReq.equipmentId,
+      equipmentName: baseReq.equipmentName,
+      category: baseReq.category,
+      type: baseReq.type,
+      baseCount: baseReq.count,
+      auxiliaryCount,
+      difference, // 正の値=過剰、負の値=不足
+      status: difference >= 0 ? 'sufficient' : 'insufficient',
+    });
+  }
+
+  // 補助任務にのみ存在する装備を追加（ベース任務にない装備）
+  for (const auxItem of auxiliaryScrapList) {
+    // ベース任務に同じ装備が存在するかチェック
+    const existsInBase = baseRequirements.some((baseReq) => {
+      if (baseReq.type === EQUIPMENT_TYPE.ITEM && auxItem.type === EQUIPMENT_TYPE.ITEM) {
+        return baseReq.equipmentId === auxItem.equipmentId;
+      }
+      if (baseReq.type === EQUIPMENT_TYPE.CATEGORY && auxItem.type === EQUIPMENT_TYPE.CATEGORY) {
+        return baseReq.equipmentId === auxItem.equipmentId;
+      }
+      if (baseReq.type === EQUIPMENT_TYPE.CATEGORY && auxItem.type === EQUIPMENT_TYPE.ITEM) {
+        const equipment = equipmentMap.get(auxItem.equipmentId);
+        return equipment && equipment.categoryId === baseReq.equipmentId;
+      }
+      return false;
+    });
+
+    if (!existsInBase) {
+      comparison.push({
+        equipmentId: auxItem.equipmentId,
+        equipmentName: auxItem.equipmentName,
+        category: auxItem.category,
+        type: auxItem.type,
+        baseCount: 0,
+        auxiliaryCount: auxItem.count,
+        difference: auxItem.count,
+        status: 'excess', // ベース任務には不要だが補助任務で廃棄される
+      });
+    }
+  }
+
+  // カテゴリ名でソート
+  comparison.sort((a, b) => a.category.localeCompare(b.category, 'ja'));
+
+  return comparison;
 }
