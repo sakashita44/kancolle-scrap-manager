@@ -8,6 +8,7 @@ import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
 import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
+import { saveUserEquipments } from './utils/localStorage'
 import {
   analyzeCategoryDeletionImpact,
   buildCategoryDeletionMessage,
@@ -49,7 +50,8 @@ function App() {
     corruptedItems: corruptedEquipments,
     addUserEquipment,
     updateUserEquipment,
-    deleteUserEquipment
+    deleteUserEquipment,
+    setUserEquipments
   } = useEquipments(allCategories, categoryMap)
   const {
     allMissions: missions,
@@ -172,7 +174,8 @@ function App() {
       executeCategoryDeletion(
         confirmDialog.id,
         userEquipments,
-        deleteUserEquipment,
+        setUserEquipments,
+        saveUserEquipments,
         deleteUserCategory
       )
     }

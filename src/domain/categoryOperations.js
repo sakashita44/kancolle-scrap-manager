@@ -97,15 +97,20 @@ export function buildCategoryDeletionMessage(impact) {
  *
  * @param {string} categoryId - カテゴリID
  * @param {Array} userEquipments - ユーザー装備配列
- * @param {Function} deleteEquipment - 装備削除関数
+ * @param {Function} setUserEquipments - 装備状態更新関数
+ * @param {Function} saveUserEquipments - 装備保存関数
  * @param {Function} deleteCategory - カテゴリ削除関数
  */
-export function executeCategoryDeletion(categoryId, userEquipments, deleteEquipment, deleteCategory) {
-  // カテゴリに含まれる装備を全て削除
-  const affectedEquipments = userEquipments.filter(eq => eq.categoryId === categoryId)
-  affectedEquipments.forEach(eq => {
-    deleteEquipment(eq.id)
-  })
+export function executeCategoryDeletion(categoryId, userEquipments, setUserEquipments, saveUserEquipments, deleteCategory) {
+  // カテゴリに含まれる装備IDを収集
+  const equipmentIdsToDelete = userEquipments
+    .filter(eq => eq.categoryId === categoryId)
+    .map(eq => eq.id)
+
+  // 一括で装備を削除（フィルタリングして残すべき装備のみ保持）
+  const updatedEquipments = userEquipments.filter(eq => !equipmentIdsToDelete.includes(eq.id))
+  setUserEquipments(updatedEquipments)
+  saveUserEquipments(updatedEquipments)
 
   // カテゴリを削除
   deleteCategory(categoryId)
