@@ -61,18 +61,13 @@ function App() {
     deleteUserMission,
     getNextOrder: getNextMissionOrder
   } = useMissions()
-  const { selectedMissionIds, selectedCount, toggleMission, clearSelection } = useSelectedMissions()
-  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissionIds, missions, equipmentMap, categoryMap)
+  const { selectedMissions, selectedMissionIds, selectedCount, toggleMission, updateMissionCount, clearSelection } = useSelectedMissions()
+  const { scrapList, calculating: _calculating } = useScrapCalculation(selectedMissions, missions, equipmentMap, categoryMap)
   const { isAboutModalOpen, openAboutModal, closeAboutModal } = useAboutModal()
 
   const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
-
-  // 選択中の任務一覧を取得
-  const selectedMissions = useMemo(() =>
-    missions.filter(mission => selectedMissionIds.includes(mission.id))
-  , [missions, selectedMissionIds])
 
   // フィルタリング
   const {
@@ -217,8 +212,12 @@ function App() {
 
       <SelectedMissionsSummary
         selectedMissions={selectedMissions}
+        missions={missions}
+        equipmentMap={equipmentMap}
+        categoryMap={categoryMap}
         selectedCount={selectedCount}
         onToggleMission={toggleMission}
+        onUpdateMissionCount={updateMissionCount}
         onClearSelection={clearSelection}
       />
 
