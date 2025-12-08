@@ -19,7 +19,6 @@ import { toRuntimeMissions } from '../utils/dataConverter.js';
  */
 export function useMissions() {
   const [allMissions, setAllMissions] = useState([]);
-  const [crudError, setCrudError] = useState(null);
 
   // マスタデータをインポート（isMasterフラグを付与）
   const masterMissions = useMemo(() => {
@@ -43,7 +42,6 @@ export function useMissions() {
     userMissions,
     setUserMissions,
     saveUserMissions,
-    setCrudError,
     'mission'
   );
 
@@ -75,7 +73,6 @@ export function useMissions() {
     allMissions,
 
     // 状態
-    crudError,
     corruptedItems,
 
     // 操作関数

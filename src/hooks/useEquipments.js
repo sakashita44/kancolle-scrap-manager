@@ -20,7 +20,6 @@ import { toRuntimeEquipments, generateCategoryRepresentatives, addEquipmentType,
  */
 export function useEquipments(categories, categoryMap) {
   const [equipments, setEquipments] = useState([]);
-  const [crudError, setCrudError] = useState(null);
 
   // マスタデータをインポート（isMasterフラグを付与）
   const masterEquipments = useMemo(() => {
@@ -64,7 +63,6 @@ export function useEquipments(categories, categoryMap) {
     userEquipments,
     setUserEquipments,
     saveUserEquipments,
-    setCrudError,
     'equipment'
   );
 
@@ -90,7 +88,6 @@ export function useEquipments(categories, categoryMap) {
     equipmentMap,         // 装備検索用Map（カテゴリ代表は含まない）
 
     // 状態
-    crudError,
     corruptedItems,
 
     // 操作関数

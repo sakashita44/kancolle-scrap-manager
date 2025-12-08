@@ -11,6 +11,7 @@ import {
   clearSelectedMissions,
 } from '../utils/sessionStorage.js';
 import { LIMITS } from '../types/schema.js';
+import { useErrorHandler, ERROR_TYPE } from './useErrorHandler.js';
 import { logError, logWarning } from '../utils/logger.js';
 
 /**
@@ -18,6 +19,7 @@ import { logError, logWarning } from '../utils/logger.js';
  * @returns {Object} 選択任務リストと操作関数
  */
 export function useSelectedMissions() {
+  const { addError } = useErrorHandler();
   const [selectedMissions, setSelectedMissions] = useState({
     baseMission: null,
     auxiliaryMissions: [],
@@ -35,6 +37,11 @@ export function useSelectedMissions() {
         function: 'useSelectedMissions',
         error: err,
       });
+      addError(ERROR_TYPE.WARNING, `選択任務の読み込みに失敗しました: ${err.message}`, {
+        tag: 'session-storage-load',
+        source: 'session-storage',
+        operation: 'load',
+      });
       setIsInitialized(true);
     }
   }, []);
@@ -49,6 +56,11 @@ export function useSelectedMissions() {
       logError('Failed to save selected missions', {
         function: 'useSelectedMissions',
         error: err,
+      });
+      addError(ERROR_TYPE.WARNING, `選択任務の保存に失敗しました: ${err.message}`, {
+        tag: 'session-storage-save',
+        source: 'session-storage',
+        operation: 'save',
       });
     }
   }, [selectedMissions, isInitialized]);

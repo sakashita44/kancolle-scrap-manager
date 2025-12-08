@@ -5,6 +5,7 @@
  */
 
 import { useCallback } from 'react';
+import { useErrorHandler, ERROR_TYPE } from './useErrorHandler.js';
 import { logError } from '../utils/logger.js';
 
 /**
@@ -12,11 +13,11 @@ import { logError } from '../utils/logger.js';
  * @param {Array} userData - ユーザーデータ配列
  * @param {Function} setUserData - ユーザーデータ更新関数
  * @param {Function} saveUserData - ストレージ保存関数
- * @param {Function} setError - エラー設定関数
  * @param {string} dataType - データ種別名（エラーログ用）
  * @returns {Object} CRUD操作関数
  */
-export function useUserDataCRUD(userData, setUserData, saveUserData, setError, dataType) {
+export function useUserDataCRUD(userData, setUserData, saveUserData, dataType) {
+  const { addError } = useErrorHandler();
   /**
    * ユーザーデータを追加
    * @param {Object} item - 追加するアイテム
@@ -34,10 +35,15 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
         dataType,
         error: err,
       });
-      setError(err.message);
+      addError(ERROR_TYPE.ERROR, `${dataType}の追加に失敗しました: ${err.message}`, {
+        tag: `crud-${dataType}`,
+        source: 'crud',
+        operation: 'add',
+        dataType,
+      });
       return false;
     }
-  }, [userData, setUserData, saveUserData, setError, dataType]);
+  }, [userData, setUserData, saveUserData, addError, dataType]);
 
   /**
    * ユーザーデータを更新
@@ -62,10 +68,16 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
         id,
         error: err,
       });
-      setError(err.message);
+      addError(ERROR_TYPE.ERROR, `${dataType}の更新に失敗しました: ${err.message}`, {
+        tag: `crud-${dataType}`,
+        source: 'crud',
+        operation: 'update',
+        dataType,
+        id,
+      });
       return false;
     }
-  }, [setUserData, saveUserData, setError, dataType]);
+  }, [setUserData, saveUserData, addError, dataType]);
 
   /**
    * ユーザーデータを削除
@@ -85,10 +97,16 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
         id,
         error: err,
       });
-      setError(err.message);
+      addError(ERROR_TYPE.ERROR, `${dataType}の削除に失敗しました: ${err.message}`, {
+        tag: `crud-${dataType}`,
+        source: 'crud',
+        operation: 'delete',
+        dataType,
+        id,
+      });
       return false;
     }
-  }, [userData, setUserData, saveUserData, setError, dataType]);
+  }, [userData, setUserData, saveUserData, addError, dataType]);
 
   return {
     addItem,
