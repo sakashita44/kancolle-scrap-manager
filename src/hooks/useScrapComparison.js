@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { calculateScrapComparison, calculateScrapList } from '../domain/scrapCalculation.js';
 import { logError, logInfo } from '../utils/logger.js';
+import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext.jsx';
 
 /**
  * ベース任務と補助任務の過不足を計算するカスタムフック
@@ -23,6 +24,9 @@ export function useScrapComparison(selectedMissions, allMissions, equipmentMap, 
   const [comparison, setComparison] = useState([]);
   const [warnings, setWarnings] = useState([]);
   const [calculating, setCalculating] = useState(false);
+
+  // エラーハンドラーを取得（Context経由）
+  const { syncErrors } = useErrorHandler();
 
   // 依存データの変更を検知してメモ化
   const deps = useMemo(
@@ -98,6 +102,20 @@ export function useScrapComparison(selectedMissions, allMissions, equipmentMap, 
   useEffect(() => {
     calculate();
   }, [calculate]);
+
+  // 計算警告を統合エラーハンドラーに登録（Pub/Subモデル）
+  useEffect(() => {
+    if (warnings.length > 0) {
+      const calculationErrors = warnings.map((warning) => ({
+        type: warning.type === 'error' ? ERROR_TYPE.ERROR : ERROR_TYPE.WARNING,
+        message: warning.message,
+        context: { source: 'calculation', ...warning },
+      }));
+      syncErrors('calculation', calculationErrors);
+    } else {
+      syncErrors('calculation', []);
+    }
+  }, [warnings, syncErrors]);
 
   // 手動再計算用の関数
   const recalculate = useCallback(() => {

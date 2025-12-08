@@ -11,6 +11,7 @@ import { getNextOrder as getNextOrderUtil, mergeAndSort, createDefaultSortCompar
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
 import { toRuntimeEquipments, generateCategoryRepresentatives, addEquipmentType, createEquipmentMap } from '../utils/dataConverter.js';
+import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext.jsx';
 
 /**
  * 装備データを管理するカスタムフック
@@ -21,6 +22,9 @@ import { toRuntimeEquipments, generateCategoryRepresentatives, addEquipmentType,
 export function useEquipments(categories, categoryMap) {
   const [equipments, setEquipments] = useState([]);
   const [crudError, setCrudError] = useState(null);
+
+  // エラーハンドラーを取得（Context経由）
+  const { syncErrors } = useErrorHandler();
 
   // マスタデータをインポート（isMasterフラグを付与）
   const masterEquipments = useMemo(() => {
@@ -77,6 +81,20 @@ export function useEquipments(categories, categoryMap) {
   const getNextOrder = useCallback(() => {
     return getNextOrderUtil(userEquipments);
   }, [userEquipments]);
+
+  // 破損データを統合エラーハンドラーに登録（Pub/Subモデル）
+  useEffect(() => {
+    if (corruptedItems.length > 0) {
+      const errors = corruptedItems.map((item) => ({
+        type: ERROR_TYPE.WARNING,
+        message: `装備 "${item.name || item.id}": ${item.reason}`,
+        context: { source: 'data-integrity', dataType: 'equipment', item },
+      }));
+      syncErrors('corrupted-equipments', errors);
+    } else {
+      syncErrors('corrupted-equipments', []);
+    }
+  }, [corruptedItems, syncErrors]);
 
   return {
     // データ

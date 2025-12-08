@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
+import { ErrorProvider, useErrorHandler, ERROR_TYPE } from './contexts/ErrorContext'
 import { useEquipments } from './hooks/useEquipments'
 import { useMissions } from './hooks/useMissions'
 import { useCategories } from './hooks/useCategories'
@@ -29,7 +30,10 @@ import GlobalWarningBanner from './components/GlobalWarningBanner'
 import ConfirmDialog from './components/ConfirmDialog'
 import AboutModal from './components/AboutModal'
 
-function App() {
+function AppContent() {
+  // エラーハンドラーを取得（Context経由）
+  const { errors, syncErrors, getErrorsByTag } = useErrorHandler()
+
   const {
     allCategories,
     categoryIds: categories,
@@ -47,7 +51,6 @@ function App() {
     userEquipments,
     getNextOrder: getNextEquipmentOrder,
     crudError: equipmentsCrudError,
-    corruptedItems: corruptedEquipments,
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment,
@@ -56,7 +59,6 @@ function App() {
   const {
     allMissions: missions,
     crudError: missionsCrudError,
-    corruptedItems: corruptedMissions,
     addUserMission,
     updateUserMission,
     deleteUserMission,
@@ -91,7 +93,6 @@ function App() {
   } = useScrapComparison(selectedMissions, missions, equipmentMap, categoryMap)
   const { isAboutModalOpen, openAboutModal, closeAboutModal } = useAboutModal()
 
-  const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
   const [editingMission, setEditingMission] = useState(null) // 編集中の任務
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
@@ -110,6 +111,16 @@ function App() {
   // エラー状態の統合
   const errorMessage = equipmentsCrudError || missionsCrudError
 
+  // ベータ版情報をエラーハンドラーに登録（初期化時のみ）
+  useEffect(() => {
+    syncErrors('beta-info', [
+      {
+        type: ERROR_TYPE.INFO,
+        message: 'ベータ版です。マスタデータ（任務・装備）にはダミーデータが含まれています。必要に応じてご自身で追加してください。',
+        context: { source: 'app-info' },
+      },
+    ])
+  }, [syncErrors])
 
   const handleExport = () => {
     // TODO: issue #12で実装予定
@@ -229,10 +240,6 @@ function App() {
     setConfirmDialog({ isOpen: false, type: null, id: null, message: '' })
   }
 
-  const handleClearErrors = () => {
-    setErrors([])
-  }
-
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans relative">
       <Header
@@ -241,18 +248,39 @@ function App() {
         onImport={handleImport}
       />
 
-      {/* 破損データ警告バナー */}
-      <GlobalWarningBanner
-        corruptedEquipments={corruptedEquipments}
-        corruptedMissions={corruptedMissions}
-        type="warning"
-      />
+      {/* 破損データ警告バナー（ErrorContext経由） */}
+      {(() => {
+        const corruptedEquipmentErrors = getErrorsByTag('corrupted-equipments')
+        const corruptedMissionErrors = getErrorsByTag('corrupted-missions')
+        const corruptedEquipments = corruptedEquipmentErrors.map((err) => ({
+          name: err.context.item?.name,
+          id: err.context.item?.id,
+          reason: err.message.split(': ')[1] || err.message
+        }))
+        const corruptedMissions = corruptedMissionErrors.map((err) => ({
+          name: err.context.item?.name,
+          id: err.context.item?.id,
+          reason: err.message.split(': ')[1] || err.message
+        }))
+        return (
+          <GlobalWarningBanner
+            corruptedEquipments={corruptedEquipments}
+            corruptedMissions={corruptedMissions}
+            type="warning"
+          />
+        )
+      })()}
 
-      {/* ベータ版警告バナー */}
-      <GlobalWarningBanner
-        customMessage="ベータ版です。マスタデータ（任務・装備）にはダミーデータが含まれています。必要に応じてご自身で追加してください。"
-        type="info"
-      />
+      {/* ベータ版警告バナー（ErrorContext経由） */}
+      {(() => {
+        const betaInfoErrors = getErrorsByTag('beta-info')
+        return betaInfoErrors.length > 0 && (
+          <GlobalWarningBanner
+            customMessage={betaInfoErrors[0].message}
+            type="info"
+          />
+        )
+      })()}
 
       <StickyDashboard
         scrapList={allScrapList}
@@ -310,7 +338,8 @@ function App() {
         )}
       </div>
 
-      <FooterArea errors={errors} onClearErrors={handleClearErrors} />
+      {/* FooterArea: ErrorContextに移行したため現在未使用 */}
+      <FooterArea errors={[]} onClearErrors={() => {}} />
 
       <Modal
         isOpen={activeModal === 'equipment'}
@@ -378,4 +407,10 @@ function App() {
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <ErrorProvider>
+      <AppContent />
+    </ErrorProvider>
+  )
+}
