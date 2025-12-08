@@ -413,7 +413,7 @@ v2.0.0リリースに向けた基盤整備とリファクタリング。Phase 1-
 * **Priority**: P1（v2.0.0の基盤）
 * **実装内容**: アプリ全体でエラーハンドリングを統一し、一元管理する仕組みを導入
 * **影響範囲**: `src/hooks/useErrorHandler.js` (新規), `src/components/ErrorDisplay.jsx` (新規), `src/App.jsx`
-* **ステータス**: 未着手
+* **ステータス**: 完了 (2025-12-08)
 
 **問題の背景**:
 
@@ -421,26 +421,44 @@ v2.0.0リリースに向けた基盤整備とリファクタリング。Phase 1-
 2. **部分的な統合**: `equipmentsCrudError` と `missionsCrudError` は統合されているが、一貫した処理がない
 3. **エラー表示の不統一**: ミッションリストエリアにのみエラー表示、他の場所では表示されない
 
-**実装方針**:
+**実装内容**:
 
 1. **統合エラーハンドリングフック作成**:
    - `src/hooks/useErrorHandler.js`: 全てのエラーを一元管理
    - エラー種別（critical, error, warning, info）の定義
    - エラー追加・削除・取得機能
+   - **syncErrors機能**: タグベースのエラー同期（重複追加を防止）
+   - **タグ管理**: エラーにタグを付与し、特定ソース別にエラーを管理
 
 2. **エラー表示コンポーネント作成**:
-   - `src/components/ErrorDisplay.jsx`: エラー種別ごとにスタイリング
-   - エラー個別削除機能
+   - `src/components/ErrorDisplay.jsx`: エラー種別ごとにスタイリング（Critical/Error/Warning/Info）
+   - エラー個別削除機能（×ボタン）
+   - lucide-reactアイコン使用（XCircle/AlertCircle/AlertTriangle/Info）
 
 3. **App.jxのリファクタ**:
-   - useErrorHandler 導入
-   - 既存のエラー処理を統合
+   - useErrorHandler 導入（syncErrors含む）
+   - 以下のエラーソースを統合:
+     - **CRUDエラー**: equipmentsCrudError, missionsCrudError（タグ: `crud-equipments`, `crud-missions`）
+     - **破損データ警告**: corruptedEquipments, corruptedMissions（タグ: `corrupted-data`）
+     - **計算警告**: useScrapComparisonのwarnings（タグ: `calculation`）
+   - ErrorDisplayコンポーネント配置
    - 未使用 errors state の削除
+   - FooterAreaコンポーネントのerrors propsを削除（ErrorDisplayに統合）
+
+**統合されたエラーソース**:
+
+| エラーソース | タグ | 種別 | 説明 |
+|:------------|:-----|:-----|:-----|
+| CRUD操作失敗 | `crud-equipments`, `crud-missions` | ERROR | LocalStorage保存失敗など |
+| 破損データ | `corrupted-data` | WARNING | 起動時のデータ整合性エラー |
+| 計算警告 | `calculation` | WARNING/ERROR | 存在しないID参照、選択数超過など |
 
 **期待される効果**:
 
 * エラー処理の一貫性向上
+* 重複エラー表示の防止（syncErrorsによる同期管理）
 * #100（データ初期化）、#12（インポート/エクスポート）でのエラーハンドリングが容易に
+* 将来的なエラーソース追加が容易（タグベース管理）
 
 #### #86: validation.jsの重複パターンをスキーマベースに共通化
 
@@ -721,7 +739,7 @@ v2.0.0リリース後に実装する機能改善。
 | Phase 2 | #75 | P2 | 中 | #74 | ✅ 完了 |
 | Phase 3 | #76 | P2 | 大 | #75 | ✅ 完了 |
 | Phase 4 (v2.0.0) | #72, #73 | P1-P2 | 小 | Phase 1-3 | ✅ 完了 |
-| Phase 4 (v2.0.0) | #85 | P1 | 中 | なし | 未着手 |
+| Phase 4 (v2.0.0) | #85 | P1 | 中 | なし | ✅ 完了 |
 | Phase 4 (v2.0.0) | #86 | P1 | 中 | なし | 未着手 |
 | Phase 4 (v2.0.0) | #84 | P2 | 小 | なし | 未着手 |
 | Phase 4 (v2.0.0) | #100 | P1 | 中 | #85, #86 | 未着手 |
@@ -741,9 +759,9 @@ v2.0.0リリース後に実装する機能改善。
   - Issue #75: 完了
 * ✅ **Phase 3**: UX改善 - 完了
   - Issue #76: ベース任務と補助任務の分離 - 完了
-* ⏳ **Phase 4**: 基盤・リファクタ（v2.0.0） - 未着手
-  - 完了: #72, #73
-  - 残り: #85, #86, #84, #100, #81
+* ⏳ **Phase 4**: 基盤・リファクタ（v2.0.0） - 進行中
+  - 完了: #72, #73, #85
+  - 残り: #86, #84, #100, #81
 
 ### v2.0.0リリースに向けたスコープ
 

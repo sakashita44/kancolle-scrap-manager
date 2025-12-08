@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useEquipments } from './hooks/useEquipments'
 import { useMissions } from './hooks/useMissions'
 import { useCategories } from './hooks/useCategories'
@@ -6,6 +6,7 @@ import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
+import { useErrorHandler, ERROR_TYPE } from './hooks/useErrorHandler'
 import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
 import { saveUserEquipments } from './utils/localStorage'
@@ -21,11 +22,10 @@ import StickyDashboard from './components/StickyDashboard'
 import SelectedMissionsSummary from './components/SelectedMissionsSummary'
 import ControlBar from './components/ControlBar'
 import MissionList from './components/MissionList'
-import FooterArea from './components/FooterArea'
+import ErrorDisplay from './components/ErrorDisplay'
 import Modal from './components/Modal'
 import EquipmentModal from './components/EquipmentModal'
 import MissionModal from './components/MissionModal'
-import GlobalWarningBanner from './components/GlobalWarningBanner'
 import ConfirmDialog from './components/ConfirmDialog'
 import AboutModal from './components/AboutModal'
 
@@ -87,11 +87,12 @@ function App() {
     allScrapList,
     comparison,
     hasBaseMission,
-    hasAuxiliaryMissions
+    hasAuxiliaryMissions,
+    warnings
   } = useScrapComparison(selectedMissions, missions, equipmentMap, categoryMap)
   const { isAboutModalOpen, openAboutModal, closeAboutModal } = useAboutModal()
+  const { errors, addError, syncErrors, clearError } = useErrorHandler()
 
-  const [errors, setErrors] = useState([])
   const [activeModal, setActiveModal] = useState(null)
   const [editingMission, setEditingMission] = useState(null) // 編集中の任務
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
@@ -107,8 +108,67 @@ function App() {
     setFilterPeriod
   } = useMissionFilter(missions, equipmentMap)
 
-  // エラー状態の統合
-  const errorMessage = equipmentsCrudError || missionsCrudError
+  // 既存のCRUDエラーを統合エラーハンドラーに追加
+  useEffect(() => {
+    if (equipmentsCrudError) {
+      addError(ERROR_TYPE.ERROR, equipmentsCrudError, { tag: 'crud-equipments', source: 'equipments' })
+    }
+  }, [equipmentsCrudError, addError])
+
+  useEffect(() => {
+    if (missionsCrudError) {
+      addError(ERROR_TYPE.ERROR, missionsCrudError, { tag: 'crud-missions', source: 'missions' })
+    }
+  }, [missionsCrudError, addError])
+
+  // 破損データ警告を統合エラーハンドラーに同期
+  useEffect(() => {
+    const corruptedErrors = []
+
+    corruptedEquipments.forEach((item) => {
+      corruptedErrors.push({
+        type: ERROR_TYPE.WARNING,
+        message: `装備 "${item.name || item.id}": ${item.reason}`,
+        context: { source: 'data-integrity', dataType: 'equipment', item },
+      })
+    })
+
+    corruptedMissions.forEach((item) => {
+      corruptedErrors.push({
+        type: ERROR_TYPE.WARNING,
+        message: `任務 "${item.name || item.id}": ${item.reason}`,
+        context: { source: 'data-integrity', dataType: 'mission', item },
+      })
+    })
+
+    syncErrors('corrupted-data', corruptedErrors)
+  }, [corruptedEquipments, corruptedMissions, syncErrors])
+
+  // 計算処理の警告を統合エラーハンドラーに同期
+  useEffect(() => {
+    if (warnings && warnings.length > 0) {
+      const calculationErrors = warnings.map((warning) => ({
+        type: warning.type === 'error' ? ERROR_TYPE.ERROR : ERROR_TYPE.WARNING,
+        message: warning.message,
+        context: { source: 'calculation', ...warning },
+      }))
+      syncErrors('calculation', calculationErrors)
+    } else {
+      syncErrors('calculation', [])
+    }
+  }, [warnings, syncErrors])
+
+  // ベータ版警告を初期化時に同期
+  useEffect(() => {
+    syncErrors('beta-info', [
+      {
+        type: ERROR_TYPE.INFO,
+        message:
+          'ベータ版です。マスタデータ（任務・装備）にはダミーデータが含まれています。必要に応じてご自身で追加してください。',
+        context: { source: 'app-info' },
+      },
+    ])
+  }, [syncErrors])
 
 
   const handleExport = () => {
@@ -229,10 +289,6 @@ function App() {
     setConfirmDialog({ isOpen: false, type: null, id: null, message: '' })
   }
 
-  const handleClearErrors = () => {
-    setErrors([])
-  }
-
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans relative">
       <Header
@@ -241,18 +297,8 @@ function App() {
         onImport={handleImport}
       />
 
-      {/* 破損データ警告バナー */}
-      <GlobalWarningBanner
-        corruptedEquipments={corruptedEquipments}
-        corruptedMissions={corruptedMissions}
-        type="warning"
-      />
-
-      {/* ベータ版警告バナー */}
-      <GlobalWarningBanner
-        customMessage="ベータ版です。マスタデータ（任務・装備）にはダミーデータが含まれています。必要に応じてご自身で追加してください。"
-        type="info"
-      />
+      {/* エラー表示 */}
+      <ErrorDisplay errors={errors} onClear={clearError} />
 
       <StickyDashboard
         scrapList={allScrapList}
@@ -292,25 +338,18 @@ function App() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 pb-20">
-        {errorMessage && (
-          <p className="text-center py-10 text-red-600">エラー: {errorMessage}</p>
-        )}
-        {!errorMessage && (
-          <MissionList
-            missions={filteredMissions}
-            equipmentMap={equipmentMap}
-            categoryMap={categoryMap}
-            selectedMissionIds={getAllSelectedIds()}
-            selectedCount={selectedCount}
-            isBaseMission={isBaseMission}
-            onToggle={toggleMission}
-            onDelete={handleDeleteMission}
-            onEdit={handleEditMission}
-          />
-        )}
+        <MissionList
+          missions={filteredMissions}
+          equipmentMap={equipmentMap}
+          categoryMap={categoryMap}
+          selectedMissionIds={getAllSelectedIds()}
+          selectedCount={selectedCount}
+          isBaseMission={isBaseMission}
+          onToggle={toggleMission}
+          onDelete={handleDeleteMission}
+          onEdit={handleEditMission}
+        />
       </div>
-
-      <FooterArea errors={errors} onClearErrors={handleClearErrors} />
 
       <Modal
         isOpen={activeModal === 'equipment'}
