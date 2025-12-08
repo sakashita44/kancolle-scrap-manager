@@ -383,8 +383,8 @@ function App() {
         isOpen={confirmDialog.isOpen}
         title={
           confirmDialog.type === 'equipment' ? '装備の削除' :
-          confirmDialog.type === 'mission' ? '任務の削除' :
-          'カテゴリの削除'
+            confirmDialog.type === 'mission' ? '任務の削除' :
+              'カテゴリの削除'
         }
         message={confirmDialog.message}
         confirmText="削除"
