@@ -12,6 +12,7 @@ import { getNextOrder as getNextOrderUtil, mergeAndSort, createMissionSortCompar
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
 import { toRuntimeMissions } from '../utils/dataConverter.js';
+import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext.jsx';
 
 /**
  * 任務データを管理するカスタムフック
@@ -20,6 +21,9 @@ import { toRuntimeMissions } from '../utils/dataConverter.js';
 export function useMissions() {
   const [allMissions, setAllMissions] = useState([]);
   const [crudError, setCrudError] = useState(null);
+
+  // エラーハンドラーを取得（Context経由）
+  const { syncErrors } = useErrorHandler();
 
   // マスタデータをインポート（isMasterフラグを付与）
   const masterMissions = useMemo(() => {
@@ -67,6 +71,20 @@ export function useMissions() {
   const getNextOrder = useCallback(() => {
     return getNextOrderUtil(userMissions);
   }, [userMissions]);
+
+  // 破損データを統合エラーハンドラーに登録（Pub/Subモデル）
+  useEffect(() => {
+    if (corruptedItems.length > 0) {
+      const errors = corruptedItems.map((item) => ({
+        type: ERROR_TYPE.WARNING,
+        message: `任務 "${item.name || item.id}": ${item.reason}`,
+        context: { source: 'data-integrity', dataType: 'mission', item },
+      }));
+      syncErrors('corrupted-missions', errors);
+    } else {
+      syncErrors('corrupted-missions', []);
+    }
+  }, [corruptedItems, syncErrors]);
 
   return {
     // データ

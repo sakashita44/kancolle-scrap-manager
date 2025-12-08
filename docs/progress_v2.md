@@ -412,35 +412,71 @@ v2.0.0リリースに向けた基盤整備とリファクタリング。Phase 1-
 
 * **Priority**: P1（v2.0.0の基盤）
 * **実装内容**: アプリ全体でエラーハンドリングを統一し、一元管理する仕組みを導入
-* **影響範囲**: `src/hooks/useErrorHandler.js` (新規), `src/components/ErrorDisplay.jsx` (新規), `src/App.jsx`
-* **ステータス**: 未着手
+* **影響範囲**: `src/contexts/ErrorContext.jsx` (新規), `src/hooks/useEquipments.js`, `src/hooks/useMissions.js`, `src/hooks/useScrapComparison.js`, `src/App.jsx`
+* **ステータス**: ✅ 完了 (2025-12-09)
 
 **問題の背景**:
 
-1. **未使用のエラー状態**: App.jxで `errors` state が定義されているが使用されていない
-2. **部分的な統合**: `equipmentsCrudError` と `missionsCrudError` は統合されているが、一貫した処理がない
-3. **エラー表示の不統一**: ミッションリストエリアにのみエラー表示、他の場所では表示されない
+1. **アプリ全体でエラーハンドリングが不統一**: 各フックが独自の方法でエラーを返し、App.jxで手動同期が必要
+2. **App.jxの肥大化**: 手動同期のuseEffectが3つ存在し、約50行のエラー変換・同期処理が存在
+3. **フックの独立性が低い**: 各フックが`corruptedItems`や`warnings`を返し、App.jxが変換処理を担当
 
-**実装方針**:
+**実装内容**:
 
-1. **統合エラーハンドリングフック作成**:
-   - `src/hooks/useErrorHandler.js`: 全てのエラーを一元管理
-   - エラー種別（critical, error, warning, info）の定義
-   - エラー追加・削除・取得機能
+1. **ErrorContext作成** (`src/contexts/ErrorContext.jsx`):
+   - `ErrorProvider`: アプリ全体のエラー状態を管理するProvider
+   - `useErrorHandler`: ErrorContextを使用するカスタムフック
+   - エラー種別定義: `CRITICAL`, `ERROR`, `WARNING`, `INFO`
+   - API:
+     - `syncErrors(tag, errorList)`: タグ付きエラーリストを同期（Pub/Subモデル）
+     - `addError(type, message, context)`: 単一エラーを追加
+     - `clearError(id)`, `clearErrorsByTag(tag)`: エラーをクリア
+     - `getErrorsByType(type)`, `getErrorsByTag(tag)`: エラーのフィルタリング
 
-2. **エラー表示コンポーネント作成**:
-   - `src/components/ErrorDisplay.jsx`: エラー種別ごとにスタイリング
-   - エラー個別削除機能
+2. **各フックの変更**:
+   - `useEquipments`: 破損装備データを`syncErrors('corrupted-equipments', errors)`で直接登録
+   - `useMissions`: 破損任務データを`syncErrors('corrupted-missions', errors)`で直接登録
+   - `useScrapComparison`: 計算警告を`syncErrors('calculation', errors)`で直接登録
+   - 各フックがErrorContextから`syncErrors`を取得し、独立してエラー登録
 
-3. **App.jxのリファクタ**:
-   - useErrorHandler 導入
-   - 既存のエラー処理を統合
-   - 未使用 errors state の削除
+3. **App.jxの変更**:
+   - `ErrorProvider`でアプリ全体をラップ
+   - 手動同期のuseEffect（3つ）を削除
+   - ベータ版情報を`syncErrors('beta-info', errors)`で登録
+   - `GlobalWarningBanner`をErrorContext経由で表示（`getErrorsByTag`を使用）
+   - 未使用の`errors` stateと`handleClearErrors`を削除
+
+**アーキテクチャ変更**:
+
+Before（手動同期）:
+```
+App.jsx (ハブ)
+  ↓ useEffect で手動同期 ×3
+  ↑ corruptedItems, warnings
+useEquipments, useMissions, useScrapComparison
+```
+
+After（Pub/Subモデル）:
+```
+ErrorProvider (グローバル)
+  ↑ useContext(ErrorContext) - グローバル共有
+  ↑ 各フックが直接 syncErrors/addError
+useEquipments, useMissions, useScrapComparison
+  ↓
+App.jsx（表示のみ）
+  ↓ GlobalWarningBanner で表示
+```
 
 **期待される効果**:
 
-* エラー処理の一貫性向上
-* #100（データ初期化）、#12（インポート/エクスポート）でのエラーハンドリングが容易に
+* **コードの簡素化**: App.jxから約50行削減（手動同期useEffect 3つ削除）
+* **保守性向上**: 新しいエラーソース追加時にApp.jxの修正不要
+* **一貫性確保**: 全フックが同じ方法（Context経由）でエラー登録
+* **拡張性向上**: #100（データ初期化）、#12（インポート/エクスポート）でのエラーハンドリングが容易に
+
+**実装成果**:
+- コミット: `2c98912`
+- PR #112: マージ待ち
 
 #### #86: validation.jsの重複パターンをスキーマベースに共通化
 
@@ -721,7 +757,7 @@ v2.0.0リリース後に実装する機能改善。
 | Phase 2 | #75 | P2 | 中 | #74 | ✅ 完了 |
 | Phase 3 | #76 | P2 | 大 | #75 | ✅ 完了 |
 | Phase 4 (v2.0.0) | #72, #73 | P1-P2 | 小 | Phase 1-3 | ✅ 完了 |
-| Phase 4 (v2.0.0) | #85 | P1 | 中 | なし | 未着手 |
+| Phase 4 (v2.0.0) | #85 | P1 | 中 | なし | ✅ 完了 |
 | Phase 4 (v2.0.0) | #86 | P1 | 中 | なし | 未着手 |
 | Phase 4 (v2.0.0) | #84 | P2 | 小 | なし | 未着手 |
 | Phase 4 (v2.0.0) | #100 | P1 | 中 | #85, #86 | 未着手 |
@@ -731,7 +767,7 @@ v2.0.0リリース後に実装する機能改善。
 | Phase 5 (v2.1.0以降) | #9, #11, #10, #78, #93, #79 | P3 | 小-中 | なし | 未着手 |
 | その他 | #46, #30 | P3 | 小-中 | なし | 優先度低 |
 
-## 今後の方針 (2025-12-08更新)
+## 今後の方針 (2025-12-09更新)
 
 ### 完了状況
 
@@ -741,9 +777,9 @@ v2.0.0リリース後に実装する機能改善。
   - Issue #75: 完了
 * ✅ **Phase 3**: UX改善 - 完了
   - Issue #76: ベース任務と補助任務の分離 - 完了
-* ⏳ **Phase 4**: 基盤・リファクタ（v2.0.0） - 未着手
-  - 完了: #72, #73
-  - 残り: #85, #86, #84, #100, #81
+* ⏳ **Phase 4**: 基盤・リファクタ（v2.0.0） - 進行中
+  - 完了: #72, #73, #85
+  - 残り: #86, #84, #100, #81
 
 ### v2.0.0リリースに向けたスコープ
 
@@ -751,7 +787,7 @@ Phase 1-3のコア機能が完成したため、v2.0.0リリースに向けて�
 
 **v2.0.0に含めるタスク** (5件):
 
-1. **#85**: エラーハンドリングの統一と一元管理（P1、基盤）
+1. ✅ **#85**: エラーハンドリングの統一と一元管理（P1、基盤）
 2. **#86**: validation.jsの重複パターンをスキーマベースに共通化（P1、基盤）
 3. **#84**: ユーザーデータ管理フックの統合（P2、リファクタ）
 4. **#100**: データ初期化機能の実装（P1、必須機能）
