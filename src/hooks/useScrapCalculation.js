@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { calculateScrapList } from '../domain/scrapCalculation.js';
 import { logError, logInfo } from '../utils/logger.js';
+import { useErrorHandler, ERROR_TYPE } from './useErrorHandler.js';
 
 /**
  * 廃棄リスト計算を管理するカスタムフック
@@ -30,6 +31,7 @@ export function useScrapCalculation(selectedMissions, allMissions, equipmentMap,
   const [scrapList, setScrapList] = useState([]);
   const [warnings, setWarnings] = useState([]);
   const [calculating, setCalculating] = useState(false);
+  const { addError } = useErrorHandler();
 
   // 依存データの変更を検知してメモ化
   const deps = useMemo(
@@ -75,10 +77,15 @@ export function useScrapCalculation(selectedMissions, allMissions, equipmentMap,
           message: `計算エラー: ${error.message}`,
         },
       ]);
+      // 統合エラーハンドラーに通知
+      addError(ERROR_TYPE.ERROR, `計算エラー: ${error.message}`, {
+        source: 'calculation',
+        error: error.message,
+      });
     } finally {
       setCalculating(false);
     }
-  }, [deps]);
+  }, [deps, addError]);
 
   // 選択任務・装備・任務データが変更されたら再計算
   useEffect(() => {

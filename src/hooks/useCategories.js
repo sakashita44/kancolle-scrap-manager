@@ -18,7 +18,6 @@ import { toRuntimeCategories, createCategoryMaps } from '../utils/dataConverter.
  */
 export function useCategories() {
   const [allCategories, setAllCategories] = useState([]);
-  const [crudError, setCrudError] = useState(null);
 
   // マスタデータをインポート（isMasterフラグを付与）
   const masterCategories = useMemo(() => {
@@ -42,7 +41,6 @@ export function useCategories() {
     userCategories,
     setUserCategories,
     saveUserCategories,
-    setCrudError,
     'category'
   );
 
@@ -75,7 +73,6 @@ export function useCategories() {
     categoryIds,
 
     // 状態
-    crudError,
     corruptedItems,
 
     // 操作関数

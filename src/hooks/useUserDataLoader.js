@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { logError } from '../utils/logger.js';
+import { useErrorHandler, ERROR_TYPE } from './useErrorHandler.js';
 
 /**
  * ユーザーデータを読み込む汎用フック
@@ -16,6 +17,7 @@ import { logError } from '../utils/logger.js';
 export function useUserDataLoader(loadFn, dataType) {
   const [userData, setUserData] = useState([]);
   const [corruptedItems, setCorruptedItems] = useState([]);
+  const { addError } = useErrorHandler();
 
   useEffect(() => {
     try {
@@ -30,8 +32,14 @@ export function useUserDataLoader(loadFn, dataType) {
       });
       setUserData([]);
       setCorruptedItems([]);
+      // 統合エラーハンドラーに通知
+      addError(ERROR_TYPE.WARNING, `データの読み込みに失敗しました（${dataType}）`, {
+        source: 'data-loader',
+        dataType,
+        error: err.message,
+      });
     }
-  }, [loadFn, dataType]);
+  }, [loadFn, dataType, addError]);
 
   return {
     userData,
