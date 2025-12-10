@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Plus, Search, List, Trash2, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
-import { validateEquipment, validateUniqueName, validateName } from '../utils/validation'
+import { validateUniqueName, validateName } from '../utils/validation'
 import { LIMITS } from '../types/schema'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
