@@ -215,6 +215,47 @@ The app implements 4-level error classification with comprehensive recovery stra
 * Schema validation failure → Block import, show field-level errors
 * Import success → Complete overwrite of target data type with confirmation
 
+## Architecture and Design Principles
+
+### Domain Layer Design (Critical)
+
+**Pure Function Requirement**: All domain logic in `src/domain/` **must** be implemented as pure functions.
+
+**NG (Bad)**: Domain functions that accept state update functions as arguments and execute them internally (side effects):
+
+```javascript
+// ❌ BAD: Domain function with side effects
+export function swapEquipmentOrder(id1, id2, equipments, updateEquipment) {
+  const eq1 = equipments.find(e => e.id === id1)
+  const eq2 = equipments.find(e => e.id === id2)
+
+  updateEquipment(id1, { ...eq1, order: eq2.order })  // ❌ Side effect
+  updateEquipment(id2, { ...eq2, order: tempOrder })  // ❌ Side effect
+}
+```
+
+**OK (Good)**: Domain functions that return calculation results or new objects/arrays without side effects:
+
+```javascript
+// ✅ GOOD: Pure domain function
+export function calculateSwappedEquipments(id1, id2, equipments) {
+  const eq1 = equipments.find(e => e.id === id1)
+  const eq2 = equipments.find(e => e.id === id2)
+
+  return equipments.map(eq => {
+    if (eq.id === id1) return { ...eq, order: eq2.order }
+    if (eq.id === id2) return { ...eq, order: eq1.order }
+    return eq
+  })
+}
+
+// Caller (UI component or hook) handles state updates:
+const newEquipments = calculateSwappedEquipments(id1, id2, equipments)
+setEquipments(newEquipments)
+```
+
+**Enforcement**: Issue #110 must enforce this principle and refactor existing domain functions that violate it.
+
 ## Important Implementation Notes
 
 1. **No Server Backend**: All data processing happens client-side. Emphasize this in UI (privacy feature).
