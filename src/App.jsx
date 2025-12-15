@@ -111,12 +111,12 @@ function AppContent() {
   // エラー状態の統合
   const errorMessage = equipmentsCrudError || missionsCrudError
 
-  // ベータ版情報をエラーハンドラーに登録（初期化時のみ）
+  // Alpha版情報をエラーハンドラーに登録（初期化時のみ）
   useEffect(() => {
-    syncErrors('beta-info', [
+    syncErrors('alpha-info', [
       {
         type: ERROR_TYPE.INFO,
-        message: 'ベータ版です。マスタデータ（任務・装備）にはダミーデータが含まれています。必要に応じてご自身で追加してください。',
+        message: 'Alpha版です。マスタデータ（任務・装備）にはダミーデータが含まれています。必要に応じてご自身で追加してください。',
         context: { source: 'app-info' },
       },
     ])
@@ -294,12 +294,12 @@ function AppContent() {
         )
       })()}
 
-      {/* ベータ版警告バナー（ErrorContext経由） */}
+      {/* Alpha版情報バナー（ErrorContext経由） */}
       {(() => {
-        const betaInfoErrors = getErrorsByTag('beta-info')
-        return betaInfoErrors.length > 0 && (
+        const alphaInfoErrors = getErrorsByTag('alpha-info')
+        return alphaInfoErrors.length > 0 && (
           <GlobalWarningBanner
-            customMessage={betaInfoErrors[0].message}
+            customMessage={alphaInfoErrors[0].message}
             type="info"
           />
         )

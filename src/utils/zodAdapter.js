@@ -2,6 +2,8 @@
  * Zodバリデーション結果を既存の戻り値形式に変換するアダプター
  * 段階的移行のため、既存コードとの互換性を維持
  * @module utils/zodAdapter
+ *
+ * NOTE: Zod v4では error.errors → error.issues に変更されている
  */
 
 import { ZodError } from 'zod';
@@ -24,7 +26,12 @@ export function toValidationResult(schema, data) {
     return { valid: true, errors: [] };
   } catch (error) {
     if (error instanceof ZodError) {
-      const errors = error.errors.map((err) => {
+      // Zod v4: error.errors → error.issues
+      const issues = error.issues;
+      if (!issues || issues.length === 0) {
+        return { valid: false, errors: ['検証に失敗しました'] };
+      }
+      const errors = issues.map((err) => {
         // パス情報がある場合は先頭に付与（例: "reqs[0].count: 数値は必須です"）
         const path = err.path.length > 0 ? `${err.path.join('.')}: ` : '';
         return `${path}${err.message}`;
@@ -55,10 +62,15 @@ export function toSimpleValidationResult(schema, data) {
     return { valid: true };
   } catch (error) {
     if (error instanceof ZodError) {
+      // Zod v4: error.errors → error.issues
+      const issues = error.issues;
+      if (!issues || issues.length === 0) {
+        return { valid: false, error: '検証に失敗しました' };
+      }
       // 最初のエラーのみ返す
-      const firstError = error.errors[0];
-      const path = firstError.path.length > 0 ? `${firstError.path.join('.')}: ` : '';
-      return { valid: false, error: `${path}${firstError.message}` };
+      const firstIssue = issues[0];
+      const path = firstIssue.path.length > 0 ? `${firstIssue.path.join('.')}: ` : '';
+      return { valid: false, error: `${path}${firstIssue.message}` };
     }
     // ZodError以外の予期しないエラーは再スロー
     throw error;

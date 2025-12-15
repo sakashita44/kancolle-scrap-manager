@@ -39,16 +39,10 @@ const AboutModal = ({ isOpen, onClose }) => {
         <div className="bg-blue-50 border border-blue-200 rounded p-3">
           <h5 className="font-semibold text-blue-800 mb-2">【Alpha版について】</h5>
           <p className="text-sm text-blue-700 leading-relaxed">
-            本バージョンは開発中のアルファ版です。Phase 4B（リファクタリング）の実装中に仕様変更が発生する可能性があります。ご了承の上ご利用ください。
+            本バージョンは開発中のアルファ版です。開発途中のため、仕様変更が発生する可能性があります。
           </p>
-        </div>
-
-        {/* ベータ版について */}
-        <div className="bg-amber-50 border border-amber-200 rounded p-3">
-          <h5 className="font-semibold text-amber-800 mb-2">【ベータ版について】</h5>
-          <p className="text-sm text-amber-700 leading-relaxed">
-            本アプリに含まれる任務・装備のマスタデータにはダミーデータが含まれています。
-            必要に応じてご自身で装備・任務を追加してください。
+          <p className="text-sm text-blue-700 leading-relaxed mt-2">
+            また、本アプリに含まれる任務・装備のマスタデータにはダミーデータが含まれています。必要に応じてご自身で装備・任務を追加してください。
           </p>
         </div>
 
