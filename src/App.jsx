@@ -261,38 +261,16 @@ function AppContent() {
       />
 
       {/* 破損データ警告バナー（ErrorContext経由） */}
-      {(() => {
-        const corruptedEquipmentErrors = getErrorsByTag('corrupted-equipments')
-        const corruptedMissionErrors = getErrorsByTag('corrupted-missions')
-        const corruptedEquipments = corruptedEquipmentErrors.map((err) => ({
-          name: err.context.item?.name,
-          id: err.context.item?.id,
-          reason: err.message.split(': ')[1] || err.message
-        }))
-        const corruptedMissions = corruptedMissionErrors.map((err) => ({
-          name: err.context.item?.name,
-          id: err.context.item?.id,
-          reason: err.message.split(': ')[1] || err.message
-        }))
-        return (
-          <GlobalWarningBanner
-            corruptedEquipments={corruptedEquipments}
-            corruptedMissions={corruptedMissions}
-            type="warning"
-          />
-        )
-      })()}
+      <GlobalWarningBanner
+        tag="corrupted-data"
+        type="warning"
+      />
 
       {/* Alpha版情報バナー（ErrorContext経由） */}
-      {(() => {
-        const alphaInfoErrors = getErrorsByTag('alpha-info')
-        return alphaInfoErrors.length > 0 && (
-          <GlobalWarningBanner
-            customMessage={alphaInfoErrors[0].message}
-            type="info"
-          />
-        )
-      })()}
+      <GlobalWarningBanner
+        tag="alpha-info"
+        type="info"
+      />
 
       <StickyDashboard
         scrapList={allScrapList}
