@@ -9,11 +9,10 @@ import { safeString, equipmentIdSchema, categoryIdSchema, positiveInteger } from
 import { LIMITS, EQUIPMENT_TYPE } from '../types/schema.js';
 
 /**
- * 永続化形式装備スキーマ
- * JSONファイル・LocalStorage保存時の形式
- * type, isMasterフィールドは含まない（実行時に自動付与）
+ * ベース装備スキーマ（refinement適用前）
+ * extend用の基礎スキーマ
  */
-export const persistedEquipmentSchema = z
+const baseEquipmentSchema = z
   .object({
     id: equipmentIdSchema,
     name: safeString.max(
@@ -23,7 +22,14 @@ export const persistedEquipmentSchema = z
     categoryId: categoryIdSchema,
     order: positiveInteger,
   })
-  .strict()
+  .strict();
+
+/**
+ * 永続化形式装備スキーマ
+ * JSONファイル・LocalStorage保存時の形式
+ * type, isMasterフィールドは含まない（実行時に自動付与）
+ */
+export const persistedEquipmentSchema = baseEquipmentSchema
   .refine((data) => !Object.prototype.hasOwnProperty.call(data, 'type'), {
     message: 'typeフィールドは保存できません',
     path: ['type'],
@@ -37,7 +43,7 @@ export const persistedEquipmentSchema = z
  * ランタイム形式装備スキーマ
  * アプリ実行時の形式（type, isMaster付き）
  */
-export const runtimeEquipmentSchema = persistedEquipmentSchema.extend({
+export const runtimeEquipmentSchema = baseEquipmentSchema.extend({
   type: z.enum([EQUIPMENT_TYPE.ITEM, EQUIPMENT_TYPE.CATEGORY]),
   isMaster: z.boolean(),
 });

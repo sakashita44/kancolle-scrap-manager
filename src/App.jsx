@@ -9,7 +9,7 @@ import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
 import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
-import { saveUserEquipments } from './utils/localStorage'
+import { saveUserEquipments, clearAllData } from './utils/localStorage'
 import {
   analyzeCategoryDeletionImpact,
   buildCategoryDeletionMessage,
@@ -219,6 +219,15 @@ function AppContent() {
     })
   }
 
+  const handleDataReset = () => {
+    setConfirmDialog({
+      isOpen: true,
+      type: 'data-reset',
+      id: null,
+      message: '本当に全てのユーザーデータを削除しますか？この操作は取り消せません。'
+    })
+  }
+
   const handleConfirmDelete = () => {
     if (confirmDialog.type === 'equipment') {
       deleteUserEquipment(confirmDialog.id)
@@ -232,6 +241,19 @@ function AppContent() {
         saveUserEquipments,
         deleteUserCategory
       )
+    } else if (confirmDialog.type === 'data-reset') {
+      // 全データを削除してリロード
+      const success = clearAllData()
+      if (success) {
+        window.location.reload()
+      } else {
+        // エラー時は ErrorContext 経由で通知
+        syncErrors('data-reset-error', [{
+          type: ERROR_TYPE.ERROR,
+          message: 'データの削除に失敗しました',
+          context: { source: 'data-reset' }
+        }])
+      }
     }
     setConfirmDialog({ isOpen: false, type: null, id: null, message: '' })
   }
@@ -246,6 +268,7 @@ function AppContent() {
         onAboutOpen={openAboutModal}
         onExport={handleExport}
         onImport={handleImport}
+        onDataReset={handleDataReset}
       />
 
       {/* 破損データ警告バナー（ErrorContext経由） */}
@@ -389,10 +412,11 @@ function AppContent() {
         title={
           confirmDialog.type === 'equipment' ? '装備の削除' :
           confirmDialog.type === 'mission' ? '任務の削除' :
+          confirmDialog.type === 'data-reset' ? 'データの初期化' :
           'カテゴリの削除'
         }
         message={confirmDialog.message}
-        confirmText="削除"
+        confirmText={confirmDialog.type === 'data-reset' ? '初期化' : '削除'}
         cancelText="キャンセル"
         variant="danger"
         onConfirm={handleConfirmDelete}

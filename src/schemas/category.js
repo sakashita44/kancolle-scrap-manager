@@ -9,11 +9,10 @@ import { safeString, categoryIdSchema, positiveInteger } from './base.js';
 import { LIMITS } from '../types/schema.js';
 
 /**
- * 永続化形式カテゴリスキーマ
- * JSONファイル・LocalStorage保存時の形式
- * isMasterフィールドは含まない（実行時に自動付与）
+ * ベースカテゴリスキーマ（refinement適用前）
+ * extend用の基礎スキーマ
  */
-export const persistedCategorySchema = z
+const baseCategorySchema = z
   .object({
     id: categoryIdSchema,
     name: safeString.max(
@@ -22,17 +21,26 @@ export const persistedCategorySchema = z
     ),
     order: positiveInteger,
   })
-  .strict()
-  .refine((data) => !Object.prototype.hasOwnProperty.call(data, 'isMaster'), {
+  .strict();
+
+/**
+ * 永続化形式カテゴリスキーマ
+ * JSONファイル・LocalStorage保存時の形式
+ * isMasterフィールドは含まない（実行時に自動付与）
+ */
+export const persistedCategorySchema = baseCategorySchema.refine(
+  (data) => !Object.prototype.hasOwnProperty.call(data, 'isMaster'),
+  {
     message: 'isMasterフィールドは保存できません',
     path: ['isMaster'],
-  });
+  }
+);
 
 /**
  * ランタイム形式カテゴリスキーマ
  * アプリ実行時の形式（isMaster付き）
  */
-export const runtimeCategorySchema = persistedCategorySchema.extend({
+export const runtimeCategorySchema = baseCategorySchema.extend({
   isMaster: z.boolean(),
 });
 
