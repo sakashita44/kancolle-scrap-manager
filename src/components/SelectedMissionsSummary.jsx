@@ -1,6 +1,7 @@
 import { Check, X, ChevronUp, ChevronDown, Plus, Minus, Target } from 'lucide-react'
 import { LIMITS } from '../types/schema'
 import { useToggle } from '../hooks/useToggle'
+import { useData } from '../contexts/DataContext'
 
 /**
  * 選択中の任務一覧を表示する折り畳み可能なコンポーネント
@@ -8,9 +9,6 @@ import { useToggle } from '../hooks/useToggle'
  * @param {Object} props
  * @param {{missionId: string, count: number} | null} props.baseMission - ベース任務
  * @param {Array<{missionId: string, count: number}>} props.auxiliaryMissions - 補助任務リスト
- * @param {import('../types/schema').Mission[]} props.missions - 全任務データ
- * @param {Map} props.equipmentMap - 装備検索用Map
- * @param {Map} props.categoryMap - カテゴリ検索用Map
  * @param {number} props.selectedCount - 選択中の任務数
  * @param {Function} props.isBaseMission - ベース任務かチェック
  * @param {Function} props.onSelectBaseMission - ベース任務設定ハンドラ
@@ -24,9 +22,6 @@ import { useToggle } from '../hooks/useToggle'
 const SelectedMissionsSummary = ({
   baseMission,
   auxiliaryMissions,
-  missions,
-  equipmentMap,
-  categoryMap,
   selectedCount,
   onSelectBaseMission,
   onDeselectBaseMission,
@@ -36,6 +31,7 @@ const SelectedMissionsSummary = ({
   onUpdateAuxiliaryMissionCount,
   onClearSelection
 }) => {
+  const { missions, equipmentMap, categoryMap } = useData()
   const [isOpen, { toggle }] = useToggle(true)
 
   // 必要装備の概要を生成

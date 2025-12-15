@@ -3,17 +3,20 @@ import { Plus, Trash2 } from 'lucide-react'
 import { PERIOD, LIMITS, TARGET_TYPE } from '../types/schema'
 import { validateUniqueName, validateName } from '../utils/validation'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
+import { useData } from '../contexts/DataContext'
 
 const MissionModal = ({
   editingMission = null, // 編集対象の任務（追加時はnull）
-  equipments,
-  categories,
-  missions,
-  getCategoryName,
-  getNextOrder,
   onSave,
   onCancel
 }) => {
+  const {
+    equipmentsForUI: equipments,
+    categoryIds: categories,
+    missions,
+    getCategoryName,
+    getNextMissionOrder: getNextOrder,
+  } = useData()
   const isEditMode = editingMission !== null
 
   const [name, setName] = useState(editingMission?.name || '')

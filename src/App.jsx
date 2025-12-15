@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ErrorProvider, useErrorHandler, ERROR_TYPE } from './contexts/ErrorContext'
-import { useEquipments } from './hooks/useEquipments'
-import { useMissions } from './hooks/useMissions'
-import { useCategories } from './hooks/useCategories'
+import { DataProvider, useData } from './contexts/DataContext'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
@@ -34,36 +32,27 @@ function AppContent() {
   // エラーハンドラーを取得（Context経由）
   const { errors, syncErrors, getErrorsByTag } = useErrorHandler()
 
+  // データ管理を取得（Context経由）
   const {
     allCategories,
-    categoryIds: categories,
     categoryMap,
-    categoryNameMap,
     getCategoryName,
     addUserCategory,
     updateUserCategory,
     deleteUserCategory,
-    getNextOrder: getNextCategoryOrder
-  } = useCategories()
-  const {
-    equipmentsForUI: equipments,
     equipmentMap,
     userEquipments,
-    getNextOrder: getNextEquipmentOrder,
-    crudError: equipmentsCrudError,
+    equipmentsCrudError,
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment,
-    setUserEquipments
-  } = useEquipments(allCategories, categoryMap)
-  const {
-    allMissions: missions,
-    crudError: missionsCrudError,
+    setUserEquipments,
+    missions,
+    missionsCrudError,
     addUserMission,
     updateUserMission,
     deleteUserMission,
-    getNextOrder: getNextMissionOrder
-  } = useMissions()
+  } = useData()
   const {
     selectedMissions,
     baseMission,
@@ -314,9 +303,6 @@ function AppContent() {
       <SelectedMissionsSummary
         baseMission={baseMission}
         auxiliaryMissions={auxiliaryMissions}
-        missions={missions}
-        equipmentMap={equipmentMap}
-        categoryMap={categoryMap}
         selectedCount={selectedCount}
         onSelectBaseMission={selectBaseMission}
         onDeselectBaseMission={deselectBaseMission}
@@ -332,8 +318,6 @@ function AppContent() {
           filterText={filterText}
           filterCategory={filterCategory}
           filterPeriod={filterPeriod}
-          categories={categories}
-          getCategoryName={getCategoryName}
           onFilterTextChange={setFilterText}
           onFilterCategoryChange={setFilterCategory}
           onFilterPeriodChange={setFilterPeriod}
@@ -349,8 +333,6 @@ function AppContent() {
         {!errorMessage && (
           <MissionList
             missions={filteredMissions}
-            equipmentMap={equipmentMap}
-            categoryMap={categoryMap}
             selectedMissionIds={getAllSelectedIds()}
             selectedCount={selectedCount}
             isBaseMission={isBaseMission}
@@ -370,11 +352,6 @@ function AppContent() {
         onClose={() => setActiveModal(null)}
       >
         <EquipmentModal
-          equipments={equipments}
-          categories={categories}
-          getCategoryName={getCategoryName}
-          getNextOrder={getNextEquipmentOrder}
-          getNextCategoryOrder={getNextCategoryOrder}
           onSave={handleAddEquipment}
           onSwapOrder={handleSwapEquipmentOrder}
           onSwapCategoryOrder={handleSwapCategoryOrder}
@@ -394,11 +371,6 @@ function AppContent() {
       >
         <MissionModal
           editingMission={editingMission}
-          equipments={equipments}
-          categories={categories}
-          missions={missions}
-          getCategoryName={getCategoryName}
-          getNextOrder={getNextMissionOrder}
           onSave={handleSaveMission}
           onCancel={() => {
             setActiveModal(null)
@@ -434,7 +406,9 @@ function AppContent() {
 export default function App() {
   return (
     <ErrorProvider>
-      <AppContent />
+      <DataProvider>
+        <AppContent />
+      </DataProvider>
     </ErrorProvider>
   )
 }

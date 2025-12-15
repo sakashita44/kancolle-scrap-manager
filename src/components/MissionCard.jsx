@@ -1,10 +1,9 @@
 import { Trash2, Target, Edit2 } from 'lucide-react'
 import { TARGET_TYPE } from '../types/schema'
+import { useData } from '../contexts/DataContext'
 
 const MissionCard = ({
   mission,
-  equipmentMap,
-  categoryMap,
   isSelected,
   isBaseMission = false,
   isDisabled = false,
@@ -12,6 +11,7 @@ const MissionCard = ({
   onDelete,
   onEdit
 }) => {
+  const { equipmentMap, categoryMap } = useData()
   const isUserDefined = mission.id.startsWith('u_')
 
   return (

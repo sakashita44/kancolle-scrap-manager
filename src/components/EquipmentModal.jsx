@@ -3,13 +3,9 @@ import { Plus, Search, List, Trash2, ChevronDown, ChevronUp, ChevronRight } from
 import { validateUniqueName, validateName } from '../utils/validation'
 import { LIMITS } from '../types/schema'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
+import { useData } from '../contexts/DataContext'
 
 const EquipmentModal = ({
-  equipments,
-  categories,
-  getCategoryName,
-  getNextOrder,
-  getNextCategoryOrder,
   onSave,
   onDelete,
   onDeleteCategory,
@@ -17,6 +13,13 @@ const EquipmentModal = ({
   onSwapCategoryOrder,
   onCancel
 }) => {
+  const {
+    equipmentsForUI: equipments,
+    categoryIds: categories,
+    getCategoryName,
+    getNextEquipmentOrder: getNextOrder,
+    getNextCategoryOrder,
+  } = useData()
   const [mode, setMode] = useState('equipment') // 'equipment' | 'category'
   const [name, setName] = useState('')
   const [category, setCategory] = useState(categories[0] || '')
