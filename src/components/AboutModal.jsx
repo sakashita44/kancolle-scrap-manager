@@ -25,6 +25,16 @@ const AboutModal = ({ isOpen, onClose }) => {
           </p>
         </div>
 
+        {/* v2.0.0-beta 新機能 */}
+        <div className="bg-teal-50 border border-teal-200 rounded p-3">
+          <h5 className="font-semibold text-teal-800 mb-2">【v2.0.0-beta 新機能】</h5>
+          <ul className="text-sm text-teal-700 leading-relaxed space-y-1 list-disc list-inside">
+            <li>ベース任務/副任務の概念導入</li>
+            <li>データ初期化機能（設定メニューから全データを削除可能）</li>
+            <li>任務の編集機能</li>
+          </ul>
+        </div>
+
         {/* ベータ版について */}
         <div className="bg-amber-50 border border-amber-200 rounded p-3">
           <h5 className="font-semibold text-amber-800 mb-2">【ベータ版について】</h5>
