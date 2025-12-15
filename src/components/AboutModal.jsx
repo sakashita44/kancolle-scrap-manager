@@ -25,14 +25,22 @@ const AboutModal = ({ isOpen, onClose }) => {
           </p>
         </div>
 
-        {/* v2.0.0-beta 新機能 */}
+        {/* v2.0.0-alpha 新機能 */}
         <div className="bg-teal-50 border border-teal-200 rounded p-3">
-          <h5 className="font-semibold text-teal-800 mb-2">【v2.0.0-beta 新機能】</h5>
+          <h5 className="font-semibold text-teal-800 mb-2">【v2.0.0-alpha 新機能】</h5>
           <ul className="text-sm text-teal-700 leading-relaxed space-y-1 list-disc list-inside">
             <li>ベース任務/副任務の概念導入</li>
             <li>データ初期化機能（設定メニューから全データを削除可能）</li>
             <li>任務の編集機能</li>
           </ul>
+        </div>
+
+        {/* Alpha版について */}
+        <div className="bg-blue-50 border border-blue-200 rounded p-3">
+          <h5 className="font-semibold text-blue-800 mb-2">【Alpha版について】</h5>
+          <p className="text-sm text-blue-700 leading-relaxed">
+            本バージョンは開発中のアルファ版です。Phase 4B（リファクタリング）の実装中に仕様変更が発生する可能性があります。ご了承の上ご利用ください。
+          </p>
         </div>
 
         {/* ベータ版について */}
