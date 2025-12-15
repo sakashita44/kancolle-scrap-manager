@@ -28,11 +28,10 @@ export const requirementSchema = z.object({
 });
 
 /**
- * 永続化形式任務スキーマ
- * JSONファイル・LocalStorage保存時の形式
- * isMasterフィールドは含まない（実行時に自動付与）
+ * ベース任務スキーマ（refinement適用前）
+ * extend用の基礎スキーマ
  */
-export const persistedMissionSchema = z
+const baseMissionSchema = z
   .object({
     id: missionIdSchema,
     name: safeString.max(
@@ -68,17 +67,26 @@ export const persistedMissionSchema = z
         }
       ),
   })
-  .strict()
-  .refine((data) => !Object.prototype.hasOwnProperty.call(data, 'isMaster'), {
+  .strict();
+
+/**
+ * 永続化形式任務スキーマ
+ * JSONファイル・LocalStorage保存時の形式
+ * isMasterフィールドは含まない（実行時に自動付与）
+ */
+export const persistedMissionSchema = baseMissionSchema.refine(
+  (data) => !Object.prototype.hasOwnProperty.call(data, 'isMaster'),
+  {
     message: 'isMasterフィールドは保存できません',
     path: ['isMaster'],
-  });
+  }
+);
 
 /**
  * ランタイム形式任務スキーマ
  * アプリ実行時の形式（isMaster付き）
  */
-export const runtimeMissionSchema = persistedMissionSchema.extend({
+export const runtimeMissionSchema = baseMissionSchema.extend({
   isMaster: z.boolean(),
 });
 

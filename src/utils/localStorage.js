@@ -9,49 +9,47 @@ import { validateEquipment, validateMission, validateName } from './validation.j
 import { createStorageHelper } from './storageHelper.js';
 import { logError, logWarning, logInfo } from './logger.js';
 import { toRuntimeCategories, toRuntimeEquipments, toRuntimeMissions, toPersistCategories, toPersistEquipments, toPersistMissions } from './dataConverter.js';
+import { sanitizeDataList } from './dataSanitizer.js';
+import { persistedEquipmentSchema, persistedMissionSchema } from '../schemas/index.js';
 
 // LocalStorage操作用のヘルパー関数
 const { getItem, setItem, removeItem } = createStorageHelper(localStorage, 'LocalStorage');
 
 /**
  * ユーザーデータの読込とバリデーション処理の共通関数
+ * Parse, don't validateアーキテクチャに基づき、Zodスキーマで境界での厳密なバリデーションを実施
  * @param {string} storageKey - StorageKey
  * @param {string} dataKey - データキー名（'equipments'/'missions'）
- * @param {Function} validateFn - バリデーション関数
+ * @param {import('zod').ZodSchema} schema - Zodスキーマ
  * @param {Function} toRuntimeFn - 永続化形式→ランタイム形式変換関数
  * @param {Function} saveFn - 保存関数
  * @param {string} dataType - データ種別（ログ用）
  * @returns {{data: Array, corruptedItems: Array}} データと破損アイテム情報
  */
-function loadAndValidateUserData(storageKey, dataKey, validateFn, toRuntimeFn, saveFn, dataType) {
+function loadAndValidateUserData(storageKey, dataKey, schema, toRuntimeFn, saveFn, dataType) {
   const rawData = getItem(storageKey);
   if (!rawData || !rawData[dataKey]) {
     logInfo(`No user ${dataType} found`, { function: 'loadAndValidateUserData', dataType });
     return { data: [], corruptedItems: [] };
   }
 
-  // 起動時バリデーション
-  const validPersistedItems = [];
-  const corruptedItems = [];
+  // sanitizeDataListを使用した起動時バリデーション（Parse, don't validate）
+  const { validItems: validPersistedItems, errors } = sanitizeDataList(rawData[dataKey], schema);
 
-  rawData[dataKey].forEach((item) => {
-    const validation = validateFn(item);
-    if (validation.valid) {
-      validPersistedItems.push(item);
-    } else {
-      logWarning(`Corrupted ${dataType} detected`, {
-        function: 'loadAndValidateUserData',
-        dataType,
-        id: item.id,
-        errors: validation.errors,
-      });
-      corruptedItems.push({
-        id: item.id || 'unknown',
-        name: item.name || 'unknown',
-        type: dataType,
-        errors: validation.errors,
-      });
-    }
+  // エラー情報をcorruptedItems形式に変換
+  const corruptedItems = errors.map((err) => {
+    logWarning(`Corrupted ${dataType} detected`, {
+      function: 'loadAndValidateUserData',
+      dataType,
+      index: err.index,
+      message: err.message,
+    });
+    return {
+      id: err.data?.id || 'unknown',
+      name: err.data?.name || 'unknown',
+      type: dataType,
+      errors: [err.message],
+    };
   });
 
   // 永続化形式 → ランタイム形式に変換
@@ -175,7 +173,7 @@ export function loadUserEquipments() {
   return loadAndValidateUserData(
     STORAGE_KEYS.USER_EQUIPMENTS,
     'equipments',
-    validateEquipment,
+    persistedEquipmentSchema,
     toRuntimeEquipments,
     saveUserEquipments,
     'equipment'
@@ -210,7 +208,7 @@ export function loadUserMissions() {
   return loadAndValidateUserData(
     STORAGE_KEYS.USER_MISSIONS,
     'missions',
-    validateMission,
+    persistedMissionSchema,
     toRuntimeMissions,
     saveUserMissions,
     'mission'

@@ -1,8 +1,8 @@
-import { Anchor, Settings, Download, Upload, Info, ExternalLink } from 'lucide-react'
+import { Anchor, Settings, Download, Upload, Info, ExternalLink, AlertTriangle } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { useToggle } from '../hooks/useToggle'
 
-const Header = ({ onAboutOpen, onExport, onImport }) => {
+const Header = ({ onAboutOpen, onExport, onImport, onDataReset }) => {
   const [isMenuOpen, { toggle, setFalse }] = useToggle(false)
   const menuRef = useRef(null)
   const buttonRef = useRef(null)
@@ -84,6 +84,13 @@ const Header = ({ onAboutOpen, onExport, onImport }) => {
                 >
                   <Upload className="w-4 h-4" />
                   インポート（WIP）
+                </button>
+                <button
+                  onClick={() => handleMenuItemClick(onDataReset)}
+                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                >
+                  <AlertTriangle className="w-4 h-4" />
+                  ⚠️ データを初期化（全削除）
                 </button>
               </div>
 
