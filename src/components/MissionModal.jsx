@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { PERIOD, LIMITS, TARGET_TYPE } from '../types/schema'
-import { validateName } from '../utils/validation'
+import { validateUniqueName, validateName } from '../utils/validation'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 
 const MissionModal = ({
@@ -77,6 +77,16 @@ const MissionModal = ({
       // 文字数カウンター用のメッセージ（エラーではない）
       if (name.length > LIMITS.MISSION_NAME_MAX * 0.9) {
         errors.name = `任務名は${LIMITS.MISSION_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
+      } else {
+        // 任務名の重複チェック（エラー扱い）
+        // 編集モードの場合は自分自身を除外
+        const missionsToCheck = isEditMode
+          ? missions.filter(m => m.id !== editingMission.id)
+          : missions
+        const isUnique = validateUniqueName(name, missionsToCheck)
+        if (!isUnique) {
+          errors.name = '同じ名前の任務が既に存在します'
+        }
       }
     }
 
@@ -102,7 +112,7 @@ const MissionModal = ({
     }
 
     return errors
-  }, [name, reqs])
+  }, [name, reqs, missions, isEditMode, editingMission])
 
   // フォームが有効かどうか
   const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== '' && reqs.length > 0
