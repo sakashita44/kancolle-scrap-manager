@@ -13,7 +13,7 @@ const MissionModal = ({
   const {
     equipmentsForUI: equipments,
     categoryIds: categories,
-    missions,
+    allMissions,
     getCategoryName,
     getNextMissionOrder: getNextOrder,
   } = useData()
@@ -84,8 +84,8 @@ const MissionModal = ({
         // 任務名の重複チェック（エラー扱い）
         // 編集モードの場合は自分自身を除外
         const missionsToCheck = isEditMode
-          ? missions.filter(m => m.id !== editingMission.id)
-          : missions
+          ? allMissions.filter(m => m.id !== editingMission.id)
+          : allMissions
         const isUnique = validateUniqueName(name, missionsToCheck)
         if (!isUnique) {
           errors.name = '同じ名前の任務が既に存在します'
@@ -115,7 +115,7 @@ const MissionModal = ({
     }
 
     return errors
-  }, [name, reqs, missions, isEditMode, editingMission])
+  }, [name, reqs, allMissions, isEditMode, editingMission])
 
   // フォームが有効かどうか
   const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== '' && reqs.length > 0

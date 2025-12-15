@@ -31,7 +31,7 @@ const SelectedMissionsSummary = ({
   onUpdateAuxiliaryMissionCount,
   onClearSelection
 }) => {
-  const { missions, equipmentMap, categoryMap } = useData()
+  const { allMissions, equipmentMap, categoryMap } = useData()
   const [isOpen, { toggle }] = useToggle(true)
 
   // 必要装備の概要を生成
@@ -105,7 +105,7 @@ const SelectedMissionsSummary = ({
           <div className="mt-2 pb-2 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex gap-2 overflow-x-auto pb-1 snap-x">
               {allSelected.map((selected) => {
-                const mission = missions.find((m) => m.id === selected.missionId)
+                const mission = allMissions.find((m) => m.id === selected.missionId)
                 if (!mission) return null
 
                 const isBase = selected.isBase

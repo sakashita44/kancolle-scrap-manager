@@ -47,7 +47,7 @@ function AppContent() {
     updateUserEquipment,
     deleteUserEquipment,
     setUserEquipments,
-    missions,
+    allMissions,
     missionsCrudError,
     addUserMission,
     updateUserMission,
@@ -79,7 +79,7 @@ function AppContent() {
     comparison,
     hasBaseMission,
     hasAuxiliaryMissions
-  } = useScrapComparison(selectedMissions, missions, equipmentMap, categoryMap)
+  } = useScrapComparison(selectedMissions, allMissions, equipmentMap, categoryMap)
   const { isAboutModalOpen, openAboutModal, closeAboutModal } = useAboutModal()
 
   const [activeModal, setActiveModal] = useState(null)
@@ -95,7 +95,7 @@ function AppContent() {
     setFilterCategory,
     filterPeriod,
     setFilterPeriod
-  } = useMissionFilter(missions, equipmentMap)
+  } = useMissionFilter(allMissions, equipmentMap)
 
   // エラー状態の統合
   const errorMessage = equipmentsCrudError || missionsCrudError
@@ -158,7 +158,7 @@ function AppContent() {
   }
 
   const handleDeleteCategory = (categoryId) => {
-    const impact = analyzeCategoryDeletionImpact(categoryId, userEquipments, missions, getCategoryName)
+    const impact = analyzeCategoryDeletionImpact(categoryId, userEquipments, allMissions, getCategoryName)
     const message = buildCategoryDeletionMessage(impact)
 
     setConfirmDialog({

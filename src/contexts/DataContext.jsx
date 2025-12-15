@@ -1,140 +1,53 @@
 /**
- * DataContext - アプリ全体のデータ状態を管理するContext
- * categories, equipments, missions とそのCRUD操作を一元管理
+ * DataContext - データ管理のFacade
+ * CategoryContext, EquipmentContext, MissionContextを統合し、
+ * 統一的なインターフェースを提供
  * @module contexts/DataContext
  */
 
-import { createContext, useContext } from 'react'
-import { useCategories } from '../hooks/useCategories'
-import { useEquipments } from '../hooks/useEquipments'
-import { useMissions } from '../hooks/useMissions'
-
-const DataContext = createContext(null)
+import { CategoryProvider, useCategoryData } from './CategoryContext'
+import { EquipmentProvider, useEquipmentData } from './EquipmentContext'
+import { MissionProvider, useMissionData } from './MissionContext'
 
 /**
- * DataProvider - アプリ全体のデータ状態を管理するProvider
+ * DataProvider - 3つのデータContextをラップするFacade Provider
  *
- * categories, equipments, missions とそのCRUD操作を一元管理し,
- * Props バケツリレーを解消する.
+ * アーキテクチャ: Facadeパターン
+ * - CategoryProvider, EquipmentProvider, MissionProviderを階層的にラップ
+ * - 各Providerは独立して再レンダリングを制御
+ * - useData()で統一的なインターフェースを提供
  */
 export function DataProvider({ children }) {
-  // カテゴリデータ管理
-  const {
-    allCategories,
-    categories,
-    masterCategories,
-    userCategories,
-    categoryMap,
-    categoryNameMap,
-    categoryIds,
-    crudError: categoriesCrudError,
-    corruptedItems: corruptedCategories,
-    addUserCategory,
-    updateUserCategory,
-    deleteUserCategory,
-    getCategoryName,
-    getNextOrder: getNextCategoryOrder,
-  } = useCategories()
-
-  // 装備データ管理（カテゴリに依存）
-  const {
-    equipments,
-    equipmentsForUI,
-    allEquipments,
-    masterEquipments,
-    userEquipments,
-    equipmentMap,
-    crudError: equipmentsCrudError,
-    corruptedItems: corruptedEquipments,
-    addUserEquipment,
-    updateUserEquipment,
-    deleteUserEquipment,
-    setUserEquipments,
-    findEquipmentById,
-    getNextOrder: getNextEquipmentOrder,
-  } = useEquipments(allCategories, categoryMap)
-
-  // 任務データ管理
-  const {
-    masterMissions,
-    userMissions,
-    allMissions,
-    crudError: missionsCrudError,
-    corruptedItems: corruptedMissions,
-    addUserMission,
-    updateUserMission,
-    deleteUserMission,
-    findMissionById,
-    filterByPeriod,
-    getPeriods,
-    getNextOrder: getNextMissionOrder,
-  } = useMissions()
-
-  const value = {
-    // カテゴリ関連
-    allCategories,
-    categories,
-    masterCategories,
-    userCategories,
-    categoryMap,
-    categoryNameMap,
-    categoryIds,
-    categoriesCrudError,
-    corruptedCategories,
-    addUserCategory,
-    updateUserCategory,
-    deleteUserCategory,
-    getCategoryName,
-    getNextCategoryOrder,
-
-    // 装備関連
-    equipments,
-    equipmentsForUI,
-    allEquipments,
-    masterEquipments,
-    userEquipments,
-    equipmentMap,
-    equipmentsCrudError,
-    corruptedEquipments,
-    addUserEquipment,
-    updateUserEquipment,
-    deleteUserEquipment,
-    setUserEquipments,
-    findEquipmentById,
-    getNextEquipmentOrder,
-
-    // 任務関連
-    masterMissions,
-    userMissions,
-    allMissions,
-    missions: allMissions, // 後方互換性のため
-    missionsCrudError,
-    corruptedMissions,
-    addUserMission,
-    updateUserMission,
-    deleteUserMission,
-    findMissionById,
-    filterByPeriod,
-    getPeriods,
-    getNextMissionOrder,
-  }
-
   return (
-    <DataContext.Provider value={value}>
-      {children}
-    </DataContext.Provider>
+    <CategoryProvider>
+      <EquipmentProvider>
+        <MissionProvider>
+          {children}
+        </MissionProvider>
+      </EquipmentProvider>
+    </CategoryProvider>
   )
 }
 
 /**
- * useData - DataContextを使用するカスタムフック
- * @returns {object} データ管理用のメソッドと状態
- * @throws {Error} DataProvider外で使用された場合
+ * useData - 統一的なデータアクセスのFacade hook
+ *
+ * 3つのContextから必要なデータを取得し、統一的なインターフェースで提供
+ * @returns {object} 全データと操作関数
  */
 export function useData() {
-  const context = useContext(DataContext)
-  if (!context) {
-    throw new Error('useData must be used within DataProvider')
+  const categoryData = useCategoryData()
+  const equipmentData = useEquipmentData()
+  const missionData = useMissionData()
+
+  return {
+    // カテゴリ関連
+    ...categoryData,
+
+    // 装備関連
+    ...equipmentData,
+
+    // 任務関連
+    ...missionData,
   }
-  return context
 }
