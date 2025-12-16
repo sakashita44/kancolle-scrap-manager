@@ -39,7 +39,6 @@ export function useData() {
   const {
     allCategories,
     categoryMap,
-    categoryNameMap,
     categoryIds,
     getCategoryName,
     addUserCategory,
@@ -73,7 +72,6 @@ export function useData() {
   return {
     allCategories,
     categoryMap,
-    categoryNameMap,
     categoryIds,
     getCategoryName,
     addUserCategory,

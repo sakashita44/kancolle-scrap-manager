@@ -30,7 +30,7 @@ import AboutModal from './components/AboutModal'
 
 function AppContent() {
   // エラーハンドラーを取得（Context経由）
-  const { errors, syncErrors, getErrorsByTag } = useErrorHandler()
+  const { syncErrors } = useErrorHandler()
 
   // データ管理を取得（Context経由）
   const {
