@@ -1,10 +1,10 @@
 import { Trash2, Target, Edit2 } from 'lucide-react'
 import { TARGET_TYPE } from '../types/schema'
+import { useCategoryData } from '../contexts/CategoryContext'
+import { useEquipmentData } from '../contexts/EquipmentContext'
 
 const MissionCard = ({
   mission,
-  equipmentMap,
-  categoryMap,
   isSelected,
   isBaseMission = false,
   isDisabled = false,
@@ -12,19 +12,20 @@ const MissionCard = ({
   onDelete,
   onEdit
 }) => {
+  const { categoryMap } = useCategoryData()
+  const { equipmentMap } = useEquipmentData()
   const isUserDefined = mission.id.startsWith('u_')
 
   return (
     <label
-      className={`block bg-white rounded-lg border shadow-sm transition-colors group relative ${
-        isDisabled
+      className={`block bg-white rounded-lg border shadow-sm transition-colors group relative ${isDisabled
           ? 'border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed'
           : isBaseMission
-          ? 'border-amber-400 bg-amber-50 cursor-pointer'
-          : isSelected
-          ? 'border-blue-400 bg-blue-50 cursor-pointer'
-          : 'border-slate-200 hover:border-blue-300 cursor-pointer'
-      }`}
+            ? 'border-amber-400 bg-amber-50 cursor-pointer'
+            : isSelected
+              ? 'border-blue-400 bg-blue-50 cursor-pointer'
+              : 'border-slate-200 hover:border-blue-300 cursor-pointer'
+        }`}
     >
       <div className="p-4 flex items-start gap-3">
         <div className="flex items-center gap-2">

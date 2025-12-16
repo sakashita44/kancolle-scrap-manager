@@ -20,6 +20,12 @@
 | Master Data | アプリケーションバンドル          | 公式マスタデータ (.json) をバンドル      |
 | Database    | LocalStorage (Browser)            | ユーザー定義データ, 設定, 選択状態の保存 |
 
+### Context設計ルール
+
+* `useData()`はFacadeとして, App/各UIが実際に使う最小セットのみ公開する. 公開値追加は利用箇所を作ってから行い, 利用が消えた公開値は削除する.
+* 叶コンポーネントは原則として `useData()` を使わず, 必要なContextのみを直接参照する (`useCategoryData()`, `useEquipmentData()`, `useMissionData()`).
+* `useData()` はApp層(配線)向けFacadeとして扱い, 依存が過剰に広がることを避ける.
+
 ### 2.2. データフロー (詳細版)
 
 マスタデータをアプリケーションにバンドルする戦略を採用し、起動時のネットワーク待機をゼロにする。

@@ -1,18 +1,18 @@
 import { Plus, Search } from 'lucide-react'
 import { PERIOD } from '../types/schema'
+import { useCategoryData } from '../contexts/CategoryContext'
 
 const ControlBar = ({
   filterText,
   filterCategory,
   filterPeriod,
-  categories,
-  getCategoryName,
   onFilterTextChange,
   onFilterCategoryChange,
   onFilterPeriodChange,
   onEquipmentClick,
   onMissionClick
 }) => {
+  const { categoryIds: categories, getCategoryName } = useCategoryData()
   return (
     <div className="bg-white p-3 rounded-xl shadow-sm flex flex-col sm:flex-row gap-3">
       {/* フィルタ */}

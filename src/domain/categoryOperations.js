@@ -9,12 +9,12 @@
  *
  * @param {string} id1 - カテゴリID 1
  * @param {string} id2 - カテゴリID 2
- * @param {Array} allCategories - 全カテゴリ配列
- * @param {Function} updateCategory - カテゴリ更新関数
+ * @param {(categoryId: string) => any} getCategoryById - カテゴリ取得関数
+ * @param {Function} updateCategory - カテゴリ更新関数 (id, updatedItem)
  */
-export function swapCategoryOrder(id1, id2, allCategories, updateCategory) {
-  const cat1 = allCategories.find(c => c.id === id1)
-  const cat2 = allCategories.find(c => c.id === id2)
+export function swapCategoryOrder(id1, id2, getCategoryById, updateCategory) {
+  const cat1 = getCategoryById(id1)
+  const cat2 = getCategoryById(id2)
 
   if (!cat1 || !cat2) {
     console.warn('カテゴリが見つかりません', { id1, id2 })
@@ -23,8 +23,8 @@ export function swapCategoryOrder(id1, id2, allCategories, updateCategory) {
 
   const tempOrder = cat1.order
 
-  updateCategory({ ...cat1, order: cat2.order })
-  updateCategory({ ...cat2, order: tempOrder })
+  updateCategory(id1, { ...cat1, order: cat2.order })
+  updateCategory(id2, { ...cat2, order: tempOrder })
 }
 
 /**

@@ -3,8 +3,6 @@ import { LIMITS } from '../types/schema'
 
 const MissionList = ({
   missions,
-  equipmentMap,
-  categoryMap,
   selectedMissionIds,
   selectedCount,
   isBaseMission,
@@ -31,8 +29,6 @@ const MissionList = ({
           <MissionCard
             key={mission.id}
             mission={mission}
-            equipmentMap={equipmentMap}
-            categoryMap={categoryMap}
             isSelected={isSelected}
             isBaseMission={isMissionBaseMission}
             isDisabled={isDisabled}

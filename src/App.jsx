@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ErrorProvider, useErrorHandler, ERROR_TYPE } from './contexts/ErrorContext'
-import { useEquipments } from './hooks/useEquipments'
-import { useMissions } from './hooks/useMissions'
-import { useCategories } from './hooks/useCategories'
+import { DataProvider, useData } from './contexts/DataContext'
 import { useSelectedMissions } from './hooks/useSelectedMissions'
 import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
@@ -32,38 +30,27 @@ import AboutModal from './components/AboutModal'
 
 function AppContent() {
   // エラーハンドラーを取得（Context経由）
-  const { errors, syncErrors, getErrorsByTag } = useErrorHandler()
+  const { syncErrors } = useErrorHandler()
 
+  // データ管理を取得（Context経由）
   const {
-    allCategories,
-    categoryIds: categories,
-    categoryMap,
-    categoryNameMap,
     getCategoryName,
+    getCategoryById,
     addUserCategory,
     updateUserCategory,
     deleteUserCategory,
-    getNextOrder: getNextCategoryOrder
-  } = useCategories()
-  const {
-    equipmentsForUI: equipments,
-    equipmentMap,
     userEquipments,
-    getNextOrder: getNextEquipmentOrder,
-    crudError: equipmentsCrudError,
+    equipmentsCrudError,
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment,
-    setUserEquipments
-  } = useEquipments(allCategories, categoryMap)
-  const {
-    allMissions: missions,
-    crudError: missionsCrudError,
+    setUserEquipments,
+    allMissions,
+    missionsCrudError,
     addUserMission,
     updateUserMission,
     deleteUserMission,
-    getNextOrder: getNextMissionOrder
-  } = useMissions()
+  } = useData()
   const {
     selectedMissions,
     baseMission,
@@ -90,7 +77,7 @@ function AppContent() {
     comparison,
     hasBaseMission,
     hasAuxiliaryMissions
-  } = useScrapComparison(selectedMissions, missions, equipmentMap, categoryMap)
+  } = useScrapComparison(selectedMissions)
   const { isAboutModalOpen, openAboutModal, closeAboutModal } = useAboutModal()
 
   const [activeModal, setActiveModal] = useState(null)
@@ -106,7 +93,7 @@ function AppContent() {
     setFilterCategory,
     filterPeriod,
     setFilterPeriod
-  } = useMissionFilter(missions, equipmentMap)
+  } = useMissionFilter()
 
   // エラー状態の統合
   const errorMessage = equipmentsCrudError || missionsCrudError
@@ -156,7 +143,7 @@ function AppContent() {
   }
 
   const handleSwapCategoryOrder = (id1, id2) => {
-    swapCategoryOrder(id1, id2, allCategories, updateUserCategory)
+    swapCategoryOrder(id1, id2, getCategoryById, updateUserCategory)
   }
 
   const handleDeleteEquipment = (id) => {
@@ -169,7 +156,7 @@ function AppContent() {
   }
 
   const handleDeleteCategory = (categoryId) => {
-    const impact = analyzeCategoryDeletionImpact(categoryId, userEquipments, missions, getCategoryName)
+    const impact = analyzeCategoryDeletionImpact(categoryId, userEquipments, allMissions, getCategoryName)
     const message = buildCategoryDeletionMessage(impact)
 
     setConfirmDialog({
@@ -272,38 +259,16 @@ function AppContent() {
       />
 
       {/* 破損データ警告バナー（ErrorContext経由） */}
-      {(() => {
-        const corruptedEquipmentErrors = getErrorsByTag('corrupted-equipments')
-        const corruptedMissionErrors = getErrorsByTag('corrupted-missions')
-        const corruptedEquipments = corruptedEquipmentErrors.map((err) => ({
-          name: err.context.item?.name,
-          id: err.context.item?.id,
-          reason: err.message.split(': ')[1] || err.message
-        }))
-        const corruptedMissions = corruptedMissionErrors.map((err) => ({
-          name: err.context.item?.name,
-          id: err.context.item?.id,
-          reason: err.message.split(': ')[1] || err.message
-        }))
-        return (
-          <GlobalWarningBanner
-            corruptedEquipments={corruptedEquipments}
-            corruptedMissions={corruptedMissions}
-            type="warning"
-          />
-        )
-      })()}
+      <GlobalWarningBanner
+        tags={['corrupted-equipments', 'corrupted-missions']}
+        type="warning"
+      />
 
       {/* Alpha版情報バナー（ErrorContext経由） */}
-      {(() => {
-        const alphaInfoErrors = getErrorsByTag('alpha-info')
-        return alphaInfoErrors.length > 0 && (
-          <GlobalWarningBanner
-            customMessage={alphaInfoErrors[0].message}
-            type="info"
-          />
-        )
-      })()}
+      <GlobalWarningBanner
+        tags={['alpha-info']}
+        type="info"
+      />
 
       <StickyDashboard
         scrapList={allScrapList}
@@ -314,9 +279,6 @@ function AppContent() {
       <SelectedMissionsSummary
         baseMission={baseMission}
         auxiliaryMissions={auxiliaryMissions}
-        missions={missions}
-        equipmentMap={equipmentMap}
-        categoryMap={categoryMap}
         selectedCount={selectedCount}
         onSelectBaseMission={selectBaseMission}
         onDeselectBaseMission={deselectBaseMission}
@@ -332,8 +294,6 @@ function AppContent() {
           filterText={filterText}
           filterCategory={filterCategory}
           filterPeriod={filterPeriod}
-          categories={categories}
-          getCategoryName={getCategoryName}
           onFilterTextChange={setFilterText}
           onFilterCategoryChange={setFilterCategory}
           onFilterPeriodChange={setFilterPeriod}
@@ -349,8 +309,6 @@ function AppContent() {
         {!errorMessage && (
           <MissionList
             missions={filteredMissions}
-            equipmentMap={equipmentMap}
-            categoryMap={categoryMap}
             selectedMissionIds={getAllSelectedIds()}
             selectedCount={selectedCount}
             isBaseMission={isBaseMission}
@@ -362,7 +320,7 @@ function AppContent() {
       </div>
 
       {/* FooterArea: ErrorContextに移行したため現在未使用 */}
-      <FooterArea errors={[]} onClearErrors={() => {}} />
+      <FooterArea errors={[]} onClearErrors={() => { }} />
 
       <Modal
         isOpen={activeModal === 'equipment'}
@@ -370,11 +328,6 @@ function AppContent() {
         onClose={() => setActiveModal(null)}
       >
         <EquipmentModal
-          equipments={equipments}
-          categories={categories}
-          getCategoryName={getCategoryName}
-          getNextOrder={getNextEquipmentOrder}
-          getNextCategoryOrder={getNextCategoryOrder}
           onSave={handleAddEquipment}
           onSwapOrder={handleSwapEquipmentOrder}
           onSwapCategoryOrder={handleSwapCategoryOrder}
@@ -394,11 +347,6 @@ function AppContent() {
       >
         <MissionModal
           editingMission={editingMission}
-          equipments={equipments}
-          categories={categories}
-          missions={missions}
-          getCategoryName={getCategoryName}
-          getNextOrder={getNextMissionOrder}
           onSave={handleSaveMission}
           onCancel={() => {
             setActiveModal(null)
@@ -411,9 +359,9 @@ function AppContent() {
         isOpen={confirmDialog.isOpen}
         title={
           confirmDialog.type === 'equipment' ? '装備の削除' :
-          confirmDialog.type === 'mission' ? '任務の削除' :
-          confirmDialog.type === 'data-reset' ? 'データの初期化' :
-          'カテゴリの削除'
+            confirmDialog.type === 'mission' ? '任務の削除' :
+              confirmDialog.type === 'data-reset' ? 'データの初期化' :
+                'カテゴリの削除'
         }
         message={confirmDialog.message}
         confirmText={confirmDialog.type === 'data-reset' ? '初期化' : '削除'}
@@ -434,7 +382,9 @@ function AppContent() {
 export default function App() {
   return (
     <ErrorProvider>
-      <AppContent />
+      <DataProvider>
+        <AppContent />
+      </DataProvider>
     </ErrorProvider>
   )
 }

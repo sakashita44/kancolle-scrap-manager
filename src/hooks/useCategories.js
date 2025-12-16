@@ -59,6 +59,11 @@ export function useCategories() {
     return categoryNameMap.get(categoryId) || categoryId;
   }, [categoryNameMap]);
 
+  // カテゴリIDからカテゴリオブジェクトを取得
+  const getCategoryById = useCallback((categoryId) => {
+    return categoryMap.get(categoryId) || null;
+  }, [categoryMap]);
+
   // ユーザー定義カテゴリの次の order 値を取得
   const getNextOrder = useCallback(() => {
     return getNextOrderUtil(userCategories);
@@ -85,6 +90,7 @@ export function useCategories() {
 
     // ユーティリティ
     getCategoryName,
+    getCategoryById,
     getNextOrder,
   };
 }
