@@ -8,22 +8,26 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { calculateScrapComparison, calculateScrapList } from '../domain/scrapCalculation.js';
 import { logError, logInfo } from '../utils/logger.js';
 import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext.jsx';
+import { useCategoryData } from '../contexts/CategoryContext.jsx';
+import { useEquipmentData } from '../contexts/EquipmentContext.jsx';
+import { useMissionData } from '../contexts/MissionContext.jsx';
 
 /**
  * ベース任務と補助任務の過不足を計算するカスタムフック
  * @param {{baseMission: {missionId: string, count: number} | null, auxiliaryMissions: Array<{missionId: string, count: number}>}} selectedMissions - 選択中の任務（ベース/補助分離）
- * @param {Object[]} allMissions - 全任務データ
- * @param {Map} equipmentMap - 装備検索用Map（カテゴリ代表は含まない）
- * @param {Map} categoryMap - カテゴリ検索用Map
  * @returns {Object} 過不足情報と警告
  */
-export function useScrapComparison(selectedMissions, allMissions, equipmentMap, categoryMap) {
+export function useScrapComparison(selectedMissions) {
   const [baseRequirements, setBaseRequirements] = useState([]);
   const [auxiliaryScrapList, setAuxiliaryScrapList] = useState([]);
   const [allScrapList, setAllScrapList] = useState([]);
   const [comparison, setComparison] = useState([]);
   const [warnings, setWarnings] = useState([]);
   const [calculating, setCalculating] = useState(false);
+
+  const { categoryMap } = useCategoryData();
+  const { equipmentMap } = useEquipmentData();
+  const { allMissions } = useMissionData();
 
   // エラーハンドラーを取得（Context経由）
   const { syncErrors } = useErrorHandler();

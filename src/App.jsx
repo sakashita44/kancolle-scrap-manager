@@ -34,13 +34,11 @@ function AppContent() {
 
   // データ管理を取得（Context経由）
   const {
-    allCategories,
-    categoryMap,
     getCategoryName,
+    getCategoryById,
     addUserCategory,
     updateUserCategory,
     deleteUserCategory,
-    equipmentMap,
     userEquipments,
     equipmentsCrudError,
     addUserEquipment,
@@ -79,7 +77,7 @@ function AppContent() {
     comparison,
     hasBaseMission,
     hasAuxiliaryMissions
-  } = useScrapComparison(selectedMissions, allMissions, equipmentMap, categoryMap)
+  } = useScrapComparison(selectedMissions)
   const { isAboutModalOpen, openAboutModal, closeAboutModal } = useAboutModal()
 
   const [activeModal, setActiveModal] = useState(null)
@@ -95,7 +93,7 @@ function AppContent() {
     setFilterCategory,
     filterPeriod,
     setFilterPeriod
-  } = useMissionFilter(allMissions, equipmentMap)
+  } = useMissionFilter()
 
   // エラー状態の統合
   const errorMessage = equipmentsCrudError || missionsCrudError
@@ -145,7 +143,7 @@ function AppContent() {
   }
 
   const handleSwapCategoryOrder = (id1, id2) => {
-    swapCategoryOrder(id1, id2, allCategories, updateUserCategory)
+    swapCategoryOrder(id1, id2, getCategoryById, updateUserCategory)
   }
 
   const handleDeleteEquipment = (id) => {

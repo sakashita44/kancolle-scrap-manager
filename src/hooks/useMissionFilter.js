@@ -1,4 +1,6 @@
 import { useReducer, useMemo } from 'react'
+import { useEquipmentData } from '../contexts/EquipmentContext'
+import { useMissionData } from '../contexts/MissionContext'
 
 /**
  * フィルタ状態の初期値
@@ -29,11 +31,11 @@ function filterReducer(state, action) {
 
 /**
  * 任務フィルタリングを管理するカスタムhook
- * @param {Array} missions - 任務データの配列
- * @param {Map} equipmentMap - 装備データのMap (id -> equipment)
  * @returns {Object} フィルタ状態と操作関数、フィルタ済み任務リスト
  */
-export function useMissionFilter(missions, equipmentMap) {
+export function useMissionFilter() {
+  const { allMissions: missions } = useMissionData()
+  const { equipmentMap } = useEquipmentData()
   const [filters, dispatch] = useReducer(filterReducer, initialFilterState)
 
   // フィルタリング処理

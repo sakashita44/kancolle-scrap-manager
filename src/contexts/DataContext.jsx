@@ -37,26 +37,19 @@ export function DataProvider({ children }) {
  */
 export function useData() {
   const {
-    allCategories,
-    categoryMap,
-    categoryIds,
     getCategoryName,
+    getCategoryById,
     addUserCategory,
     updateUserCategory,
     deleteUserCategory,
-    getNextOrder: getNextCategoryOrder,
-    crudError: categoriesCrudError,
   } = useCategoryData()
 
   const {
-    equipmentsForUI,
-    equipmentMap,
     userEquipments,
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment,
     setUserEquipments,
-    getNextOrder: getNextEquipmentOrder,
     crudError: equipmentsCrudError,
   } = useEquipmentData()
 
@@ -65,36 +58,27 @@ export function useData() {
     addUserMission,
     updateUserMission,
     deleteUserMission,
-    getNextOrder: getNextMissionOrder,
     crudError: missionsCrudError,
   } = useMissionData()
 
   return {
-    allCategories,
-    categoryMap,
-    categoryIds,
     getCategoryName,
+    getCategoryById,
     addUserCategory,
     updateUserCategory,
     deleteUserCategory,
-    getNextCategoryOrder,
-    categoriesCrudError,
 
-    equipmentsForUI,
-    equipmentMap,
     userEquipments,
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment,
     setUserEquipments,
-    getNextEquipmentOrder,
     equipmentsCrudError,
 
     allMissions,
     addUserMission,
     updateUserMission,
     deleteUserMission,
-    getNextMissionOrder,
     missionsCrudError,
   }
 }
