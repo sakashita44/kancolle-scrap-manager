@@ -188,7 +188,7 @@ const MissionModal = ({
                   <optgroup key={categoryId} label={getCategoryName(categoryId)}>
                     {categoryEquipments.map(e => (
                       <option key={e.id} value={e.id}>
-                        {e.name} ({e.type === 'category' ? '種別不問' : '個別装備'})
+                        {e.name}
                       </option>
                     ))}
                   </optgroup>
