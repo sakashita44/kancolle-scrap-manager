@@ -6,47 +6,54 @@ import { useErrorHandler } from '../contexts/ErrorContext'
  * グローバル警告バナーコンポーネント
  * 破損データ検出時やマスタデータフェッチ失敗時に警告を表示
  * @param {Object} props
- * @param {string} props.tag - ErrorContextから取得するエラーのタグ
+ * @param {string[]} props.tags - ErrorContextから取得するエラーのタグ配列
+ * @param {string} props.tag - 互換用. 単一タグ
  * @param {string} props.type - バナータイプ ('warning' | 'error' | 'info')
  * @param {string} props.customMessage - カスタムメッセージ（破損データがない場合）
  */
 const GlobalWarningBanner = ({
   tag = null,
+  tags = null,
   type = 'warning',
   customMessage = null
 }) => {
   const [dismissed, setDismissed] = useState(false)
   const { getErrorsByTag } = useErrorHandler()
 
+  const normalizedTags = useMemo(() => {
+    const list = []
+    if (Array.isArray(tags)) list.push(...tags)
+    if (typeof tags === 'string') list.push(tags)
+    if (typeof tag === 'string') list.push(tag)
+    return [...new Set(list.filter(Boolean))]
+  }, [tag, tags])
+
   // ErrorContextからエラーを取得して加工
   const { corruptedEquipments, corruptedMissions, message } = useMemo(() => {
-    if (tag === 'corrupted-data') {
-      const equipmentErrors = getErrorsByTag('corrupted-equipments')
-      const missionErrors = getErrorsByTag('corrupted-missions')
-      return {
-        corruptedEquipments: equipmentErrors.map((err) => ({
-          name: err.context.item?.name,
-          id: err.context.item?.id,
-          reason: err.message.split(': ')[1] || err.message
-        })),
-        corruptedMissions: missionErrors.map((err) => ({
-          name: err.context.item?.name,
-          id: err.context.item?.id,
-          reason: err.message.split(': ')[1] || err.message
-        })),
-        message: null
-      }
-    } else if (tag) {
-      // その他のタグ（alpha-infoなど）の場合
-      const errors = getErrorsByTag(tag)
-      return {
-        corruptedEquipments: [],
-        corruptedMissions: [],
-        message: errors.length > 0 ? errors[0].message : null
-      }
+    const equipmentErrors = normalizedTags.includes('corrupted-equipments')
+      ? getErrorsByTag('corrupted-equipments')
+      : []
+    const missionErrors = normalizedTags.includes('corrupted-missions')
+      ? getErrorsByTag('corrupted-missions')
+      : []
+
+    const messageTags = normalizedTags.filter((t) => t !== 'corrupted-equipments' && t !== 'corrupted-missions')
+    const messageErrors = messageTags.flatMap((t) => getErrorsByTag(t))
+
+    return {
+      corruptedEquipments: equipmentErrors.map((err) => ({
+        name: err.context.item?.name,
+        id: err.context.item?.id,
+        reason: err.message.split(': ')[1] || err.message
+      })),
+      corruptedMissions: missionErrors.map((err) => ({
+        name: err.context.item?.name,
+        id: err.context.item?.id,
+        reason: err.message.split(': ')[1] || err.message
+      })),
+      message: messageErrors.length > 0 ? messageErrors[0].message : null
     }
-    return { corruptedEquipments: [], corruptedMissions: [], message: null }
-  }, [tag, getErrorsByTag])
+  }, [normalizedTags, getErrorsByTag])
 
   // customMessageが指定されている場合はそちらを優先
   const displayMessage = customMessage || message

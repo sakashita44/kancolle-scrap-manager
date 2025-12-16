@@ -30,7 +30,7 @@ export function CategoryProvider({ children }) {
 export function useCategoryData() {
   const context = useContext(CategoryContext)
   if (!context) {
-    throw new Error('useCategoryData must be used within CategoryProvider')
+    throw new Error('useCategoryData must be used within CategoryProvider (or DataProvider)')
   }
   return context
 }

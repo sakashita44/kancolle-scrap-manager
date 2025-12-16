@@ -36,18 +36,67 @@ export function DataProvider({ children }) {
  * @returns {object} 全データと操作関数
  */
 export function useData() {
-  const categoryData = useCategoryData()
-  const equipmentData = useEquipmentData()
-  const missionData = useMissionData()
+  const {
+    allCategories,
+    categoryMap,
+    categoryNameMap,
+    categoryIds,
+    getCategoryName,
+    addUserCategory,
+    updateUserCategory,
+    deleteUserCategory,
+    getNextOrder: getNextCategoryOrder,
+    crudError: categoriesCrudError,
+  } = useCategoryData()
+
+  const {
+    equipmentsForUI,
+    equipmentMap,
+    userEquipments,
+    addUserEquipment,
+    updateUserEquipment,
+    deleteUserEquipment,
+    setUserEquipments,
+    getNextOrder: getNextEquipmentOrder,
+    crudError: equipmentsCrudError,
+  } = useEquipmentData()
+
+  const {
+    allMissions,
+    addUserMission,
+    updateUserMission,
+    deleteUserMission,
+    getNextOrder: getNextMissionOrder,
+    crudError: missionsCrudError,
+  } = useMissionData()
 
   return {
-    // カテゴリ関連
-    ...categoryData,
+    allCategories,
+    categoryMap,
+    categoryNameMap,
+    categoryIds,
+    getCategoryName,
+    addUserCategory,
+    updateUserCategory,
+    deleteUserCategory,
+    getNextCategoryOrder,
+    categoriesCrudError,
 
-    // 装備関連
-    ...equipmentData,
+    equipmentsForUI,
+    equipmentMap,
+    userEquipments,
+    addUserEquipment,
+    updateUserEquipment,
+    deleteUserEquipment,
+    setUserEquipments,
+    getNextEquipmentOrder,
+    equipmentsCrudError,
 
-    // 任務関連
-    ...missionData,
+    allMissions,
+    addUserMission,
+    updateUserMission,
+    deleteUserMission,
+    getNextMissionOrder,
+    missionsCrudError,
   }
 }

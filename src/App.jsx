@@ -262,13 +262,13 @@ function AppContent() {
 
       {/* 破損データ警告バナー（ErrorContext経由） */}
       <GlobalWarningBanner
-        tag="corrupted-data"
+        tags={['corrupted-equipments', 'corrupted-missions']}
         type="warning"
       />
 
       {/* Alpha版情報バナー（ErrorContext経由） */}
       <GlobalWarningBanner
-        tag="alpha-info"
+        tags={['alpha-info']}
         type="info"
       />
 
@@ -322,7 +322,7 @@ function AppContent() {
       </div>
 
       {/* FooterArea: ErrorContextに移行したため現在未使用 */}
-      <FooterArea errors={[]} onClearErrors={() => {}} />
+      <FooterArea errors={[]} onClearErrors={() => { }} />
 
       <Modal
         isOpen={activeModal === 'equipment'}
@@ -361,9 +361,9 @@ function AppContent() {
         isOpen={confirmDialog.isOpen}
         title={
           confirmDialog.type === 'equipment' ? '装備の削除' :
-          confirmDialog.type === 'mission' ? '任務の削除' :
-          confirmDialog.type === 'data-reset' ? 'データの初期化' :
-          'カテゴリの削除'
+            confirmDialog.type === 'mission' ? '任務の削除' :
+              confirmDialog.type === 'data-reset' ? 'データの初期化' :
+                'カテゴリの削除'
         }
         message={confirmDialog.message}
         confirmText={confirmDialog.type === 'data-reset' ? '初期化' : '削除'}

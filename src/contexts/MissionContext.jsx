@@ -30,7 +30,7 @@ export function MissionProvider({ children }) {
 export function useMissionData() {
   const context = useContext(MissionContext)
   if (!context) {
-    throw new Error('useMissionData must be used within MissionProvider')
+    throw new Error('useMissionData must be used within MissionProvider (or DataProvider)')
   }
   return context
 }

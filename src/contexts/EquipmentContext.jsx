@@ -33,7 +33,7 @@ export function EquipmentProvider({ children }) {
 export function useEquipmentData() {
   const context = useContext(EquipmentContext)
   if (!context) {
-    throw new Error('useEquipmentData must be used within EquipmentProvider')
+    throw new Error('useEquipmentData must be used within EquipmentProvider (or DataProvider)')
   }
   return context
 }
