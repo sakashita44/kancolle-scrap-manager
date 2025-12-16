@@ -8,7 +8,6 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import {
   loadSelectedMissions,
   saveSelectedMissions,
-  clearSelectedMissions,
 } from '../utils/sessionStorage.js'
 import { LIMITS } from '../types/schema.js'
 import { logError, logWarning } from '../utils/logger.js'
@@ -196,10 +195,10 @@ export function SelectionProvider({ children }) {
     }))
   }, [])
 
-  // 全ての選択を解除
+  // 全ての選択を解除（空データを保存する方針）
   const clearSelection = useCallback(() => {
     setSelectedMissions({ baseMission: null, auxiliaryMissions: [] })
-    clearSelectedMissions()
+    // effectで空データが自動保存される（「空を保存する」方針に統一）
   }, [])
 
   // 任務が選択されているかチェック（ベース/補助問わず）

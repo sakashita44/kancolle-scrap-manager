@@ -2,13 +2,16 @@ import MissionCard from './MissionCard'
 import { LIMITS } from '../types/schema'
 import { useSelection } from '../contexts/SelectionContext'
 
+/**
+ * 任務リストを表示するContainerコンポーネント
+ * SelectionContextから選択状態と操作を取得
+ */
 const MissionList = ({
   missions,
-  onToggle,
   onDelete,
   onEdit
 }) => {
-  const { selectedCount, isBaseMission, getAllSelectedIds } = useSelection()
+  const { selectedCount, isBaseMission, getAllSelectedIds, toggleMission } = useSelection()
   const selectedMissionIds = getAllSelectedIds()
   const isMaxSelected = selectedCount >= LIMITS.SELECTED_MISSIONS_MAX
   if (missions.length === 0) {
@@ -32,7 +35,7 @@ const MissionList = ({
             isSelected={isSelected}
             isBaseMission={isMissionBaseMission}
             isDisabled={isDisabled}
-            onToggle={onToggle}
+            onToggle={toggleMission}
             onDelete={onDelete}
             onEdit={onEdit}
           />

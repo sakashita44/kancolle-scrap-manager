@@ -52,8 +52,7 @@ function AppContent() {
     deleteUserMission,
   } = useData()
   const {
-    selectedMissions,
-    toggleMission
+    selectedMissions
   } = useSelection()
   const {
     baseRequirements,
@@ -283,7 +282,6 @@ function AppContent() {
         {!errorMessage && (
           <MissionList
             missions={filteredMissions}
-            onToggle={toggleMission}
             onDelete={handleDeleteMission}
             onEdit={handleEditMission}
           />
