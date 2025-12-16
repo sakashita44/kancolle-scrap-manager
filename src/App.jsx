@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ErrorProvider, useErrorHandler, ERROR_TYPE } from './contexts/ErrorContext'
 import { DataProvider, useData } from './contexts/DataContext'
-import { useSelectedMissions } from './hooks/useSelectedMissions'
+import { SelectionProvider, useSelection } from './contexts/SelectionContext'
 import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
@@ -52,24 +52,8 @@ function AppContent() {
     deleteUserMission,
   } = useData()
   const {
-    selectedMissions,
-    baseMission,
-    auxiliaryMissions,
-    selectedCount,
-    selectBaseMission,
-    deselectBaseMission,
-    updateBaseMissionCount,
-    selectAuxiliaryMission,
-    deselectAuxiliaryMission,
-    updateAuxiliaryMissionCount,
-    toggleMission,
-    clearSelection,
-    isSelected,
-    isBaseMission,
-    isAuxiliaryMission,
-    getAllSelectedIds,
-    getAllSelectedMissions
-  } = useSelectedMissions()
+    selectedMissions
+  } = useSelection()
   const {
     baseRequirements,
     auxiliaryScrapList,
@@ -276,18 +260,7 @@ function AppContent() {
         hasBaseMission={hasBaseMission}
       />
 
-      <SelectedMissionsSummary
-        baseMission={baseMission}
-        auxiliaryMissions={auxiliaryMissions}
-        selectedCount={selectedCount}
-        onSelectBaseMission={selectBaseMission}
-        onDeselectBaseMission={deselectBaseMission}
-        onDeselectAuxiliaryMission={deselectAuxiliaryMission}
-        onToggleMission={toggleMission}
-        onUpdateBaseMissionCount={updateBaseMissionCount}
-        onUpdateAuxiliaryMissionCount={updateAuxiliaryMissionCount}
-        onClearSelection={clearSelection}
-      />
+      <SelectedMissionsSummary />
 
       <div className="max-w-3xl mx-auto p-4">
         <ControlBar
@@ -309,10 +282,6 @@ function AppContent() {
         {!errorMessage && (
           <MissionList
             missions={filteredMissions}
-            selectedMissionIds={getAllSelectedIds()}
-            selectedCount={selectedCount}
-            isBaseMission={isBaseMission}
-            onToggle={toggleMission}
             onDelete={handleDeleteMission}
             onEdit={handleEditMission}
           />
@@ -383,7 +352,9 @@ export default function App() {
   return (
     <ErrorProvider>
       <DataProvider>
-        <AppContent />
+        <SelectionProvider>
+          <AppContent />
+        </SelectionProvider>
       </DataProvider>
     </ErrorProvider>
   )
