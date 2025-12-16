@@ -3,20 +3,18 @@ import { Plus, Trash2 } from 'lucide-react'
 import { PERIOD, LIMITS, TARGET_TYPE } from '../types/schema'
 import { validateUniqueName, validateName } from '../utils/validation'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
-import { useData } from '../contexts/DataContext'
+import { useCategoryData } from '../contexts/CategoryContext'
+import { useEquipmentData } from '../contexts/EquipmentContext'
+import { useMissionData } from '../contexts/MissionContext'
 
 const MissionModal = ({
   editingMission = null, // 編集対象の任務（追加時はnull）
   onSave,
   onCancel
 }) => {
-  const {
-    equipmentsForUI: equipments,
-    categoryIds: categories,
-    allMissions,
-    getCategoryName,
-    getNextMissionOrder: getNextOrder,
-  } = useData()
+  const { categoryIds: categories, getCategoryName } = useCategoryData()
+  const { equipmentsForUI: equipments } = useEquipmentData()
+  const { allMissions, getNextOrder: getNextOrder } = useMissionData()
   const isEditMode = editingMission !== null
 
   const [name, setName] = useState(editingMission?.name || '')
@@ -150,9 +148,8 @@ const MissionModal = ({
           {name && <span className="ml-1 text-[10px] text-slate-400">({name.length}/{LIMITS.MISSION_NAME_MAX})</span>}
         </label>
         <input
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none ${
-            validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
-          }`}
+          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none ${validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+            }`}
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="例: (単) 新型兵装の廃棄"
@@ -182,9 +179,8 @@ const MissionModal = ({
           {reqs.map((req, index) => (
             <div key={req.id} className="flex gap-2">
               <select
-                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${
-                  validationErrors[`req_${req.id}_target`] ? 'border-red-500' : ''
-                }`}
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${validationErrors[`req_${req.id}_target`] ? 'border-red-500' : ''
+                  }`}
                 value={req.targetId}
                 onChange={e => updateReq(req.id, 'targetId', e.target.value)}
               >
@@ -202,9 +198,8 @@ const MissionModal = ({
                 type="number"
                 min={LIMITS.REQUIREMENT_COUNT_MIN}
                 max={LIMITS.REQUIREMENT_COUNT_MAX}
-                className={`w-20 px-2 py-2 border rounded-lg text-center text-sm ${
-                  validationErrors[`req_${req.id}_count`] ? 'border-red-500' : ''
-                }`}
+                className={`w-20 px-2 py-2 border rounded-lg text-center text-sm ${validationErrors[`req_${req.id}_count`] ? 'border-red-500' : ''
+                  }`}
                 value={req.count}
                 onChange={e => updateReq(req.id, 'count', e.target.value)}
               />
@@ -227,11 +222,10 @@ const MissionModal = ({
             type="button"
             onClick={addReq}
             disabled={reqs.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX}
-            className={`w-full py-2 text-sm rounded-lg flex items-center justify-center gap-1 transition-colors ${
-              reqs.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX
+            className={`w-full py-2 text-sm rounded-lg flex items-center justify-center gap-1 transition-colors ${reqs.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX
                 ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                 : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
-            }`}
+              }`}
           >
             <Plus className="w-4 h-4" />
             装備を追加
@@ -249,11 +243,10 @@ const MissionModal = ({
         <button
           type="submit"
           disabled={!isFormValid}
-          className={`flex-1 py-2 rounded-lg font-bold transition-colors ${
-            isFormValid
+          className={`flex-1 py-2 rounded-lg font-bold transition-colors ${isFormValid
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-          }`}
+            }`}
         >
           {isEditMode ? '更新' : '追加'}
         </button>

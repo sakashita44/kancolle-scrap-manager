@@ -1,7 +1,9 @@
 import { Check, X, ChevronUp, ChevronDown, Plus, Minus, Target } from 'lucide-react'
 import { LIMITS } from '../types/schema'
 import { useToggle } from '../hooks/useToggle'
-import { useData } from '../contexts/DataContext'
+import { useCategoryData } from '../contexts/CategoryContext'
+import { useEquipmentData } from '../contexts/EquipmentContext'
+import { useMissionData } from '../contexts/MissionContext'
 
 /**
  * 選択中の任務一覧を表示する折り畳み可能なコンポーネント
@@ -31,7 +33,9 @@ const SelectedMissionsSummary = ({
   onUpdateAuxiliaryMissionCount,
   onClearSelection
 }) => {
-  const { allMissions, equipmentMap, categoryMap } = useData()
+  const { categoryMap } = useCategoryData()
+  const { equipmentMap } = useEquipmentData()
+  const { allMissions } = useMissionData()
   const [isOpen, { toggle }] = useToggle(true)
 
   // 必要装備の概要を生成
@@ -113,11 +117,10 @@ const SelectedMissionsSummary = ({
                 return (
                   <div
                     key={mission.id}
-                    className={`flex-none rounded-lg p-2 shadow-sm snap-center min-w-[200px] max-w-[250px] hover:shadow-md transition-shadow group ${
-                      isBase
+                    className={`flex-none rounded-lg p-2 shadow-sm snap-center min-w-[200px] max-w-[250px] hover:shadow-md transition-shadow group ${isBase
                         ? 'bg-amber-50 border-2 border-amber-300'
                         : 'bg-white border border-blue-300'
-                    }`}
+                      }`}
                   >
                     {/* ヘッダー: 任務名と選択解除ボタン */}
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -125,17 +128,15 @@ const SelectedMissionsSummary = ({
                         <div className="font-semibold text-sm text-slate-700 truncate" title={mission.name}>
                           {mission.name}
                         </div>
-                        <span className={`text-xs px-1.5 py-0.5 rounded inline-block mt-1 ${
-                          isBase ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'
-                        }`}>
+                        <span className={`text-xs px-1.5 py-0.5 rounded inline-block mt-1 ${isBase ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'
+                          }`}>
                           {mission.period}
                         </span>
                       </div>
                       <button
                         onClick={() => onToggleMission(mission.id)}
-                        className={`flex-none transition-colors p-1 -m-1 ${
-                          isBase ? 'text-slate-300 hover:text-amber-600' : 'text-slate-300 hover:text-blue-500'
-                        }`}
+                        className={`flex-none transition-colors p-1 -m-1 ${isBase ? 'text-slate-300 hover:text-amber-600' : 'text-slate-300 hover:text-blue-500'
+                          }`}
                         title="選択を解除"
                       >
                         <X className="w-4 h-4" />
@@ -148,9 +149,8 @@ const SelectedMissionsSummary = ({
                     </div>
 
                     {/* 実行回数選択 */}
-                    <div className={`flex items-center gap-2 pt-2 mb-2 ${
-                      isBase ? 'border-t border-amber-200' : 'border-t border-blue-100'
-                    }`}>
+                    <div className={`flex items-center gap-2 pt-2 mb-2 ${isBase ? 'border-t border-amber-200' : 'border-t border-blue-100'
+                      }`}>
                       <span className="text-xs text-slate-600 font-medium">実行回数:</span>
                       <div className="flex items-center gap-1 ml-auto">
                         <button
@@ -159,11 +159,10 @@ const SelectedMissionsSummary = ({
                             : onUpdateAuxiliaryMissionCount(mission.id, selected.count - 1)
                           }
                           disabled={selected.count <= 1}
-                          className={`p-0.5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${
-                            isBase
+                          className={`p-0.5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${isBase
                               ? 'bg-amber-100 hover:bg-amber-200'
                               : 'bg-slate-100 hover:bg-slate-200'
-                          }`}
+                            }`}
                           title="回数を減らす"
                         >
                           <Minus className={`w-3 h-3 ${isBase ? 'text-amber-700' : 'text-slate-600'}`} />
@@ -183,11 +182,10 @@ const SelectedMissionsSummary = ({
                               }
                             }
                           }}
-                          className={`w-10 text-center text-sm font-semibold text-slate-700 border rounded px-1 py-0.5 focus:outline-none focus:ring-1 ${
-                            isBase
+                          className={`w-10 text-center text-sm font-semibold text-slate-700 border rounded px-1 py-0.5 focus:outline-none focus:ring-1 ${isBase
                               ? 'border-amber-300 focus:ring-amber-400'
                               : 'border-slate-200 focus:ring-blue-400'
-                          }`}
+                            }`}
                         />
                         <button
                           onClick={() => isBase
@@ -195,11 +193,10 @@ const SelectedMissionsSummary = ({
                             : onUpdateAuxiliaryMissionCount(mission.id, selected.count + 1)
                           }
                           disabled={selected.count >= 99}
-                          className={`p-0.5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${
-                            isBase
+                          className={`p-0.5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${isBase
                               ? 'bg-amber-100 hover:bg-amber-200'
                               : 'bg-slate-100 hover:bg-slate-200'
-                          }`}
+                            }`}
                           title="回数を増やす"
                         >
                           <Plus className={`w-3 h-3 ${isBase ? 'text-amber-700' : 'text-slate-600'}`} />
@@ -218,11 +215,10 @@ const SelectedMissionsSummary = ({
                           onSelectBaseMission(mission.id)
                         }
                       }}
-                      className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                        isBase
+                      className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors ${isBase
                           ? 'bg-amber-500 hover:bg-amber-600 text-white'
                           : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                      }`}
+                        }`}
                     >
                       <Target className="w-4 h-4" />
                       <span className="text-xs font-medium">

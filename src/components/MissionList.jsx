@@ -1,6 +1,5 @@
 import MissionCard from './MissionCard'
 import { LIMITS } from '../types/schema'
-import { useData } from '../contexts/DataContext'
 
 const MissionList = ({
   missions,
@@ -11,7 +10,6 @@ const MissionList = ({
   onDelete,
   onEdit
 }) => {
-  const { equipmentMap, categoryMap } = useData()
   const isMaxSelected = selectedCount >= LIMITS.SELECTED_MISSIONS_MAX
   if (missions.length === 0) {
     return (

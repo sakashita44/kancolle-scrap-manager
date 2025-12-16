@@ -7,13 +7,11 @@ import { useErrorHandler } from '../contexts/ErrorContext'
  * 破損データ検出時やマスタデータフェッチ失敗時に警告を表示
  * @param {Object} props
  * @param {string[]} props.tags - ErrorContextから取得するエラーのタグ配列
- * @param {string} props.tag - 互換用. 単一タグ
  * @param {string} props.type - バナータイプ ('warning' | 'error' | 'info')
  * @param {string} props.customMessage - カスタムメッセージ（破損データがない場合）
  */
 const GlobalWarningBanner = ({
-  tag = null,
-  tags = null,
+  tags = [],
   type = 'warning',
   customMessage = null
 }) => {
@@ -21,12 +19,9 @@ const GlobalWarningBanner = ({
   const { getErrorsByTag } = useErrorHandler()
 
   const normalizedTags = useMemo(() => {
-    const list = []
-    if (Array.isArray(tags)) list.push(...tags)
-    if (typeof tags === 'string') list.push(tags)
-    if (typeof tag === 'string') list.push(tag)
+    const list = Array.isArray(tags) ? tags : []
     return [...new Set(list.filter(Boolean))]
-  }, [tag, tags])
+  }, [tags])
 
   // ErrorContextからエラーを取得して加工
   const { corruptedEquipments, corruptedMissions, message } = useMemo(() => {
