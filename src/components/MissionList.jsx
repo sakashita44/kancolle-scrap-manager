@@ -1,15 +1,15 @@
 import MissionCard from './MissionCard'
 import { LIMITS } from '../types/schema'
+import { useSelection } from '../contexts/SelectionContext'
 
 const MissionList = ({
   missions,
-  selectedMissionIds,
-  selectedCount,
-  isBaseMission,
   onToggle,
   onDelete,
   onEdit
 }) => {
+  const { selectedCount, isBaseMission, getAllSelectedIds } = useSelection()
+  const selectedMissionIds = getAllSelectedIds()
   const isMaxSelected = selectedCount >= LIMITS.SELECTED_MISSIONS_MAX
   if (missions.length === 0) {
     return (

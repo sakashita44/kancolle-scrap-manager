@@ -4,38 +4,28 @@ import { useToggle } from '../hooks/useToggle'
 import { useCategoryData } from '../contexts/CategoryContext'
 import { useEquipmentData } from '../contexts/EquipmentContext'
 import { useMissionData } from '../contexts/MissionContext'
+import { useSelection } from '../contexts/SelectionContext'
 
 /**
  * 選択中の任務一覧を表示する折り畳み可能なコンポーネント
  * 選択中の任務からベース任務を指定可能
- * @param {Object} props
- * @param {{missionId: string, count: number} | null} props.baseMission - ベース任務
- * @param {Array<{missionId: string, count: number}>} props.auxiliaryMissions - 補助任務リスト
- * @param {number} props.selectedCount - 選択中の任務数
- * @param {Function} props.isBaseMission - ベース任務かチェック
- * @param {Function} props.onSelectBaseMission - ベース任務設定ハンドラ
- * @param {Function} props.onDeselectBaseMission - ベース任務解除ハンドラ
- * @param {Function} props.onDeselectAuxiliaryMission - 補助任務選択解除ハンドラ
- * @param {Function} props.onToggleMission - 任務選択トグルハンドラ
- * @param {Function} props.onUpdateBaseMissionCount - ベース任務実行回数更新ハンドラ
- * @param {Function} props.onUpdateAuxiliaryMissionCount - 補助任務実行回数更新ハンドラ
- * @param {Function} props.onClearSelection - 全選択解除ハンドラ
+ * SelectionContextから直接データを取得
  */
-const SelectedMissionsSummary = ({
-  baseMission,
-  auxiliaryMissions,
-  selectedCount,
-  onSelectBaseMission,
-  onDeselectBaseMission,
-  onDeselectAuxiliaryMission,
-  onToggleMission,
-  onUpdateBaseMissionCount,
-  onUpdateAuxiliaryMissionCount,
-  onClearSelection
-}) => {
+const SelectedMissionsSummary = () => {
   const { categoryMap } = useCategoryData()
   const { equipmentMap } = useEquipmentData()
   const { allMissions } = useMissionData()
+  const {
+    baseMission,
+    auxiliaryMissions,
+    selectedCount,
+    selectBaseMission,
+    deselectBaseMission,
+    toggleMission,
+    updateBaseMissionCount,
+    updateAuxiliaryMissionCount,
+    clearSelection
+  } = useSelection()
   const [isOpen, { toggle }] = useToggle(true)
 
   // 必要装備の概要を生成
@@ -90,7 +80,7 @@ const SelectedMissionsSummary = ({
             <button
               onClick={(e) => {
                 e.stopPropagation()
-                onClearSelection()
+                clearSelection()
               }}
               className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200 transition-colors flex items-center gap-1"
               title="全解除"
@@ -134,7 +124,7 @@ const SelectedMissionsSummary = ({
                         </span>
                       </div>
                       <button
-                        onClick={() => onToggleMission(mission.id)}
+                        onClick={() => toggleMission(mission.id)}
                         className={`flex-none transition-colors p-1 -m-1 ${isBase ? 'text-slate-300 hover:text-amber-600' : 'text-slate-300 hover:text-blue-500'
                           }`}
                         title="選択を解除"
@@ -155,8 +145,8 @@ const SelectedMissionsSummary = ({
                       <div className="flex items-center gap-1 ml-auto">
                         <button
                           onClick={() => isBase
-                            ? onUpdateBaseMissionCount(selected.count - 1)
-                            : onUpdateAuxiliaryMissionCount(mission.id, selected.count - 1)
+                            ? updateBaseMissionCount(selected.count - 1)
+                            : updateAuxiliaryMissionCount(mission.id, selected.count - 1)
                           }
                           disabled={selected.count <= 1}
                           className={`p-0.5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${isBase
@@ -176,9 +166,9 @@ const SelectedMissionsSummary = ({
                             const value = parseInt(e.target.value, 10)
                             if (!isNaN(value)) {
                               if (isBase) {
-                                onUpdateBaseMissionCount(value)
+                                updateBaseMissionCount(value)
                               } else {
-                                onUpdateAuxiliaryMissionCount(mission.id, value)
+                                updateAuxiliaryMissionCount(mission.id, value)
                               }
                             }
                           }}
@@ -189,8 +179,8 @@ const SelectedMissionsSummary = ({
                         />
                         <button
                           onClick={() => isBase
-                            ? onUpdateBaseMissionCount(selected.count + 1)
-                            : onUpdateAuxiliaryMissionCount(mission.id, selected.count + 1)
+                            ? updateBaseMissionCount(selected.count + 1)
+                            : updateAuxiliaryMissionCount(mission.id, selected.count + 1)
                           }
                           disabled={selected.count >= 99}
                           className={`p-0.5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${isBase
@@ -209,10 +199,10 @@ const SelectedMissionsSummary = ({
                       onClick={() => {
                         if (isBase) {
                           // 既にベース任務の場合は解除
-                          onDeselectBaseMission()
+                          deselectBaseMission()
                         } else {
                           // ベース任務として設定
-                          onSelectBaseMission(mission.id)
+                          selectBaseMission(mission.id)
                         }
                       }}
                       className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg transition-colors ${isBase
