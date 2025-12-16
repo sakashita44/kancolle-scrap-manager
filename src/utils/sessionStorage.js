@@ -71,13 +71,13 @@ export function loadSelectedMissions() {
 }
 
 /**
- * 選択状態をクリア
- * @returns {boolean} 削除が成功した場合true
+ * 選択状態をクリア（空データを保存する方針に統一）
+ * @returns {boolean} クリアが成功した場合true
  */
 export function clearSelectedMissions() {
   try {
-    removeItem(STORAGE_KEYS.SELECTED_MISSIONS);
-    logInfo('Cleared selected missions', { function: 'clearSelectedMissions' });
+    saveSelectedMissions({ baseMission: null, auxiliaryMissions: [] });
+    logInfo('Cleared selected missions (saved empty data)', { function: 'clearSelectedMissions' });
     return true;
   } catch (error) {
     logError('Failed to clear selected missions', {

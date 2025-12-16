@@ -4,7 +4,7 @@
  * @module contexts/SelectionContext
  */
 
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 import {
   loadSelectedMissions,
   saveSelectedMissions,
@@ -254,7 +254,7 @@ export function SelectionProvider({ children }) {
     return missions
   }, [selectedMissions])
 
-  const value = {
+  const value = useMemo(() => ({
     // データ
     selectedMissions,
     baseMission: selectedMissions.baseMission,
@@ -283,7 +283,23 @@ export function SelectionProvider({ children }) {
     canSelect,
     getAllSelectedIds,
     getAllSelectedMissions,
-  }
+  }), [
+    selectedMissions,
+    selectBaseMission,
+    deselectBaseMission,
+    updateBaseMissionCount,
+    selectAuxiliaryMission,
+    deselectAuxiliaryMission,
+    updateAuxiliaryMissionCount,
+    toggleMission,
+    clearSelection,
+    isSelected,
+    isBaseMission,
+    isAuxiliaryMission,
+    canSelect,
+    getAllSelectedIds,
+    getAllSelectedMissions,
+  ])
 
   return (
     <SelectionContext.Provider value={value}>

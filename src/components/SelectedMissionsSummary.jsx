@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Check, X, ChevronUp, ChevronDown, Plus, Minus, Target } from 'lucide-react'
 import { LIMITS } from '../types/schema'
 import { useToggle } from '../hooks/useToggle'
@@ -27,6 +28,9 @@ const SelectedMissionsSummary = () => {
     clearSelection
   } = useSelection()
   const [isOpen, { toggle }] = useToggle(true)
+
+  // 任務IDからMissionオブジェクトへのMapを作成してO(1)アクセスに最適化
+  const missionMap = useMemo(() => new Map(allMissions.map(m => [m.id, m])), [allMissions])
 
   // 必要装備の概要を生成
   const getEquipmentSummary = (mission) => {
@@ -99,7 +103,7 @@ const SelectedMissionsSummary = () => {
           <div className="mt-2 pb-2 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex gap-2 overflow-x-auto pb-1 snap-x">
               {allSelected.map((selected) => {
-                const mission = allMissions.find((m) => m.id === selected.missionId)
+                const mission = missionMap.get(selected.missionId)
                 if (!mission) return null
 
                 const isBase = selected.isBase

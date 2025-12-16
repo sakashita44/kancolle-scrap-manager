@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import MissionCard from './MissionCard'
 import { LIMITS } from '../types/schema'
 import { useSelection } from '../contexts/SelectionContext'
@@ -12,7 +13,9 @@ const MissionList = ({
   onEdit
 }) => {
   const { selectedCount, isBaseMission, getAllSelectedIds, toggleMission } = useSelection()
-  const selectedMissionIds = getAllSelectedIds()
+
+  // 選択IDをSetに変換してO(1)判定に最適化
+  const selectedIdSet = useMemo(() => new Set(getAllSelectedIds()), [getAllSelectedIds])
   const isMaxSelected = selectedCount >= LIMITS.SELECTED_MISSIONS_MAX
   if (missions.length === 0) {
     return (
@@ -25,7 +28,7 @@ const MissionList = ({
   return (
     <div className="space-y-2">
       {missions.map(mission => {
-        const isSelected = selectedMissionIds.includes(mission.id)
+        const isSelected = selectedIdSet.has(mission.id)
         const isMissionBaseMission = isBaseMission(mission.id)
         const isDisabled = isMaxSelected && !isSelected
         return (
