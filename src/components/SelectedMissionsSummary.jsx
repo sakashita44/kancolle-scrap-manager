@@ -6,6 +6,7 @@ import { useCategoryData } from '../contexts/CategoryContext'
 import { useEquipmentData } from '../contexts/EquipmentContext'
 import { useMissionData } from '../contexts/MissionContext'
 import { useSelection } from '../contexts/SelectionContext'
+import { getRequirementDisplayName } from '../utils/displayUtils'
 
 /**
  * 選択中の任務一覧を表示する折り畳み可能なコンポーネント
@@ -39,16 +40,7 @@ const SelectedMissionsSummary = () => {
     }
 
     return mission.reqs.map((req) => {
-      let name = '削除済み装備'
-
-      if (req.targetType === 'category') {
-        const category = categoryMap.get(req.targetId)
-        name = category ? category.name : '削除済みカテゴリ'
-      } else {
-        const equipment = equipmentMap.get(req.targetId)
-        name = equipment ? equipment.name : '削除済み装備'
-      }
-
+      const name = getRequirementDisplayName(req, categoryMap, equipmentMap)
       return `${name}×${req.count}`
     }).join(', ')
   }
