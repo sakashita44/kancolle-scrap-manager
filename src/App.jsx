@@ -6,7 +6,7 @@ import { UIProvider, useUI, CONFIRM_DIALOG_TYPE, getConfirmDialogConfig, buildCa
 import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
-import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
+import { generateCategoryId, generateEquipmentId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
 import { saveUserEquipments, clearAllData } from './utils/localStorage'
 import {
@@ -48,8 +48,7 @@ function AppContent() {
     swapUserEquipmentOrder,
     allMissions,
     missionsCrudError,
-    addUserMission,
-    updateUserMission,
+    saveMission,
     deleteUserMission,
   } = useData()
   const {
@@ -146,31 +145,12 @@ function AppContent() {
     openConfirmDialog(CONFIRM_DIALOG_TYPE.CATEGORY, categoryId, message)
   }
 
-  const handleAddMission = (data) => {
-    const newMission = {
-      id: generateMissionId(),
-      ...data
-    }
-    addUserMission(newMission)
-    closeModal()
-  }
-
   const handleEditMission = (mission) => {
     openMissionModalForEdit(mission)
   }
 
   const handleSaveMission = (data) => {
-    if (data.id) {
-      // 編集モード: 既存の任務を更新
-      updateUserMission(data.id, data)
-    } else {
-      // 追加モード: 新規任務を追加
-      const newMission = {
-        ...data,
-        id: generateMissionId() // dataを先に展開してからidで上書き
-      }
-      addUserMission(newMission)
-    }
+    saveMission(data)
     closeModal()
   }
 

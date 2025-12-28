@@ -14,7 +14,7 @@ const MissionModal = ({
 }) => {
   const { categoryIds: categories, getCategoryName } = useCategoryData()
   const { equipmentsForUI: equipments } = useEquipmentData()
-  const { allMissions, getNextOrder: getNextOrder } = useMissionData()
+  const { allMissions } = useMissionData()
   const isEditMode = editingMission !== null
 
   const [name, setName] = useState(editingMission?.name || '')
@@ -121,23 +121,31 @@ const MissionModal = ({
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!isFormValid) return
-    // 複数の装備要求に対応（targetTypeを自動判定）
-    onSave({
-      id: isEditMode ? editingMission.id : undefined, // 編集時は既存ID、追加時は未定義
+
+    // 要求装備データを構築（targetTypeを自動判定）
+    const reqsData = reqs.map(req => {
+      const equipment = equipments.find(e => e.id === req.targetId)
+      const targetType = equipment?.type === 'category' ? TARGET_TYPE.CATEGORY : TARGET_TYPE.ITEM
+      return {
+        id: req.id,
+        targetId: req.targetId,
+        targetType,
+        count: parseInt(req.count)
+      }
+    })
+
+    // 保存データを構築（ID/order採番は呼び出し側のsaveMissionで行う）
+    const saveData = {
       name,
       period,
-      reqs: reqs.map(req => {
-        const equipment = equipments.find(e => e.id === req.targetId)
-        const targetType = equipment?.type === 'category' ? TARGET_TYPE.CATEGORY : TARGET_TYPE.ITEM
-        return {
-          id: req.id,
-          targetId: req.targetId,
-          targetType,
-          count: parseInt(req.count)
-        }
-      }),
-      order: isEditMode ? editingMission.order : getNextOrder() // 編集時は既存order、追加時は新規order
-    })
+      reqs: reqsData,
+      ...(isEditMode && {
+        id: editingMission.id,
+        order: editingMission.order
+      })
+    }
+
+    onSave(saveData)
   }
 
   return (
