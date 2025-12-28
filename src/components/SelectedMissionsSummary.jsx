@@ -39,14 +39,14 @@ const SelectedMissionsSummary = () => {
     }
 
     return mission.reqs.map((req) => {
-      let name = req.targetId
+      let name = '削除済み装備'
 
       if (req.targetType === 'category') {
         const category = categoryMap.get(req.targetId)
-        name = category ? category.name : req.targetId
+        name = category ? category.name : '削除済みカテゴリ'
       } else {
         const equipment = equipmentMap.get(req.targetId)
-        name = equipment ? equipment.name : req.targetId
+        name = equipment ? equipment.name : '削除済み装備'
       }
 
       return `${name}×${req.count}`

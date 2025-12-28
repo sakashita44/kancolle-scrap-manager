@@ -54,8 +54,14 @@ export function useMissionFilter() {
       let matchCategory = true
       if (filters.category !== 'ALL') {
         matchCategory = mission.reqs.some((req) => {
-          const eq = equipmentMap.get(req.targetId)
-          return eq && eq.categoryId === filters.category
+          if (req.targetType === 'category') {
+            // カテゴリ指定の場合、targetIdがカテゴリID
+            return req.targetId === filters.category
+          } else {
+            // 装備指定の場合、装備のcategoryIdと比較
+            const eq = equipmentMap.get(req.targetId)
+            return eq && eq.categoryId === filters.category
+          }
         })
       }
 
