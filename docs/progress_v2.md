@@ -1,6 +1,6 @@
 # v2.0.0 ロードマップ
 
-最終更新: 2025-12-16（#107-Step3実装完了, Step4に着手予定）
+最終更新: 2025-12-29（#107-Step4実装完了, UIContext導入）
 
 ## 概要
 
@@ -196,7 +196,7 @@ Phase 4Bの既存issueと新規起票issueを整理し、v2.0.0正式版に向�
   * Step 1: ErrorContext導入 → ✅ 完了（#85として実施済み）
   * Step 2: DataContext導入（categories, equipments, missions） → ✅ 完了（PR #135）
   * Step 3: SelectionContext導入（selectedMissions） → ✅ 完了（PR #139）
-  * Step 4: UIContext導入（modals, dialogs）
+  * Step 4: UIContext導入（modals, dialogs） → ✅ 完了（PR #141）
 
 **分割完了（2025-12-16）**:
 
@@ -486,8 +486,8 @@ v2.0.0リリース後に実装する機能改善。
 | **v2.0.0-alpha**           | **tag + GitHub Release** | -      | -           | -               | **✅ 完了**          |
 | **Phase 4B（リファクタ）** | **alpha後**              | -      | **5-7週間** | -               | **← 現在地**        |
 | Phase 4B-F1                | #107-Step2               | P1     | 大          | #85             | ✅ 完了 (PR #135)    |
-| Phase 4B-F1                | #107-Step3               | P1     | 中          | Step2           | レビュー中 (PR #139) |
-| Phase 4B-F1                | #107-Step4               | P1     | 小          | Step3           | 未着手              |
+| Phase 4B-F1                | #107-Step3               | P1     | 中          | Step2           | ✅ 完了 (PR #139)    |
+| Phase 4B-F1                | #107-Step4               | P1     | 小          | Step3           | ✅ 完了 (PR #141)    |
 | Phase 4B-F2                | #127-#129                | P2     | 中          | #107            | 未着手              |
 | Phase 4B-F3                | #118                     | P2     | 小          | #86             | 未着手              |
 | Phase 4B-F3                | #113                     | P2     | 中          | #86, #118       | 未着手              |
@@ -525,8 +525,8 @@ v2.0.0リリース後に実装する機能改善。
   * ✅ #81: 名前バリデーション強化 - 完了
   * ✅ #100: データ初期化機能 - 完了
 * ⏳ **Phase 4B（リファクタ）**: alpha後 - 進行中
-  * 進捗: #107-Step2（PR #135 レビュー中）
-  * 残り: #107（Step 3-4）, #127-#129, #118, #113, #114, #108, #109, #106, #119
+  * ✅ #107-Step1-4完了（Context API導入完了）
+  * 残り: #127-#129, #118, #113, #114, #108, #109, #106, #119
   * ❌ クローズ済み: #84（not planned）, #110（#127-#129へ分割）
 
 ### v2.0.0リリース戦略の明確化

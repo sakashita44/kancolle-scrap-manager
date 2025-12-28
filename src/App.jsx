@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { ErrorProvider, useErrorHandler, ERROR_TYPE } from './contexts/ErrorContext'
 import { DataProvider, useData } from './contexts/DataContext'
 import { SelectionProvider, useSelection } from './contexts/SelectionContext'
+import { UIProvider, useUI, CONFIRM_DIALOG_TYPE, getConfirmDialogConfig } from './contexts/UIContext'
 import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
@@ -55,18 +56,25 @@ function AppContent() {
     selectedMissions
   } = useSelection()
   const {
-    baseRequirements,
-    auxiliaryScrapList,
     allScrapList,
     comparison,
     hasBaseMission,
-    hasAuxiliaryMissions
   } = useScrapComparison(selectedMissions)
   const { isAboutModalOpen, openAboutModal, closeAboutModal } = useAboutModal()
 
-  const [activeModal, setActiveModal] = useState(null)
-  const [editingMission, setEditingMission] = useState(null) // 編集中の任務
-  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, type: null, id: null, message: '' })
+  // UI状態管理（Context経由）
+  const {
+    editingMission,
+    isEquipmentModalOpen,
+    isMissionModalOpen,
+    openEquipmentModal,
+    openMissionModal,
+    openMissionModalForEdit,
+    closeModal,
+    confirmDialog,
+    openConfirmDialog,
+    closeConfirmDialog,
+  } = useUI()
 
   // フィルタリング
   const {
@@ -131,24 +139,17 @@ function AppContent() {
   }
 
   const handleDeleteEquipment = (id) => {
-    setConfirmDialog({
-      isOpen: true,
-      type: 'equipment',
+    openConfirmDialog(
+      CONFIRM_DIALOG_TYPE.EQUIPMENT,
       id,
-      message: 'この装備を削除しますか？\n（この装備を使用している任務がある場合、表示がおかしくなる可能性があります）'
-    })
+      'この装備を削除しますか？\n（この装備を使用している任務がある場合、表示がおかしくなる可能性があります）'
+    )
   }
 
   const handleDeleteCategory = (categoryId) => {
     const impact = analyzeCategoryDeletionImpact(categoryId, userEquipments, allMissions, getCategoryName)
     const message = buildCategoryDeletionMessage(impact)
-
-    setConfirmDialog({
-      isOpen: true,
-      type: 'category',
-      id: categoryId,
-      message
-    })
+    openConfirmDialog(CONFIRM_DIALOG_TYPE.CATEGORY, categoryId, message)
   }
 
   const handleAddMission = (data) => {
@@ -157,12 +158,11 @@ function AppContent() {
       ...data
     }
     addUserMission(newMission)
-    setActiveModal(null)
+    closeModal()
   }
 
   const handleEditMission = (mission) => {
-    setEditingMission(mission)
-    setActiveModal('mission')
+    openMissionModalForEdit(mission)
   }
 
   const handleSaveMission = (data) => {
@@ -177,34 +177,27 @@ function AppContent() {
       }
       addUserMission(newMission)
     }
-    setActiveModal(null)
-    setEditingMission(null)
+    closeModal()
   }
 
   const handleDeleteMission = (id) => {
-    setConfirmDialog({
-      isOpen: true,
-      type: 'mission',
-      id,
-      message: 'この任務を削除しますか？'
-    })
+    openConfirmDialog(CONFIRM_DIALOG_TYPE.MISSION, id, 'この任務を削除しますか？')
   }
 
   const handleDataReset = () => {
-    setConfirmDialog({
-      isOpen: true,
-      type: 'data-reset',
-      id: null,
-      message: '本当に全てのユーザーデータを削除しますか？この操作は取り消せません。'
-    })
+    openConfirmDialog(
+      CONFIRM_DIALOG_TYPE.DATA_RESET,
+      null,
+      '本当に全てのユーザーデータを削除しますか？この操作は取り消せません。'
+    )
   }
 
   const handleConfirmDelete = () => {
-    if (confirmDialog.type === 'equipment') {
+    if (confirmDialog.type === CONFIRM_DIALOG_TYPE.EQUIPMENT) {
       deleteUserEquipment(confirmDialog.id)
-    } else if (confirmDialog.type === 'mission') {
+    } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.MISSION) {
       deleteUserMission(confirmDialog.id)
-    } else if (confirmDialog.type === 'category') {
+    } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.CATEGORY) {
       executeCategoryDeletion(
         confirmDialog.id,
         userEquipments,
@@ -212,7 +205,7 @@ function AppContent() {
         saveUserEquipments,
         deleteUserCategory
       )
-    } else if (confirmDialog.type === 'data-reset') {
+    } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.DATA_RESET) {
       // 全データを削除してリロード
       const success = clearAllData()
       if (success) {
@@ -226,12 +219,15 @@ function AppContent() {
         }])
       }
     }
-    setConfirmDialog({ isOpen: false, type: null, id: null, message: '' })
+    closeConfirmDialog()
   }
 
   const handleCancelDelete = () => {
-    setConfirmDialog({ isOpen: false, type: null, id: null, message: '' })
+    closeConfirmDialog()
   }
+
+  // 確認ダイアログの設定を取得（未知のtypeは警告ログ + デフォルト値）
+  const confirmDialogConfig = getConfirmDialogConfig(confirmDialog.type)
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans relative">
@@ -270,8 +266,8 @@ function AppContent() {
           onFilterTextChange={setFilterText}
           onFilterCategoryChange={setFilterCategory}
           onFilterPeriodChange={setFilterPeriod}
-          onEquipmentClick={() => setActiveModal('equipment')}
-          onMissionClick={() => setActiveModal('mission')}
+          onEquipmentClick={openEquipmentModal}
+          onMissionClick={openMissionModal}
         />
       </div>
 
@@ -292,9 +288,9 @@ function AppContent() {
       <FooterArea errors={[]} onClearErrors={() => { }} />
 
       <Modal
-        isOpen={activeModal === 'equipment'}
+        isOpen={isEquipmentModalOpen}
         title="装備の管理・追加"
-        onClose={() => setActiveModal(null)}
+        onClose={closeModal}
       >
         <EquipmentModal
           onSave={handleAddEquipment}
@@ -302,38 +298,27 @@ function AppContent() {
           onSwapCategoryOrder={handleSwapCategoryOrder}
           onDelete={handleDeleteEquipment}
           onDeleteCategory={handleDeleteCategory}
-          onCancel={() => setActiveModal(null)}
+          onCancel={closeModal}
         />
       </Modal>
 
       <Modal
-        isOpen={activeModal === 'mission'}
+        isOpen={isMissionModalOpen}
         title={editingMission ? '任務を編集' : '任務を追加'}
-        onClose={() => {
-          setActiveModal(null)
-          setEditingMission(null)
-        }}
+        onClose={closeModal}
       >
         <MissionModal
           editingMission={editingMission}
           onSave={handleSaveMission}
-          onCancel={() => {
-            setActiveModal(null)
-            setEditingMission(null)
-          }}
+          onCancel={closeModal}
         />
       </Modal>
 
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
-        title={
-          confirmDialog.type === 'equipment' ? '装備の削除' :
-            confirmDialog.type === 'mission' ? '任務の削除' :
-              confirmDialog.type === 'data-reset' ? 'データの初期化' :
-                'カテゴリの削除'
-        }
+        title={confirmDialogConfig.title}
         message={confirmDialog.message}
-        confirmText={confirmDialog.type === 'data-reset' ? '初期化' : '削除'}
+        confirmText={confirmDialogConfig.confirmText}
         cancelText="キャンセル"
         variant="danger"
         onConfirm={handleConfirmDelete}
@@ -353,7 +338,9 @@ export default function App() {
     <ErrorProvider>
       <DataProvider>
         <SelectionProvider>
-          <AppContent />
+          <UIProvider>
+            <AppContent />
+          </UIProvider>
         </SelectionProvider>
       </DataProvider>
     </ErrorProvider>
