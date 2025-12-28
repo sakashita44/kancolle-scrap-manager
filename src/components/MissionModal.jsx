@@ -130,7 +130,7 @@ const MissionModal = ({
         id: req.id,
         targetId: req.targetId,
         targetType,
-        count: parseInt(req.count)
+        count: parseInt(req.count, 10)
       }
     })
 

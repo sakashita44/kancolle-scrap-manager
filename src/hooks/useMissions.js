@@ -81,15 +81,16 @@ export function useMissions() {
    * @returns {boolean} 成功時true
    */
   const saveMission = useCallback((formData) => {
-    const { mission, isNew } = prepareMissionForSave(formData, {
-      newId: generateMissionId(),
-      nextOrder: getNextOrderUtil(userMissions)
-    });
-
+    // 編集時は不要な生成処理をスキップ
+    const isNew = !formData.id;
     if (isNew) {
+      const { mission } = prepareMissionForSave(formData, {
+        newId: generateMissionId(),
+        nextOrder: getNextOrderUtil(userMissions)
+      });
       return addUserMission(mission);
     } else {
-      return updateUserMission(mission.id, mission);
+      return updateUserMission(formData.id, formData);
     }
   }, [userMissions, addUserMission, updateUserMission]);
 
