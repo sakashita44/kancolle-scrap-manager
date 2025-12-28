@@ -117,6 +117,7 @@ const INITIAL_CONFIRM_DIALOG = {
   type: null,
   id: null,
   message: '',
+  onConfirm: null,
 }
 
 /**
@@ -174,13 +175,15 @@ export function UIProvider({ children }) {
    * @param {string} type - ダイアログの種類 (CONFIRM_DIALOG_TYPE)
    * @param {string|null} id - 対象のID（装備/任務/カテゴリ）
    * @param {string} message - 表示メッセージ
+   * @param {Function} [onConfirm] - 確認時に実行するコールバック
    */
-  const openConfirmDialog = useCallback((type, id, message) => {
+  const openConfirmDialog = useCallback((type, id, message, onConfirm = null) => {
     setConfirmDialog({
       isOpen: true,
       type,
       id,
       message,
+      onConfirm,
     })
   }, [])
 
@@ -190,6 +193,17 @@ export function UIProvider({ children }) {
   const closeConfirmDialog = useCallback(() => {
     setConfirmDialog(INITIAL_CONFIRM_DIALOG)
   }, [])
+
+  /**
+   * 確認ダイアログの確認アクションを実行
+   * 登録されたonConfirmコールバックを実行し、ダイアログを閉じる
+   */
+  const executeConfirmDialog = useCallback(() => {
+    if (confirmDialog.onConfirm) {
+      confirmDialog.onConfirm()
+    }
+    setConfirmDialog(INITIAL_CONFIRM_DIALOG)
+  }, [confirmDialog.onConfirm])
 
   // --- ユーティリティ ---
 
@@ -229,6 +243,7 @@ export function UIProvider({ children }) {
       // 確認ダイアログ操作
       openConfirmDialog,
       closeConfirmDialog,
+      executeConfirmDialog,
     }),
     [
       activeModal,
@@ -243,6 +258,7 @@ export function UIProvider({ children }) {
       confirmDialog,
       openConfirmDialog,
       closeConfirmDialog,
+      executeConfirmDialog,
     ]
   )
 

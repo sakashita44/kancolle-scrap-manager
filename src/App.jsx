@@ -2,17 +2,13 @@ import { useEffect } from 'react'
 import { ErrorProvider, useErrorHandler, ERROR_TYPE } from './contexts/ErrorContext'
 import { DataProvider, useData } from './contexts/DataContext'
 import { SelectionProvider, useSelection } from './contexts/SelectionContext'
-import { UIProvider, useUI, CONFIRM_DIALOG_TYPE, getConfirmDialogConfig, buildCategoryDeletionMessage } from './contexts/UIContext'
+import { UIProvider, useUI, getConfirmDialogConfig } from './contexts/UIContext'
 import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
+import { useDestructiveOperations } from './hooks/useDestructiveOperations'
 import { generateCategoryId, generateEquipmentId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
-import { saveUserEquipments, clearAllData } from './utils/localStorage'
-import {
-  analyzeCategoryDeletionImpact,
-  calculateCategoryDeletionResult
-} from './domain/categoryOperations'
 import Header from './components/Header'
 import StickyDashboard from './components/StickyDashboard'
 import SelectedMissionsSummary from './components/SelectedMissionsSummary'
@@ -32,30 +28,26 @@ function AppContent() {
 
   // データ管理を取得（Context経由）
   const {
-    userCategories,
-    getCategoryName,
-    getCategoryById,
     addUserCategory,
-    updateUserCategory,
-    deleteUserCategory,
     swapUserCategoryOrder,
-    userEquipments,
     equipmentsCrudError,
     addUserEquipment,
-    updateUserEquipment,
-    deleteUserEquipment,
-    setUserEquipments,
     swapUserEquipmentOrder,
-    allMissions,
     missionsCrudError,
     saveMission,
-    deleteUserMission,
   } = useData()
+
+  // 破壊的操作（削除, リセット）を取得
   const {
-    selectedMissions,
-    isSelected,
-    toggleMission
-  } = useSelection()
+    requestDeleteEquipment,
+    requestDeleteCategory,
+    requestDeleteMission,
+    requestDataReset,
+  } = useDestructiveOperations()
+
+  // 選択任務を取得
+  const { selectedMissions } = useSelection()
+
   const {
     allScrapList,
     comparison,
@@ -73,8 +65,8 @@ function AppContent() {
     openMissionModalForEdit,
     closeModal,
     confirmDialog,
-    openConfirmDialog,
     closeConfirmDialog,
+    executeConfirmDialog,
   } = useUI()
 
   // フィルタリング
@@ -131,20 +123,6 @@ function AppContent() {
     }
   }
 
-  const handleDeleteEquipment = (id) => {
-    openConfirmDialog(
-      CONFIRM_DIALOG_TYPE.EQUIPMENT,
-      id,
-      'この装備を削除しますか？\n（この装備を使用している任務がある場合、表示がおかしくなる可能性があります）'
-    )
-  }
-
-  const handleDeleteCategory = (categoryId) => {
-    const impact = analyzeCategoryDeletionImpact(categoryId, userEquipments, allMissions, getCategoryName)
-    const message = buildCategoryDeletionMessage(impact)
-    openConfirmDialog(CONFIRM_DIALOG_TYPE.CATEGORY, categoryId, message)
-  }
-
   const handleEditMission = (mission) => {
     openMissionModalForEdit(mission)
   }
@@ -152,54 +130,6 @@ function AppContent() {
   const handleSaveMission = (data) => {
     saveMission(data)
     closeModal()
-  }
-
-  const handleDeleteMission = (id) => {
-    openConfirmDialog(CONFIRM_DIALOG_TYPE.MISSION, id, 'この任務を削除しますか？')
-  }
-
-  const handleDataReset = () => {
-    openConfirmDialog(
-      CONFIRM_DIALOG_TYPE.DATA_RESET,
-      null,
-      '本当に全てのユーザーデータを削除しますか？この操作は取り消せません。'
-    )
-  }
-
-  const handleConfirmDelete = () => {
-    if (confirmDialog.type === CONFIRM_DIALOG_TYPE.EQUIPMENT) {
-      deleteUserEquipment(confirmDialog.id)
-    } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.MISSION) {
-      // 選択中の任務を削除する場合は、先に選択解除
-      if (isSelected(confirmDialog.id)) {
-        toggleMission(confirmDialog.id)
-      }
-      deleteUserMission(confirmDialog.id)
-    } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.CATEGORY) {
-      // カテゴリ削除: 装備を先に削除してからカテゴリを削除
-      const { remainingEquipments } = calculateCategoryDeletionResult(confirmDialog.id, userEquipments)
-      setUserEquipments(remainingEquipments)
-      saveUserEquipments(remainingEquipments)
-      deleteUserCategory(confirmDialog.id)
-    } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.DATA_RESET) {
-      // 全データを削除してリロード
-      const success = clearAllData()
-      if (success) {
-        window.location.reload()
-      } else {
-        // エラー時は ErrorContext 経由で通知
-        syncErrors('data-reset-error', [{
-          type: ERROR_TYPE.ERROR,
-          message: 'データの削除に失敗しました',
-          context: { source: 'data-reset' }
-        }])
-      }
-    }
-    closeConfirmDialog()
-  }
-
-  const handleCancelDelete = () => {
-    closeConfirmDialog()
   }
 
   // 確認ダイアログの設定を取得（未知のtypeは警告ログ + デフォルト値）
@@ -211,7 +141,7 @@ function AppContent() {
         onAboutOpen={openAboutModal}
         onExport={handleExport}
         onImport={handleImport}
-        onDataReset={handleDataReset}
+        onDataReset={requestDataReset}
       />
 
       {/* 破損データ警告バナー（ErrorContext経由） */}
@@ -254,7 +184,7 @@ function AppContent() {
         {!errorMessage && (
           <MissionList
             missions={filteredMissions}
-            onDelete={handleDeleteMission}
+            onDelete={requestDeleteMission}
             onEdit={handleEditMission}
           />
         )}
@@ -272,8 +202,8 @@ function AppContent() {
           onSave={handleAddEquipment}
           onSwapOrder={swapUserEquipmentOrder}
           onSwapCategoryOrder={swapUserCategoryOrder}
-          onDelete={handleDeleteEquipment}
-          onDeleteCategory={handleDeleteCategory}
+          onDelete={requestDeleteEquipment}
+          onDeleteCategory={requestDeleteCategory}
           onCancel={closeModal}
         />
       </Modal>
@@ -297,8 +227,8 @@ function AppContent() {
         confirmText={confirmDialogConfig.confirmText}
         cancelText="キャンセル"
         variant="danger"
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
+        onConfirm={executeConfirmDialog}
+        onCancel={closeConfirmDialog}
       />
 
       <AboutModal
