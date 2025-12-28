@@ -75,6 +75,7 @@ export function useCategories() {
     categories,
     masterCategories,
     userCategories,
+    setUserCategories,
     categoryMap,
     categoryNameMap,
     categoryIds,

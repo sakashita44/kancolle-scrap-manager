@@ -2,29 +2,32 @@
  * Category Domain Logic
  *
  * カテゴリ関連のビジネスロジックを集約するモジュール
+ * 全ての関数は純粋関数として実装（副作用を持たない）
  */
 
 /**
- * カテゴリのorder値を交換
+ * カテゴリのorder値を交換した新しい配列を返す（純粋関数）
  *
+ * @param {Array} categories - カテゴリ配列
  * @param {string} id1 - カテゴリID 1
  * @param {string} id2 - カテゴリID 2
- * @param {(categoryId: string) => any} getCategoryById - カテゴリ取得関数
- * @param {Function} updateCategory - カテゴリ更新関数 (id, updatedItem)
+ * @returns {{ nextList: Array, swapped: boolean }} 交換後の配列と成功フラグ
  */
-export function swapCategoryOrder(id1, id2, getCategoryById, updateCategory) {
-  const cat1 = getCategoryById(id1)
-  const cat2 = getCategoryById(id2)
+export function swapCategoryOrder(categories, id1, id2) {
+  const cat1 = categories.find(c => c.id === id1)
+  const cat2 = categories.find(c => c.id === id2)
 
   if (!cat1 || !cat2) {
-    console.warn('カテゴリが見つかりません', { id1, id2 })
-    return
+    return { nextList: categories, swapped: false }
   }
 
-  const tempOrder = cat1.order
+  const nextList = categories.map(cat => {
+    if (cat.id === id1) return { ...cat, order: cat2.order }
+    if (cat.id === id2) return { ...cat, order: cat1.order }
+    return cat
+  })
 
-  updateCategory(id1, { ...cat1, order: cat2.order })
-  updateCategory(id2, { ...cat2, order: tempOrder })
+  return { nextList, swapped: true }
 }
 
 /**
@@ -91,27 +94,23 @@ export function buildCategoryDeletionMessage(impact) {
 }
 
 /**
- * カテゴリ削除を実行（カスケード削除）
+ * カテゴリ削除後の装備リストを計算（純粋関数）
  *
- * カテゴリに含まれる全ての装備を削除した後、カテゴリ自体を削除する
+ * カテゴリに含まれる全ての装備を除外した新しいリストを返す
+ * 実際の状態更新は呼び出し側で行う
  *
  * @param {string} categoryId - カテゴリID
  * @param {Array} userEquipments - ユーザー装備配列
- * @param {Function} setUserEquipments - 装備状態更新関数
- * @param {Function} saveUserEquipments - 装備保存関数
- * @param {Function} deleteCategory - カテゴリ削除関数
+ * @returns {{ remainingEquipments: Array, deletedEquipmentIds: Array }} 削除後の装備リストと削除された装備IDリスト
  */
-export function executeCategoryDeletion(categoryId, userEquipments, setUserEquipments, saveUserEquipments, deleteCategory) {
+export function calculateCategoryDeletionResult(categoryId, userEquipments) {
   // カテゴリに含まれる装備IDを収集
-  const equipmentIdsToDelete = userEquipments
+  const deletedEquipmentIds = userEquipments
     .filter(eq => eq.categoryId === categoryId)
     .map(eq => eq.id)
 
-  // 一括で装備を削除（フィルタリングして残すべき装備のみ保持）
-  const updatedEquipments = userEquipments.filter(eq => !equipmentIdsToDelete.includes(eq.id))
-  setUserEquipments(updatedEquipments)
-  saveUserEquipments(updatedEquipments)
+  // 残すべき装備のみ保持
+  const remainingEquipments = userEquipments.filter(eq => eq.categoryId !== categoryId)
 
-  // カテゴリを削除
-  deleteCategory(categoryId)
+  return { remainingEquipments, deletedEquipmentIds }
 }

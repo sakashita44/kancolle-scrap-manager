@@ -37,6 +37,8 @@ export function DataProvider({ children }) {
  */
 export function useData() {
   const {
+    userCategories,
+    setUserCategories,
     getCategoryName,
     getCategoryById,
     addUserCategory,
@@ -62,6 +64,8 @@ export function useData() {
   } = useMissionData()
 
   return {
+    userCategories,
+    setUserCategories,
     getCategoryName,
     getCategoryById,
     addUserCategory,

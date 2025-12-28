@@ -8,11 +8,11 @@ import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
 import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
-import { saveUserEquipments, clearAllData } from './utils/localStorage'
+import { saveUserEquipments, saveUserCategories, clearAllData } from './utils/localStorage'
 import {
   analyzeCategoryDeletionImpact,
   buildCategoryDeletionMessage,
-  executeCategoryDeletion,
+  calculateCategoryDeletionResult,
   swapCategoryOrder
 } from './domain/categoryOperations'
 import { swapEquipmentOrder } from './domain/equipmentOperations'
@@ -35,6 +35,8 @@ function AppContent() {
 
   // データ管理を取得（Context経由）
   const {
+    userCategories,
+    setUserCategories,
     getCategoryName,
     getCategoryById,
     addUserCategory,
@@ -131,11 +133,19 @@ function AppContent() {
   }
 
   const handleSwapEquipmentOrder = (id1, id2) => {
-    swapEquipmentOrder(id1, id2, userEquipments, updateUserEquipment)
+    const { nextList, swapped } = swapEquipmentOrder(userEquipments, id1, id2)
+    if (swapped) {
+      setUserEquipments(nextList)
+      saveUserEquipments(nextList)
+    }
   }
 
   const handleSwapCategoryOrder = (id1, id2) => {
-    swapCategoryOrder(id1, id2, getCategoryById, updateUserCategory)
+    const { nextList, swapped } = swapCategoryOrder(userCategories, id1, id2)
+    if (swapped) {
+      setUserCategories(nextList)
+      saveUserCategories(nextList)
+    }
   }
 
   const handleDeleteEquipment = (id) => {
@@ -198,13 +208,11 @@ function AppContent() {
     } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.MISSION) {
       deleteUserMission(confirmDialog.id)
     } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.CATEGORY) {
-      executeCategoryDeletion(
-        confirmDialog.id,
-        userEquipments,
-        setUserEquipments,
-        saveUserEquipments,
-        deleteUserCategory
-      )
+      // カテゴリ削除: 装備を先に削除してからカテゴリを削除
+      const { remainingEquipments } = calculateCategoryDeletionResult(confirmDialog.id, userEquipments)
+      setUserEquipments(remainingEquipments)
+      saveUserEquipments(remainingEquipments)
+      deleteUserCategory(confirmDialog.id)
     } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.DATA_RESET) {
       // 全データを削除してリロード
       const success = clearAllData()
