@@ -196,7 +196,7 @@ Phase 4Bの既存issueと新規起票issueを整理し、v2.0.0正式版に向�
   * Step 1: ErrorContext導入 → ✅ 完了（#85として実施済み）
   * Step 2: DataContext導入（categories, equipments, missions） → ✅ 完了（PR #135）
   * Step 3: SelectionContext導入（selectedMissions） → ✅ 完了（PR #139）
-  * Step 4: UIContext導入（modals, dialogs） → ✅ 完了（PR #TBD）
+  * Step 4: UIContext導入（modals, dialogs） → ✅ 完了（PR #141）
 
 **分割完了（2025-12-16）**:
 
@@ -487,7 +487,7 @@ v2.0.0リリース後に実装する機能改善。
 | **Phase 4B（リファクタ）** | **alpha後**              | -      | **5-7週間** | -               | **← 現在地**        |
 | Phase 4B-F1                | #107-Step2               | P1     | 大          | #85             | ✅ 完了 (PR #135)    |
 | Phase 4B-F1                | #107-Step3               | P1     | 中          | Step2           | ✅ 完了 (PR #139)    |
-| Phase 4B-F1                | #107-Step4               | P1     | 小          | Step3           | ✅ 完了 (PR #TBD)    |
+| Phase 4B-F1                | #107-Step4               | P1     | 小          | Step3           | ✅ 完了 (PR #141)    |
 | Phase 4B-F2                | #127-#129                | P2     | 中          | #107            | 未着手              |
 | Phase 4B-F3                | #118                     | P2     | 小          | #86             | 未着手              |
 | Phase 4B-F3                | #113                     | P2     | 中          | #86, #118       | 未着手              |
