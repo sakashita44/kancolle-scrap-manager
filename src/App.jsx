@@ -55,7 +55,9 @@ function AppContent() {
     deleteUserMission,
   } = useData()
   const {
-    selectedMissions
+    selectedMissions,
+    isSelected,
+    toggleMission
   } = useSelection()
   const {
     allScrapList,
@@ -206,6 +208,10 @@ function AppContent() {
     if (confirmDialog.type === CONFIRM_DIALOG_TYPE.EQUIPMENT) {
       deleteUserEquipment(confirmDialog.id)
     } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.MISSION) {
+      // 選択中の任務を削除する場合は、先に選択解除
+      if (isSelected(confirmDialog.id)) {
+        toggleMission(confirmDialog.id)
+      }
       deleteUserMission(confirmDialog.id)
     } else if (confirmDialog.type === CONFIRM_DIALOG_TYPE.CATEGORY) {
       // カテゴリ削除: 装備を先に削除してからカテゴリを削除
