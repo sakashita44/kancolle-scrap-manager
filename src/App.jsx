@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { ErrorProvider, useErrorHandler, ERROR_TYPE } from './contexts/ErrorContext'
 import { DataProvider, useData } from './contexts/DataContext'
 import { SelectionProvider, useSelection } from './contexts/SelectionContext'
-import { UIProvider, useUI, CONFIRM_DIALOG_TYPE } from './contexts/UIContext'
+import { UIProvider, useUI, CONFIRM_DIALOG_TYPE, getConfirmDialogConfig } from './contexts/UIContext'
 import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
@@ -226,6 +226,9 @@ function AppContent() {
     closeConfirmDialog()
   }
 
+  // 確認ダイアログの設定を取得（未知のtypeは警告ログ + デフォルト値）
+  const confirmDialogConfig = getConfirmDialogConfig(confirmDialog.type)
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans relative">
       <Header
@@ -313,14 +316,9 @@ function AppContent() {
 
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
-        title={
-          confirmDialog.type === CONFIRM_DIALOG_TYPE.EQUIPMENT ? '装備の削除' :
-            confirmDialog.type === CONFIRM_DIALOG_TYPE.MISSION ? '任務の削除' :
-              confirmDialog.type === CONFIRM_DIALOG_TYPE.DATA_RESET ? 'データの初期化' :
-                'カテゴリの削除'
-        }
+        title={confirmDialogConfig.title}
         message={confirmDialog.message}
-        confirmText={confirmDialog.type === CONFIRM_DIALOG_TYPE.DATA_RESET ? '初期化' : '削除'}
+        confirmText={confirmDialogConfig.confirmText}
         cancelText="キャンセル"
         variant="danger"
         onConfirm={handleConfirmDelete}

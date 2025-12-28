@@ -10,24 +10,65 @@ const UIContext = createContext(null)
 
 /**
  * モーダルの種類
+ * 値にprefixを付けてCONFIRM_DIALOG_TYPEとの誤用を防止
  * @readonly
  * @enum {string}
  */
 export const MODAL_TYPE = {
-  EQUIPMENT: 'equipment',
-  MISSION: 'mission',
+  EQUIPMENT: 'modal:equipment',
+  MISSION: 'modal:mission',
 }
 
 /**
  * 確認ダイアログの種類
+ * 値にprefixを付けてMODAL_TYPEとの誤用を防止
  * @readonly
  * @enum {string}
  */
 export const CONFIRM_DIALOG_TYPE = {
-  EQUIPMENT: 'equipment',
-  MISSION: 'mission',
-  CATEGORY: 'category',
-  DATA_RESET: 'data-reset',
+  EQUIPMENT: 'confirm:equipment',
+  MISSION: 'confirm:mission',
+  CATEGORY: 'confirm:category',
+  DATA_RESET: 'confirm:data-reset',
+}
+
+/**
+ * 確認ダイアログの設定マッピング
+ * 各タイプに対応するタイトルと確認ボタンテキストを定義
+ * @readonly
+ */
+export const CONFIRM_DIALOG_CONFIG = {
+  [CONFIRM_DIALOG_TYPE.EQUIPMENT]: {
+    title: '装備の削除',
+    confirmText: '削除',
+  },
+  [CONFIRM_DIALOG_TYPE.MISSION]: {
+    title: '任務の削除',
+    confirmText: '削除',
+  },
+  [CONFIRM_DIALOG_TYPE.CATEGORY]: {
+    title: 'カテゴリの削除',
+    confirmText: '削除',
+  },
+  [CONFIRM_DIALOG_TYPE.DATA_RESET]: {
+    title: 'データの初期化',
+    confirmText: '初期化',
+  },
+}
+
+/**
+ * 確認ダイアログの設定を取得
+ * 未知のtypeの場合は警告ログを出力しデフォルト値を返す
+ * @param {string} type - ダイアログの種類
+ * @returns {{ title: string, confirmText: string }}
+ */
+export function getConfirmDialogConfig(type) {
+  const config = CONFIRM_DIALOG_CONFIG[type]
+  if (!config) {
+    console.warn(`[UIContext] Unknown confirm dialog type: ${type}`)
+    return { title: '', confirmText: '確認' }
+  }
+  return config
 }
 
 /**
