@@ -62,6 +62,7 @@ export function useData() {
     addUserMission,
     updateUserMission,
     deleteUserMission,
+    saveMission,
     crudError: missionsCrudError,
   } = useMissionData()
 
@@ -87,6 +88,7 @@ export function useData() {
     addUserMission,
     updateUserMission,
     deleteUserMission,
+    saveMission,
     missionsCrudError,
   }
 }

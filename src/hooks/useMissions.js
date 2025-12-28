@@ -13,6 +13,8 @@ import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
 import { toRuntimeMissions } from '../utils/dataConverter.js';
 import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext.jsx';
+import { generateMissionId } from '../utils/idGenerator.js';
+import { prepareMissionForSave } from '../domain/missionRules.js';
 
 /**
  * 任務データを管理するカスタムフック
@@ -72,6 +74,26 @@ export function useMissions() {
     return getNextOrderUtil(userMissions);
   }, [userMissions]);
 
+  /**
+   * 任務を保存する（追加/編集を統一的に処理）
+   * ID生成とorder採番はこの関数内で行う（呼び出し側は判断不要）
+   * @param {Object} formData - フォームからの入力データ
+   * @returns {boolean} 成功時true
+   */
+  const saveMission = useCallback((formData) => {
+    // 編集時は不要な生成処理をスキップ
+    const isNew = !formData.id;
+    if (isNew) {
+      const { mission } = prepareMissionForSave(formData, {
+        newId: generateMissionId(),
+        nextOrder: getNextOrderUtil(userMissions)
+      });
+      return addUserMission(mission);
+    } else {
+      return updateUserMission(formData.id, formData);
+    }
+  }, [userMissions, addUserMission, updateUserMission]);
+
   // 破損データを統合エラーハンドラーに登録（Pub/Subモデル）
   useEffect(() => {
     if (corruptedItems.length > 0) {
@@ -100,6 +122,7 @@ export function useMissions() {
     addUserMission,
     updateUserMission,
     deleteUserMission,
+    saveMission,
 
     // ユーティリティ
     findMissionById,
