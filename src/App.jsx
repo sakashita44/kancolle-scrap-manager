@@ -43,6 +43,7 @@ function AppContent() {
     requestDeleteCategory,
     requestDeleteMission,
     requestDataReset,
+    executeConfirmedAction,
   } = useDestructiveOperations()
 
   // 選択任務を取得
@@ -66,7 +67,6 @@ function AppContent() {
     closeModal,
     confirmDialog,
     closeConfirmDialog,
-    executeConfirmDialog,
   } = useUI()
 
   // フィルタリング
@@ -227,7 +227,7 @@ function AppContent() {
         confirmText={confirmDialogConfig.confirmText}
         cancelText="キャンセル"
         variant="danger"
-        onConfirm={executeConfirmDialog}
+        onConfirm={executeConfirmedAction}
         onCancel={closeConfirmDialog}
       />
 
