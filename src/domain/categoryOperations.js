@@ -56,44 +56,6 @@ export function analyzeCategoryDeletionImpact(categoryId, userEquipments, missio
 }
 
 /**
- * カテゴリ削除確認メッセージを構築
- *
- * @param {Object} impact - 影響分析結果
- * @param {Array} impact.affectedEquipments - 影響を受ける装備配列
- * @param {Array} impact.affectedMissions - 影響を受ける任務配列
- * @param {string} impact.categoryName - カテゴリ名
- * @returns {string} 確認メッセージ
- */
-export function buildCategoryDeletionMessage(impact) {
-  const { affectedEquipments, affectedMissions, categoryName } = impact
-  const messageLines = []
-
-  if (affectedEquipments.length > 0) {
-    messageLines.push(`⚠️ このカテゴリ「${categoryName}」に含まれる装備：`)
-    affectedEquipments.forEach(eq => {
-      messageLines.push(`  • ${eq.name}`)
-    })
-    messageLines.push(`  計${affectedEquipments.length}件が削除されます`)
-    messageLines.push('')
-  }
-
-  if (affectedMissions.length > 0) {
-    messageLines.push(`⚠️ このカテゴリを参照する任務：`)
-    affectedMissions.forEach(ms => {
-      messageLines.push(`  • ${ms.name}`)
-    })
-    messageLines.push(`  計${affectedMissions.length}件の任務に影響があります`)
-    messageLines.push(`  （任務は削除されません）`)
-  }
-
-  if (messageLines.length === 0) {
-    messageLines.push(`カテゴリ「${categoryName}」を削除しますか？`)
-  }
-
-  return messageLines.join('\n')
-}
-
-/**
  * カテゴリ削除後の装備リストを計算（純粋関数）
  *
  * カテゴリに含まれる全ての装備を除外した新しいリストを返す

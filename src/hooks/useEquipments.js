@@ -12,6 +12,7 @@ import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
 import { toRuntimeEquipments, generateCategoryRepresentatives, addEquipmentType, createEquipmentMap } from '../utils/dataConverter.js';
 import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext.jsx';
+import { swapEquipmentOrder } from '../domain/equipmentOperations.js';
 
 /**
  * 装備データを管理するカスタムフック
@@ -82,6 +83,21 @@ export function useEquipments(categories, categoryMap) {
     return getNextOrderUtil(userEquipments);
   }, [userEquipments]);
 
+  /**
+   * ユーザー装備の順序を入れ替えて永続化
+   * @param {string} id1 - 装備ID 1
+   * @param {string} id2 - 装備ID 2
+   * @returns {boolean} 成功したかどうか
+   */
+  const swapUserEquipmentOrder = useCallback((id1, id2) => {
+    const { nextList, swapped } = swapEquipmentOrder(userEquipments, id1, id2);
+    if (swapped) {
+      setUserEquipments(nextList);
+      saveUserEquipments(nextList);
+    }
+    return swapped;
+  }, [userEquipments, setUserEquipments]);
+
   // 破損データを統合エラーハンドラーに登録（Pub/Subモデル）
   useEffect(() => {
     if (corruptedItems.length > 0) {
@@ -115,7 +131,8 @@ export function useEquipments(categories, categoryMap) {
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment,
-    setUserEquipments,    // カテゴリ削除時の一括処理用
+    setUserEquipments,          // カテゴリ削除時の一括処理用
+    swapUserEquipmentOrder,     // 順序入れ替え（set+save集約）
 
     // ユーティリティ
     findEquipmentById,

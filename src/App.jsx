@@ -2,20 +2,17 @@ import { useEffect } from 'react'
 import { ErrorProvider, useErrorHandler, ERROR_TYPE } from './contexts/ErrorContext'
 import { DataProvider, useData } from './contexts/DataContext'
 import { SelectionProvider, useSelection } from './contexts/SelectionContext'
-import { UIProvider, useUI, CONFIRM_DIALOG_TYPE, getConfirmDialogConfig } from './contexts/UIContext'
+import { UIProvider, useUI, CONFIRM_DIALOG_TYPE, getConfirmDialogConfig, buildCategoryDeletionMessage } from './contexts/UIContext'
 import { useScrapComparison } from './hooks/useScrapComparison'
 import { useMissionFilter } from './hooks/useMissionFilter'
 import { useAboutModal } from './hooks/useAboutModal'
 import { generateCategoryId, generateEquipmentId, generateMissionId } from './utils/idGenerator'
 import { logInfo } from './utils/logger'
-import { saveUserEquipments, saveUserCategories, clearAllData } from './utils/localStorage'
+import { saveUserEquipments, clearAllData } from './utils/localStorage'
 import {
   analyzeCategoryDeletionImpact,
-  buildCategoryDeletionMessage,
-  calculateCategoryDeletionResult,
-  swapCategoryOrder
+  calculateCategoryDeletionResult
 } from './domain/categoryOperations'
-import { swapEquipmentOrder } from './domain/equipmentOperations'
 import Header from './components/Header'
 import StickyDashboard from './components/StickyDashboard'
 import SelectedMissionsSummary from './components/SelectedMissionsSummary'
@@ -36,18 +33,19 @@ function AppContent() {
   // データ管理を取得（Context経由）
   const {
     userCategories,
-    setUserCategories,
     getCategoryName,
     getCategoryById,
     addUserCategory,
     updateUserCategory,
     deleteUserCategory,
+    swapUserCategoryOrder,
     userEquipments,
     equipmentsCrudError,
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment,
     setUserEquipments,
+    swapUserEquipmentOrder,
     allMissions,
     missionsCrudError,
     addUserMission,
@@ -131,22 +129,6 @@ function AppContent() {
         ...data
       }
       addUserEquipment(newEquipment)
-    }
-  }
-
-  const handleSwapEquipmentOrder = (id1, id2) => {
-    const { nextList, swapped } = swapEquipmentOrder(userEquipments, id1, id2)
-    if (swapped) {
-      setUserEquipments(nextList)
-      saveUserEquipments(nextList)
-    }
-  }
-
-  const handleSwapCategoryOrder = (id1, id2) => {
-    const { nextList, swapped } = swapCategoryOrder(userCategories, id1, id2)
-    if (swapped) {
-      setUserCategories(nextList)
-      saveUserCategories(nextList)
     }
   }
 
@@ -308,8 +290,8 @@ function AppContent() {
       >
         <EquipmentModal
           onSave={handleAddEquipment}
-          onSwapOrder={handleSwapEquipmentOrder}
-          onSwapCategoryOrder={handleSwapCategoryOrder}
+          onSwapOrder={swapUserEquipmentOrder}
+          onSwapCategoryOrder={swapUserCategoryOrder}
           onDelete={handleDeleteEquipment}
           onDeleteCategory={handleDeleteCategory}
           onCancel={closeModal}
