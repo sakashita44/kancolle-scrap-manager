@@ -11,6 +11,7 @@ import { getNextOrder as getNextOrderUtil, mergeAndSort, createDefaultSortCompar
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
 import { toRuntimeCategories, createCategoryMaps } from '../utils/dataConverter.js';
+import { swapCategoryOrder } from '../domain/categoryOperations.js';
 
 /**
  * カテゴリデータを管理するカスタムフック
@@ -69,6 +70,21 @@ export function useCategories() {
     return getNextOrderUtil(userCategories);
   }, [userCategories]);
 
+  /**
+   * ユーザーカテゴリの順序を入れ替えて永続化
+   * @param {string} id1 - カテゴリID 1
+   * @param {string} id2 - カテゴリID 2
+   * @returns {boolean} 成功したかどうか
+   */
+  const swapUserCategoryOrder = useCallback((id1, id2) => {
+    const { nextList, swapped } = swapCategoryOrder(userCategories, id1, id2);
+    if (swapped) {
+      setUserCategories(nextList);
+      saveUserCategories(nextList);
+    }
+    return swapped;
+  }, [userCategories, setUserCategories]);
+
   return {
     // データ
     allCategories,
@@ -88,6 +104,7 @@ export function useCategories() {
     addUserCategory,
     updateUserCategory,
     deleteUserCategory,
+    swapUserCategoryOrder,  // 順序入れ替え（set+save集約）
 
     // ユーティリティ
     getCategoryName,

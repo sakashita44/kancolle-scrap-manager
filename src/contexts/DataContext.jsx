@@ -44,6 +44,7 @@ export function useData() {
     addUserCategory,
     updateUserCategory,
     deleteUserCategory,
+    swapUserCategoryOrder,
   } = useCategoryData()
 
   const {
@@ -52,6 +53,7 @@ export function useData() {
     updateUserEquipment,
     deleteUserEquipment,
     setUserEquipments,
+    swapUserEquipmentOrder,
     crudError: equipmentsCrudError,
   } = useEquipmentData()
 
@@ -71,12 +73,14 @@ export function useData() {
     addUserCategory,
     updateUserCategory,
     deleteUserCategory,
+    swapUserCategoryOrder,
 
     userEquipments,
     addUserEquipment,
     updateUserEquipment,
     deleteUserEquipment,
     setUserEquipments,
+    swapUserEquipmentOrder,
     equipmentsCrudError,
 
     allMissions,
