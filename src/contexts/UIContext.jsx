@@ -111,6 +111,7 @@ export function buildCategoryDeletionMessage(impact) {
 
 /**
  * 確認ダイアログの初期状態
+ * データのみ保持し、実行ロジックは持たない（古いclosureリスク回避）
  */
 const INITIAL_CONFIRM_DIALOG = {
   isOpen: false,
@@ -171,6 +172,7 @@ export function UIProvider({ children }) {
 
   /**
    * 確認ダイアログを開く
+   * データのみ保持し、実行ロジックは持たない（古いclosureリスク回避）
    * @param {string} type - ダイアログの種類 (CONFIRM_DIALOG_TYPE)
    * @param {string|null} id - 対象のID（装備/任務/カテゴリ）
    * @param {string} message - 表示メッセージ
