@@ -8,6 +8,7 @@ import { equipmentFormSchema, categoryFormSchema } from '../schemas'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 import { useCategoryData } from '../contexts/CategoryContext'
 import { useEquipmentData } from '../contexts/EquipmentContext'
+import { cn } from '../utils/cn'
 
 const EquipmentModal = ({
   onSave,
@@ -187,7 +188,7 @@ const EquipmentModal = ({
           <h4 className="text-sm font-bold text-slate-700 flex items-center">
             <Plus className="w-4 h-4 mr-1" /> 新規登録
           </h4>
-          <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isAddFormExpanded ? 'rotate-0' : '-rotate-90'}`} />
+          <ChevronDown className={cn('w-4 h-4 text-slate-500 transition-transform', !isAddFormExpanded && '-rotate-90')} />
         </button>
         {isAddFormExpanded && (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -231,8 +232,10 @@ const EquipmentModal = ({
                   <input
                     {...register('name')}
                     autoComplete="off"
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
-                      }`}
+                    className={cn(
+                      'w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm',
+                      nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+                    )}
                     placeholder="例: 12.7cm連装砲B型改二"
                   />
                   <ValidationErrorDisplay error={nameError} />
@@ -241,8 +244,10 @@ const EquipmentModal = ({
                   <label className="block text-xs font-medium text-slate-500 mb-1">カテゴリ *</label>
                   <select
                     {...register('categoryId')}
-                    className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.categoryId ? 'border-red-500' : ''
-                      }`}
+                    className={cn(
+                      'w-full px-3 py-2 border rounded-lg text-sm',
+                      errors.categoryId && 'border-red-500'
+                    )}
                   >
                     {categories.map(c => (
                       <option key={c} value={c}>{getCategoryName(c)}</option>
@@ -261,8 +266,10 @@ const EquipmentModal = ({
                 <input
                   {...register('name')}
                   autoComplete="off"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
-                    }`}
+                  className={cn(
+                    'w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm',
+                    nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+                  )}
                   placeholder="例: カスタムカテゴリA"
                 />
                 <ValidationErrorDisplay error={nameError} />
@@ -275,10 +282,12 @@ const EquipmentModal = ({
             <button
               type="submit"
               disabled={!isFormValid}
-              className={`w-full py-2 rounded-lg font-bold text-sm transition-colors ${isFormValid
+              className={cn(
+                'w-full py-2 rounded-lg font-bold text-sm transition-colors',
+                isFormValid
                   ? 'bg-teal-600 text-white hover:bg-teal-700'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                }`}
+              )}
             >
               {mode === 'equipment' ? 'リストに追加' : 'カテゴリを追加'}
             </button>
@@ -305,7 +314,7 @@ const EquipmentModal = ({
           />
         </div>
 
-        <div className={`overflow-y-auto border rounded-lg bg-white ${isAddFormExpanded ? 'max-h-96' : 'max-h-[32rem]'}`}>
+        <div className={cn('overflow-y-auto border rounded-lg bg-white', isAddFormExpanded ? 'max-h-96' : 'max-h-[32rem]')}>
           {groupedEquipments.size === 0 && (
             <div className="p-4 text-center text-xs text-slate-400">
               該当する装備がありません
@@ -342,7 +351,7 @@ const EquipmentModal = ({
                         <button
                           onClick={() => handleMoveCategoryUp(categoryId)}
                           disabled={categoryIndex === 0}
-                          className={`p-1 ${categoryIndex === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                          className={cn('p-1', categoryIndex === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500')}
                           title="カテゴリを上へ"
                         >
                           <ChevronUp className="w-4 h-4" />
@@ -350,7 +359,7 @@ const EquipmentModal = ({
                         <button
                           onClick={() => handleMoveCategoryDown(categoryId)}
                           disabled={categoryIndex === visibleUserCategories.length - 1}
-                          className={`p-1 ${categoryIndex === visibleUserCategories.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                          className={cn('p-1', categoryIndex === visibleUserCategories.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500')}
                           title="カテゴリを下へ"
                         >
                           <ChevronDown className="w-4 h-4" />
@@ -394,7 +403,7 @@ const EquipmentModal = ({
                                   <button
                                     onClick={() => handleMoveEquipmentUp(categoryId, eq.id)}
                                     disabled={equipmentIndex === 0}
-                                    className={`p-1 ${equipmentIndex === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                                    className={cn('p-1', equipmentIndex === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500')}
                                     title="上へ移動"
                                   >
                                     <ChevronUp className="w-4 h-4" />
@@ -402,7 +411,7 @@ const EquipmentModal = ({
                                   <button
                                     onClick={() => handleMoveEquipmentDown(categoryId, eq.id)}
                                     disabled={equipmentIndex === userEquipmentList.length - 1}
-                                    className={`p-1 ${equipmentIndex === userEquipmentList.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500'}`}
+                                    className={cn('p-1', equipmentIndex === userEquipmentList.length - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-blue-500')}
                                     title="下へ移動"
                                   >
                                     <ChevronDown className="w-4 h-4" />

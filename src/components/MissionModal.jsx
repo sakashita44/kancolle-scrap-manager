@@ -9,6 +9,7 @@ import ValidationErrorDisplay from './ValidationErrorDisplay'
 import { useCategoryData } from '../contexts/CategoryContext'
 import { useEquipmentData } from '../contexts/EquipmentContext'
 import { useMissionData } from '../contexts/MissionContext'
+import { cn } from '../utils/cn'
 
 const MissionModal = ({
   editingMission = null, // 編集対象の任務（追加時はnull）
@@ -156,8 +157,10 @@ const MissionModal = ({
         <input
           {...register('name')}
           autoComplete="off"
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none ${nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
-            }`}
+          className={cn(
+            'w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none',
+            nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+          )}
           placeholder="例: (単) 新型兵装の廃棄"
         />
         <ValidationErrorDisplay error={nameError} />
@@ -187,8 +190,10 @@ const MissionModal = ({
                   // セレクト変更時にarray-level refine（重複チェック）を再評価
                   onChange: () => trigger('reqs')
                 })}
-                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${errors.reqs?.[index]?.targetId ? 'border-red-500' : ''
-                  }`}
+                className={cn(
+                  'flex-1 px-2 py-2 border rounded-lg text-sm',
+                  errors.reqs?.[index]?.targetId && 'border-red-500'
+                )}
               >
                 {Array.from(groupedEquipments.entries()).map(([categoryId, categoryEquipments]) => (
                   <optgroup key={categoryId} label={getCategoryName(categoryId)}>
@@ -205,8 +210,10 @@ const MissionModal = ({
                 min={LIMITS.REQUIREMENT_COUNT_MIN}
                 max={LIMITS.REQUIREMENT_COUNT_MAX}
                 {...register(`reqs.${index}.count`)}
-                className={`w-20 px-2 py-2 border rounded-lg text-center text-sm ${errors.reqs?.[index]?.count ? 'border-red-500' : ''
-                  }`}
+                className={cn(
+                  'w-20 px-2 py-2 border rounded-lg text-center text-sm',
+                  errors.reqs?.[index]?.count && 'border-red-500'
+                )}
               />
               {/* 最初の1枠のみ削除ボタンを非表示（スペーサーで幅を確保） */}
               {index > 0 ? (
@@ -227,10 +234,12 @@ const MissionModal = ({
             type="button"
             onClick={addReq}
             disabled={fields.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX}
-            className={`w-full py-2 text-sm rounded-lg flex items-center justify-center gap-1 transition-colors ${fields.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX
+            className={cn(
+              'w-full py-2 text-sm rounded-lg flex items-center justify-center gap-1 transition-colors',
+              fields.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX
                 ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                 : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
-              }`}
+            )}
           >
             <Plus className="w-4 h-4" />
             装備を追加
@@ -248,10 +257,12 @@ const MissionModal = ({
         <button
           type="submit"
           disabled={!isFormValid}
-          className={`flex-1 py-2 rounded-lg font-bold transition-colors ${isFormValid
+          className={cn(
+            'flex-1 py-2 rounded-lg font-bold transition-colors',
+            isFormValid
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-            }`}
+          )}
         >
           {isEditMode ? '更新' : '追加'}
         </button>

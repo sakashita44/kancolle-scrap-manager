@@ -3,6 +3,7 @@ import { TARGET_TYPE } from '../types/schema'
 import { useCategoryData } from '../contexts/CategoryContext'
 import { useEquipmentData } from '../contexts/EquipmentContext'
 import { getRequirementDisplayName } from '../utils/displayUtils'
+import { cn } from '../utils/cn'
 
 const MissionCard = ({
   mission,
@@ -19,14 +20,13 @@ const MissionCard = ({
 
   return (
     <label
-      className={`block bg-white rounded-lg border shadow-sm transition-colors group relative ${isDisabled
-          ? 'border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed'
-          : isBaseMission
-            ? 'border-amber-400 bg-amber-50 cursor-pointer'
-            : isSelected
-              ? 'border-blue-400 bg-blue-50 cursor-pointer'
-              : 'border-slate-200 hover:border-blue-300 cursor-pointer'
-        }`}
+      className={cn(
+        'block bg-white rounded-lg border shadow-sm transition-colors group relative',
+        isDisabled && 'border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed',
+        !isDisabled && isBaseMission && 'border-amber-400 bg-amber-50 cursor-pointer',
+        !isDisabled && !isBaseMission && isSelected && 'border-blue-400 bg-blue-50 cursor-pointer',
+        !isDisabled && !isBaseMission && !isSelected && 'border-slate-200 hover:border-blue-300 cursor-pointer'
+      )}
     >
       <div className="p-4 flex items-start gap-3">
         <div className="flex items-center gap-2">
