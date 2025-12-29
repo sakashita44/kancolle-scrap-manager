@@ -26,6 +26,7 @@ const MissionModal = ({
     control,
     handleSubmit,
     watch,
+    trigger,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(missionFormSchema),
@@ -43,16 +44,18 @@ const MissionModal = ({
     },
   })
 
-  // 動的フィールド配列管理
+  // 動的フィールド配列管理（keyName指定でデータ側のidとの衝突を回避）
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'reqs',
+    keyName: 'fieldId',
   })
 
   // フォーム全体を監視
   const watchedValues = watch()
 
   // 任務名の重複チェック（カスタムバリデーション）
+  // ※reqs重複チェックはZodスキーマのrefineで実施（単一ソース化）
   const nameDuplicateError = useMemo(() => {
     const name = watchedValues.name
     if (!name || name.trim() === '') return null
@@ -64,16 +67,6 @@ const MissionModal = ({
     const isUnique = validateUniqueName(name.trim(), missionsToCheck)
     return isUnique ? null : '同じ名前の任務が既に存在します'
   }, [watchedValues.name, allMissions, isEditMode, editingMission])
-
-  // reqs配列の重複チェック（カスタムバリデーション）
-  const reqsDuplicateError = useMemo(() => {
-    const reqs = watchedValues.reqs
-    if (!reqs || reqs.length === 0) return null
-
-    const targetIds = reqs.map(r => r.targetId).filter(Boolean)
-    const hasDuplicates = targetIds.length !== new Set(targetIds).size
-    return hasDuplicates ? '同じ装備が複数回選択されています' : null
-  }, [watchedValues.reqs])
 
   // カテゴリ別に装備をグループ化
   const groupedEquipments = useMemo(() => {
@@ -98,28 +91,32 @@ const MissionModal = ({
 
   // フォームが有効かどうか（Zodエラー + カスタムエラー）
   const hasZodErrors = Object.keys(errors).length > 0
-  const hasCustomErrors = nameDuplicateError || reqsDuplicateError
-  const isFormValid = !hasZodErrors && !hasCustomErrors && watchedValues.name?.trim() !== '' && fields.length > 0
+  const isFormValid = !hasZodErrors && !nameDuplicateError && watchedValues.name?.trim() !== '' && fields.length > 0
 
-  // 装備追加
+  // 装備追加（追加後にZod再評価）
   const addReq = useCallback(() => {
     if (fields.length < LIMITS.REQUIREMENTS_PER_MISSION_MAX) {
       append({ id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 })
+      // 非同期でtriggerを呼び出してreqs全体のバリデーションを再評価
+      setTimeout(() => trigger('reqs'), 0)
     }
-  }, [fields.length, append, equipments])
+  }, [fields.length, append, equipments, trigger])
 
-  // 装備削除（最初の1枠は削除不可）
+  // 装備削除（最初の1枠は削除不可、削除後にZod再評価）
   const removeReq = useCallback((index) => {
     if (fields.length > 1) {
       remove(index)
+      // 非同期でtriggerを呼び出してreqs全体のバリデーションを再評価
+      setTimeout(() => trigger('reqs'), 0)
     }
-  }, [fields.length, remove])
+  }, [fields.length, remove, trigger])
 
   const onSubmit = (data) => {
     // カスタムバリデーションもチェック
-    if (nameDuplicateError || reqsDuplicateError) return
+    if (nameDuplicateError) return
 
     // 要求装備データを構築（targetTypeを自動判定）
+    // countはZodのz.coerceで既にnumber化済み
     const reqsData = data.reqs.map(req => {
       const equipment = equipments.find(e => e.id === req.targetId)
       const targetType = equipment?.type === 'category' ? TARGET_TYPE.CATEGORY : TARGET_TYPE.ITEM
@@ -127,7 +124,7 @@ const MissionModal = ({
         id: req.id,
         targetId: req.targetId,
         targetType,
-        count: parseInt(req.count, 10)
+        count: req.count
       }
     })
 
@@ -147,7 +144,7 @@ const MissionModal = ({
 
   // 表示用のエラーメッセージを統合
   const nameError = errors.name?.message || nameDuplicateError
-  const reqsError = errors.reqs?.message || errors.reqs?.root?.message || reqsDuplicateError
+  const reqsError = errors.reqs?.message || errors.reqs?.root?.message
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -184,7 +181,7 @@ const MissionModal = ({
         <ValidationErrorDisplay error={reqsError} />
         <div className="space-y-2">
           {fields.map((field, index) => (
-            <div key={field.id} className="flex gap-2">
+            <div key={field.fieldId} className="flex gap-2">
               <select
                 {...register(`reqs.${index}.targetId`)}
                 className={`flex-1 px-2 py-2 border rounded-lg text-sm ${errors.reqs?.[index]?.targetId ? 'border-red-500' : ''

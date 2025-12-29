@@ -6,7 +6,7 @@
 
 import { z } from 'zod';
 import { safeString } from './base.js';
-import { LIMITS, PERIOD, TARGET_TYPE } from '../types/schema.js';
+import { LIMITS, PERIOD } from '../types/schema.js';
 
 /**
  * 装備追加フォームスキーマ
