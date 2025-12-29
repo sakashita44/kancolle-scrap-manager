@@ -183,7 +183,10 @@ const MissionModal = ({
           {fields.map((field, index) => (
             <div key={field.fieldId} className="flex gap-2">
               <select
-                {...register(`reqs.${index}.targetId`)}
+                {...register(`reqs.${index}.targetId`, {
+                  // セレクト変更時にarray-level refine（重複チェック）を再評価
+                  onChange: () => trigger('reqs')
+                })}
                 className={`flex-1 px-2 py-2 border rounded-lg text-sm ${errors.reqs?.[index]?.targetId ? 'border-red-500' : ''
                   }`}
               >
