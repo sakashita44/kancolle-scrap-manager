@@ -44,12 +44,13 @@ export function loadSelectedMissions() {
     return { baseMission: null, auxiliaryMissions: [] };
   }
 
-  // バリデーション: 正しい形式かチェック
+  // バリデーション: 正しい形式かチェック（Zodネイティブ形式）
   const validation = validateSelectedMissions(data);
-  if (validation.valid) {
+  if (validation.success) {
+    const validData = validation.data;
     const result = {
-      baseMission: data.baseMission || null,
-      auxiliaryMissions: data.auxiliaryMissions || [],
+      baseMission: validData.baseMission || null,
+      auxiliaryMissions: validData.auxiliaryMissions || [],
     };
 
     const totalCount = (result.baseMission ? 1 : 0) + result.auxiliaryMissions.length;
@@ -63,9 +64,10 @@ export function loadSelectedMissions() {
   }
 
   // 不正な形式の場合は初期値を返す
+  const errorMessages = validation.error?.issues?.map((issue) => issue.message) || [];
   logInfo('Invalid selected missions format, returning initial value', {
     function: 'loadSelectedMissions',
-    errors: validation.errors,
+    errors: errorMessages,
   });
   return { baseMission: null, auxiliaryMissions: [] };
 }
