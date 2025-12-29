@@ -5,7 +5,6 @@
  */
 
 import { STORAGE_KEYS, SCHEMA_VERSION } from '../types/schema.js';
-import { validateEquipment, validateMission, validateName } from './validation.js';
 import { createStorageHelper } from './storageHelper.js';
 import { logError, logWarning, logInfo } from './logger.js';
 import { toRuntimeCategories, toRuntimeEquipments, toRuntimeMissions, toPersistCategories, toPersistEquipments, toPersistMissions } from './dataConverter.js';
