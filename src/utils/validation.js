@@ -144,7 +144,7 @@ export function isValidUserMissionId(missionId) {
 /**
  * 装備データの妥当性を検証（Zodネイティブ形式）
  * @param {Object} equipment - 装備データ
- * @returns {import('zod').SafeParseReturnType} Zodの検証結果（{ success: boolean, data?: T, error?: ZodError }）
+ * @returns {{ success: true, data: Object } | { success: false, error: import('zod').ZodError }} Zodの検証結果
  */
 export function validateEquipment(equipment) {
   return persistedEquipmentSchema.safeParse(equipment);
@@ -153,7 +153,7 @@ export function validateEquipment(equipment) {
 /**
  * 任務データの妥当性を検証（Zodネイティブ形式）
  * @param {Object} mission - 任務データ
- * @returns {import('zod').SafeParseReturnType} Zodの検証結果（{ success: boolean, data?: T, error?: ZodError }）
+ * @returns {{ success: true, data: Object } | { success: false, error: import('zod').ZodError }} Zodの検証結果
  */
 export function validateMission(mission) {
   return persistedMissionSchema.safeParse(mission);
@@ -162,7 +162,7 @@ export function validateMission(mission) {
 /**
  * 選択中任務データの妥当性を検証（Zodネイティブ形式）
  * @param {any} data - 検証するデータ
- * @returns {import('zod').SafeParseReturnType} Zodの検証結果（{ success: boolean, data?: T, error?: ZodError }）
+ * @returns {{ success: true, data: Object } | { success: false, error: import('zod').ZodError }} Zodの検証結果
  */
 export function validateSelectedMissions(data) {
   return selectedMissionsSchema.safeParse(data);
@@ -172,7 +172,7 @@ export function validateSelectedMissions(data) {
  * 名前フィールドのバリデーション（Zodネイティブ形式、XSS対策込み）
  * @param {string} name - 装備名/任務名/カテゴリ名
  * @param {number} maxLength - 最大文字数
- * @returns {import('zod').SafeParseReturnType} Zodの検証結果（{ success: boolean, data?: T, error?: ZodError }）
+ * @returns {{ success: true, data: string } | { success: false, error: import('zod').ZodError }} Zodの検証結果
  */
 export function validateName(name, maxLength) {
   const schema = safeString.max(maxLength, `名前は${maxLength}文字以内で入力してください`);

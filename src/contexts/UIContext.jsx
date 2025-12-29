@@ -63,6 +63,10 @@ export const CONFIRM_DIALOG_CONFIG = {
  * @returns {{ title: string, confirmText: string }}
  */
 export function getConfirmDialogConfig(type) {
+  // nullはダイアログ非表示状態なので警告不要
+  if (type === null) {
+    return { title: '', confirmText: '確認' }
+  }
   const config = CONFIRM_DIALOG_CONFIG[type]
   if (!config) {
     console.warn(`[UIContext] Unknown confirm dialog type: ${type}`)

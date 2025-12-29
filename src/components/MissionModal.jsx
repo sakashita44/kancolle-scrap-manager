@@ -73,7 +73,8 @@ const MissionModal = ({
     // 任務名の検証（XSS対策込み、Zodネイティブ形式）
     const nameValidation = validateName(name, LIMITS.MISSION_NAME_MAX)
     if (!nameValidation.success) {
-      errors.name = nameValidation.error?.issues?.[0]?.message || '入力に問題があります'
+      const messages = nameValidation.error?.issues?.map(issue => issue.message) || []
+      errors.name = messages.length > 0 ? messages.join(', ') : '入力に問題があります'
     } else if (name.length > 0) {
       // 文字数カウンター用のメッセージ（エラーではない）
       if (name.length > LIMITS.MISSION_NAME_MAX * 0.9) {

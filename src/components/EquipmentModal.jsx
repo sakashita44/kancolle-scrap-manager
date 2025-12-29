@@ -38,7 +38,8 @@ const EquipmentModal = ({
       // 装備モード: 装備名とカテゴリを検証（Zodネイティブ形式）
       const nameValidation = validateName(name, LIMITS.EQUIPMENT_NAME_MAX)
       if (!nameValidation.success) {
-        errors.name = nameValidation.error?.issues?.[0]?.message || '入力に問題があります'
+        const messages = nameValidation.error?.issues?.map(issue => issue.message) || []
+        errors.name = messages.length > 0 ? messages.join(', ') : '入力に問題があります'
       } else if (name.length > 0) {
         if (name.length > LIMITS.EQUIPMENT_NAME_MAX * 0.9) {
           errors.name = `装備名は${LIMITS.EQUIPMENT_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
@@ -59,7 +60,8 @@ const EquipmentModal = ({
       // カテゴリモード: カテゴリ名のみ検証（Zodネイティブ形式）
       const categoryValidation = validateName(name, LIMITS.CATEGORY_NAME_MAX)
       if (!categoryValidation.success) {
-        errors.name = categoryValidation.error?.issues?.[0]?.message || '入力に問題があります'
+        const messages = categoryValidation.error?.issues?.map(issue => issue.message) || []
+        errors.name = messages.length > 0 ? messages.join(', ') : '入力に問題があります'
       } else if (name.length > 0) {
         if (name.length > LIMITS.CATEGORY_NAME_MAX * 0.9) {
           errors.name = `カテゴリ名は${LIMITS.CATEGORY_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
