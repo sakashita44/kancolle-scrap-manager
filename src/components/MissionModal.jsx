@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react'
+import { useMemo, useCallback } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Trash2 } from 'lucide-react'
@@ -26,9 +26,7 @@ const MissionModal = ({
     control,
     handleSubmit,
     watch,
-    setError,
-    clearErrors,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(missionFormSchema),
     mode: 'onChange',
@@ -51,25 +49,31 @@ const MissionModal = ({
     name: 'reqs',
   })
 
-  // 現在の入力値を監視
-  const watchedName = watch('name', '')
+  // フォーム全体を監視
+  const watchedValues = watch()
 
   // 任務名の重複チェック（カスタムバリデーション）
-  useEffect(() => {
-    if (!watchedName || watchedName.trim() === '') {
-      clearErrors('name')
-      return
-    }
+  const nameDuplicateError = useMemo(() => {
+    const name = watchedValues.name
+    if (!name || name.trim() === '') return null
 
     // 編集モードの場合は自分自身を除外
     const missionsToCheck = isEditMode
       ? allMissions.filter(m => m.id !== editingMission.id)
       : allMissions
-    const isUnique = validateUniqueName(watchedName.trim(), missionsToCheck)
-    if (!isUnique) {
-      setError('name', { type: 'custom', message: '同じ名前の任務が既に存在します' })
-    }
-  }, [watchedName, allMissions, isEditMode, editingMission, setError, clearErrors])
+    const isUnique = validateUniqueName(name.trim(), missionsToCheck)
+    return isUnique ? null : '同じ名前の任務が既に存在します'
+  }, [watchedValues.name, allMissions, isEditMode, editingMission])
+
+  // reqs配列の重複チェック（カスタムバリデーション）
+  const reqsDuplicateError = useMemo(() => {
+    const reqs = watchedValues.reqs
+    if (!reqs || reqs.length === 0) return null
+
+    const targetIds = reqs.map(r => r.targetId).filter(Boolean)
+    const hasDuplicates = targetIds.length !== new Set(targetIds).size
+    return hasDuplicates ? '同じ装備が複数回選択されています' : null
+  }, [watchedValues.reqs])
 
   // カテゴリ別に装備をグループ化
   const groupedEquipments = useMemo(() => {
@@ -92,25 +96,28 @@ const MissionModal = ({
     return groups
   }, [equipments, categories])
 
-  // フォームが有効かどうか
-  const isFormValid = isValid && !errors.name && watchedName.trim() !== '' && fields.length > 0
+  // フォームが有効かどうか（Zodエラー + カスタムエラー）
+  const hasZodErrors = Object.keys(errors).length > 0
+  const hasCustomErrors = nameDuplicateError || reqsDuplicateError
+  const isFormValid = !hasZodErrors && !hasCustomErrors && watchedValues.name?.trim() !== '' && fields.length > 0
 
   // 装備追加
-  const addReq = () => {
+  const addReq = useCallback(() => {
     if (fields.length < LIMITS.REQUIREMENTS_PER_MISSION_MAX) {
       append({ id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 })
     }
-  }
+  }, [fields.length, append, equipments])
 
   // 装備削除（最初の1枠は削除不可）
-  const removeReq = (index) => {
+  const removeReq = useCallback((index) => {
     if (fields.length > 1) {
       remove(index)
     }
-  }
+  }, [fields.length, remove])
 
   const onSubmit = (data) => {
-    if (!isFormValid) return
+    // カスタムバリデーションもチェック
+    if (nameDuplicateError || reqsDuplicateError) return
 
     // 要求装備データを構築（targetTypeを自動判定）
     const reqsData = data.reqs.map(req => {
@@ -138,23 +145,25 @@ const MissionModal = ({
     onSave(saveData)
   }
 
-  // reqsの重複エラーを取得（配列全体のエラー）
-  const duplicateError = errors.reqs?.message || errors.reqs?.root?.message
+  // 表示用のエラーメッセージを統合
+  const nameError = errors.name?.message || nameDuplicateError
+  const reqsError = errors.reqs?.message || errors.reqs?.root?.message || reqsDuplicateError
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">
           任務名
-          {watchedName && <span className="ml-1 text-[10px] text-slate-400">({watchedName.length}/{LIMITS.MISSION_NAME_MAX})</span>}
+          {watchedValues.name && <span className="ml-1 text-[10px] text-slate-400">({watchedValues.name.length}/{LIMITS.MISSION_NAME_MAX})</span>}
         </label>
         <input
           {...register('name')}
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none ${errors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+          autoComplete="off"
+          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none ${nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
             }`}
           placeholder="例: (単) 新型兵装の廃棄"
         />
-        <ValidationErrorDisplay error={errors.name?.message} />
+        <ValidationErrorDisplay error={nameError} />
       </div>
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">周期</label>
@@ -172,7 +181,7 @@ const MissionModal = ({
       </div>
       <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
         <p className="text-xs font-bold text-slate-500 mb-2">要求装備 (最大{LIMITS.REQUIREMENTS_PER_MISSION_MAX}枠)</p>
-        <ValidationErrorDisplay error={duplicateError} />
+        <ValidationErrorDisplay error={reqsError} />
         <div className="space-y-2">
           {fields.map((field, index) => (
             <div key={field.id} className="flex gap-2">
@@ -199,18 +208,18 @@ const MissionModal = ({
                 className={`w-20 px-2 py-2 border rounded-lg text-center text-sm ${errors.reqs?.[index]?.count ? 'border-red-500' : ''
                   }`}
               />
-              {/* 最初の1枠のみ削除ボタンを非表示 */}
+              {/* 最初の1枠のみ削除ボタンを非表示（スペーサーで幅を確保） */}
               {index > 0 ? (
                 <button
                   type="button"
                   onClick={() => removeReq(index)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
                   title="削除"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               ) : (
-                <div className="w-10"></div>
+                <div className="w-8 flex-shrink-0"></div>
               )}
             </div>
           ))}

@@ -37,9 +37,7 @@ const EquipmentModal = ({
     handleSubmit,
     watch,
     reset,
-    setError,
-    clearErrors,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(mode === 'equipment' ? equipmentFormSchema : categoryFormSchema),
     mode: 'onChange',
@@ -48,43 +46,40 @@ const EquipmentModal = ({
       : { name: '' },
   })
 
-  // モード切り替え時にフォームをリセット
+  // モード切り替え時にフォームをリセット（modeのみ依存）
   useEffect(() => {
     reset(mode === 'equipment'
       ? { name: '', categoryId: categories[0] || '' }
       : { name: '' }
     )
-  }, [mode, reset, categories])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, reset])
 
-  // 現在の入力値を監視
-  const watchedName = watch('name', '')
+  // フォーム全体を監視
+  const watchedValues = watch()
 
   // 名前の重複チェック（カスタムバリデーション）
-  useEffect(() => {
-    if (!watchedName || watchedName.trim() === '') {
-      clearErrors('name')
-      return
-    }
+  const nameDuplicateError = useMemo(() => {
+    const name = watchedValues.name
+    if (!name || name.trim() === '') return null
 
     if (mode === 'equipment') {
-      const isUnique = validateUniqueName(watchedName.trim(), equipments)
-      if (!isUnique) {
-        setError('name', { type: 'custom', message: '同じ名前の装備が既に存在します' })
-      }
+      const isUnique = validateUniqueName(name.trim(), equipments)
+      return isUnique ? null : '同じ名前の装備が既に存在します'
     } else {
       const existingCategoryNames = categories.map(catId => getCategoryName(catId))
-      const isDuplicate = existingCategoryNames.some(catName => catName === watchedName.trim())
-      if (isDuplicate) {
-        setError('name', { type: 'custom', message: '同じ名前のカテゴリが既に存在します' })
-      }
+      const isDuplicate = existingCategoryNames.some(catName => catName === name.trim())
+      return isDuplicate ? '同じ名前のカテゴリが既に存在します' : null
     }
-  }, [watchedName, mode, equipments, categories, getCategoryName, setError, clearErrors])
+  }, [watchedValues.name, mode, equipments, categories, getCategoryName])
 
-  // フォームが有効かどうか（react-hook-formのisValidに加えて重複チェックも考慮）
-  const isFormValid = isValid && !errors.name && watchedName.trim() !== ''
+  // フォームが有効かどうか（Zodエラー + カスタムエラー）
+  const hasZodErrors = Object.keys(errors).length > 0
+  const isFormValid = !hasZodErrors && !nameDuplicateError && watchedValues.name?.trim() !== ''
 
   const onSubmit = (data) => {
-    if (!isFormValid) return
+    // カスタムバリデーションもチェック
+    if (nameDuplicateError) return
 
     if (mode === 'equipment') {
       onSave({ name: data.name, categoryId: data.categoryId, order: getNextOrder() })
@@ -177,6 +172,9 @@ const EquipmentModal = ({
   // 文字数カウンターの表示用
   const maxLength = mode === 'equipment' ? LIMITS.EQUIPMENT_NAME_MAX : LIMITS.CATEGORY_NAME_MAX
 
+  // 表示用のエラーメッセージを統合
+  const nameError = errors.name?.message || nameDuplicateError
+
   return (
     <div className="space-y-6">
       {/* 1. 新規追加フォーム */}
@@ -228,15 +226,16 @@ const EquipmentModal = ({
                 <div>
                   <label className="block text-xs font-medium text-slate-500 mb-1">
                     装備名 *
-                    {watchedName && <span className="ml-1 text-[10px] text-slate-400">({watchedName.length}/{maxLength})</span>}
+                    {watchedValues.name && <span className="ml-1 text-[10px] text-slate-400">({watchedValues.name.length}/{maxLength})</span>}
                   </label>
                   <input
                     {...register('name')}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${errors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+                    autoComplete="off"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
                       }`}
                     placeholder="例: 12.7cm連装砲B型改二"
                   />
-                  <ValidationErrorDisplay error={errors.name?.message} />
+                  <ValidationErrorDisplay error={nameError} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-500 mb-1">カテゴリ *</label>
@@ -257,15 +256,16 @@ const EquipmentModal = ({
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">
                   カテゴリ名 *
-                  {watchedName && <span className="ml-1 text-[10px] text-slate-400">({watchedName.length}/{maxLength})</span>}
+                  {watchedValues.name && <span className="ml-1 text-[10px] text-slate-400">({watchedValues.name.length}/{maxLength})</span>}
                 </label>
                 <input
                   {...register('name')}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${errors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+                  autoComplete="off"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
                     }`}
                   placeholder="例: カスタムカテゴリA"
                 />
-                <ValidationErrorDisplay error={errors.name?.message} />
+                <ValidationErrorDisplay error={nameError} />
                 <p className="mt-1 text-[10px] text-slate-500">
                   ℹ️ カテゴリ代表装備が自動で作成されます
                 </p>
