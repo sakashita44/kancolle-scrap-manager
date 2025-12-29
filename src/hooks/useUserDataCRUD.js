@@ -27,6 +27,7 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
       const updated = [...userData, item];
       setUserData(updated);
       saveUserData(updated);
+      setError(null); // 成功時にエラーをクリア
       return true;
     } catch (err) {
       logError(`Failed to add ${dataType}`, {
@@ -54,6 +55,7 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
         saveUserData(updated);
         return updated;
       });
+      setError(null); // 成功時にエラーをクリア
       return true;
     } catch (err) {
       logError(`Failed to update ${dataType}`, {
@@ -77,6 +79,7 @@ export function useUserDataCRUD(userData, setUserData, saveUserData, setError, d
       const updated = userData.filter((item) => item.id !== id);
       setUserData(updated);
       saveUserData(updated);
+      setError(null); // 成功時にエラーをクリア
       return true;
     } catch (err) {
       logError(`Failed to delete ${dataType}`, {
