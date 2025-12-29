@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { AlertCircle, X } from 'lucide-react'
 import { useErrorHandler } from '../contexts/ErrorContext'
 
@@ -53,6 +53,19 @@ const GlobalWarningBanner = ({
   // 表示するかどうか
   const hasCorruptedData = corruptedEquipments.length > 0 || corruptedMissions.length > 0
   const hasGenericErrors = genericErrors.length > 0
+
+  // エラー件数の合計を計算
+  const totalErrorCount = corruptedEquipments.length + corruptedMissions.length + genericErrors.length
+
+  // エラー件数が増えたらdismissedをリセット（新しいエラーを表示するため）
+  const prevCountRef = useRef(totalErrorCount)
+  useEffect(() => {
+    if (totalErrorCount > prevCountRef.current) {
+      setDismissed(false)
+    }
+    prevCountRef.current = totalErrorCount
+  }, [totalErrorCount])
+
   const shouldShow = !dismissed && (hasCorruptedData || hasGenericErrors || customMessage)
 
   if (!shouldShow) return null
