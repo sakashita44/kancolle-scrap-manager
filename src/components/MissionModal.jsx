@@ -1,7 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
+import { useForm, useFieldArray } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Trash2 } from 'lucide-react'
 import { PERIOD, LIMITS, TARGET_TYPE } from '../types/schema'
-import { validateUniqueName, validateName } from '../utils/validation'
+import { validateUniqueName } from '../utils/validation'
+import { missionFormSchema } from '../schemas'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 import { useCategoryData } from '../contexts/CategoryContext'
 import { useEquipmentData } from '../contexts/EquipmentContext'
@@ -17,33 +20,53 @@ const MissionModal = ({
   const { allMissions } = useMissionData()
   const isEditMode = editingMission !== null
 
-  const [name, setName] = useState(editingMission?.name || '')
-  const [period, setPeriod] = useState(editingMission?.period || 'Weekly')
-  // 複数の要求装備を管理（最初の1枠は必須）
-  const [reqs, setReqs] = useState(
-    editingMission?.reqs?.length > 0
-      ? editingMission.reqs.map(req => ({ ...req, id: crypto.randomUUID() }))
-      : [{ id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 }]
-  )
+  // react-hook-form設定
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    trigger,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(missionFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      name: editingMission?.name || '',
+      period: editingMission?.period || 'Weekly',
+      reqs: editingMission?.reqs?.length > 0
+        ? editingMission.reqs.map(req => ({
+            id: crypto.randomUUID(),
+            targetId: req.targetId,
+            count: req.count,
+          }))
+        : [{ id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 }],
+    },
+  })
 
-  // 装備追加
-  const addReq = () => {
-    if (reqs.length < LIMITS.REQUIREMENTS_PER_MISSION_MAX) {
-      setReqs([...reqs, { id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 }])
-    }
-  }
+  // 動的フィールド配列管理（keyName指定でデータ側のidとの衝突を回避）
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'reqs',
+    keyName: 'fieldId',
+  })
 
-  // 装備削除（最初の1枠は削除不可）
-  const removeReq = (id) => {
-    if (reqs.length > 1) {
-      setReqs(reqs.filter(req => req.id !== id))
-    }
-  }
+  // フォーム全体を監視
+  const watchedValues = watch()
 
-  // 装備の更新
-  const updateReq = (id, field, value) => {
-    setReqs(reqs.map(req => req.id === id ? { ...req, [field]: value } : req))
-  }
+  // 任務名の重複チェック（カスタムバリデーション）
+  // ※reqs重複チェックはZodスキーマのrefineで実施（単一ソース化）
+  const nameDuplicateError = useMemo(() => {
+    const name = watchedValues.name
+    if (!name || name.trim() === '') return null
+
+    // 編集モードの場合は自分自身を除外
+    const missionsToCheck = isEditMode
+      ? allMissions.filter(m => m.id !== editingMission.id)
+      : allMissions
+    const isUnique = validateUniqueName(name.trim(), missionsToCheck)
+    return isUnique ? null : '同じ名前の任務が既に存在します'
+  }, [watchedValues.name, allMissions, isEditMode, editingMission])
 
   // カテゴリ別に装備をグループ化
   const groupedEquipments = useMemo(() => {
@@ -66,79 +89,49 @@ const MissionModal = ({
     return groups
   }, [equipments, categories])
 
-  // リアルタイムバリデーション
-  const validationErrors = useMemo(() => {
-    const errors = {}
+  // フォームが有効かどうか（Zodエラー + カスタムエラー）
+  const hasZodErrors = Object.keys(errors).length > 0
+  const isFormValid = !hasZodErrors && !nameDuplicateError && watchedValues.name?.trim() !== '' && fields.length > 0
 
-    // 任務名の検証（XSS対策込み、Zodネイティブ形式）
-    const nameValidation = validateName(name, LIMITS.MISSION_NAME_MAX)
-    if (!nameValidation.success) {
-      const messages = nameValidation.error?.issues?.map(issue => issue.message) || []
-      errors.name = messages.length > 0 ? messages.join(', ') : '入力に問題があります'
-    } else if (name.length > 0) {
-      // 文字数カウンター用のメッセージ（エラーではない）
-      if (name.length > LIMITS.MISSION_NAME_MAX * 0.9) {
-        errors.name = `任務名は${LIMITS.MISSION_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
-      } else {
-        // 任務名の重複チェック（エラー扱い）
-        // 編集モードの場合は自分自身を除外
-        const missionsToCheck = isEditMode
-          ? allMissions.filter(m => m.id !== editingMission.id)
-          : allMissions
-        const isUnique = validateUniqueName(name, missionsToCheck)
-        if (!isUnique) {
-          errors.name = '同じ名前の任務が既に存在します'
-        }
-      }
+  // 装備追加（追加後にZod再評価）
+  const addReq = useCallback(() => {
+    if (fields.length < LIMITS.REQUIREMENTS_PER_MISSION_MAX) {
+      append({ id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 })
+      // 非同期でtriggerを呼び出してreqs全体のバリデーションを再評価
+      setTimeout(() => trigger('reqs'), 0)
     }
+  }, [fields.length, append, equipments, trigger])
 
-    // 要求装備の検証
-    reqs.forEach((req, index) => {
-      if (!req.targetId) {
-        errors[`req_${req.id}_target`] = '要求装備を選択してください'
-      }
-
-      const count = parseInt(req.count)
-      if (isNaN(count) || count < LIMITS.REQUIREMENT_COUNT_MIN) {
-        errors[`req_${req.id}_count`] = `必要数は${LIMITS.REQUIREMENT_COUNT_MIN}以上である必要があります`
-      } else if (count > LIMITS.REQUIREMENT_COUNT_MAX) {
-        errors[`req_${req.id}_count`] = `必要数は${LIMITS.REQUIREMENT_COUNT_MAX}以下である必要があります`
-      }
-    })
-
-    // 重複チェック
-    const targetIds = reqs.map(r => r.targetId).filter(Boolean)
-    const duplicates = targetIds.filter((id, index) => targetIds.indexOf(id) !== index)
-    if (duplicates.length > 0) {
-      errors.duplicate = '同じ装備が複数回選択されています'
+  // 装備削除（最初の1枠は削除不可、削除後にZod再評価）
+  const removeReq = useCallback((index) => {
+    if (fields.length > 1) {
+      remove(index)
+      // 非同期でtriggerを呼び出してreqs全体のバリデーションを再評価
+      setTimeout(() => trigger('reqs'), 0)
     }
+  }, [fields.length, remove, trigger])
 
-    return errors
-  }, [name, reqs, allMissions, isEditMode, editingMission])
-
-  // フォームが有効かどうか
-  const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== '' && reqs.length > 0
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!isFormValid) return
+  const onSubmit = (data) => {
+    // カスタムバリデーションもチェック
+    if (nameDuplicateError) return
 
     // 要求装備データを構築（targetTypeを自動判定）
-    const reqsData = reqs.map(req => {
+    // countはZodのz.coerceで既にnumber化済み
+    const reqsData = data.reqs.map(req => {
       const equipment = equipments.find(e => e.id === req.targetId)
       const targetType = equipment?.type === 'category' ? TARGET_TYPE.CATEGORY : TARGET_TYPE.ITEM
       return {
         id: req.id,
         targetId: req.targetId,
         targetType,
-        count: parseInt(req.count, 10)
+        count: req.count
       }
     })
 
     // 保存データを構築（ID/order採番は呼び出し側のsaveMissionで行う）
     const saveData = {
-      name,
-      period,
+      name: data.name,
+      period: data.period,
       reqs: reqsData,
       ...(isEditMode && {
         id: editingMission.id,
@@ -149,29 +142,31 @@ const MissionModal = ({
     onSave(saveData)
   }
 
+  // 表示用のエラーメッセージを統合
+  const nameError = errors.name?.message || nameDuplicateError
+  const reqsError = errors.reqs?.message || errors.reqs?.root?.message
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">
           任務名
-          {name && <span className="ml-1 text-[10px] text-slate-400">({name.length}/{LIMITS.MISSION_NAME_MAX})</span>}
+          {watchedValues.name && <span className="ml-1 text-[10px] text-slate-400">({watchedValues.name.length}/{LIMITS.MISSION_NAME_MAX})</span>}
         </label>
         <input
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none ${validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+          {...register('name')}
+          autoComplete="off"
+          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none ${nameError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
             }`}
-          value={name}
-          onChange={e => setName(e.target.value)}
           placeholder="例: (単) 新型兵装の廃棄"
-          required
         />
-        <ValidationErrorDisplay error={validationErrors.name} />
+        <ValidationErrorDisplay error={nameError} />
       </div>
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">周期</label>
         <select
+          {...register('period')}
           className="w-full px-3 py-2 border rounded-lg"
-          value={period}
-          onChange={e => setPeriod(e.target.value)}
         >
           <option value={PERIOD.DAILY}>Daily</option>
           <option value={PERIOD.WEEKLY}>Weekly</option>
@@ -183,15 +178,17 @@ const MissionModal = ({
       </div>
       <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
         <p className="text-xs font-bold text-slate-500 mb-2">要求装備 (最大{LIMITS.REQUIREMENTS_PER_MISSION_MAX}枠)</p>
-        <ValidationErrorDisplay error={validationErrors.duplicate} />
+        <ValidationErrorDisplay error={reqsError} />
         <div className="space-y-2">
-          {reqs.map((req, index) => (
-            <div key={req.id} className="flex gap-2">
+          {fields.map((field, index) => (
+            <div key={field.fieldId} className="flex gap-2">
               <select
-                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${validationErrors[`req_${req.id}_target`] ? 'border-red-500' : ''
+                {...register(`reqs.${index}.targetId`, {
+                  // セレクト変更時にarray-level refine（重複チェック）を再評価
+                  onChange: () => trigger('reqs')
+                })}
+                className={`flex-1 px-2 py-2 border rounded-lg text-sm ${errors.reqs?.[index]?.targetId ? 'border-red-500' : ''
                   }`}
-                value={req.targetId}
-                onChange={e => updateReq(req.id, 'targetId', e.target.value)}
               >
                 {Array.from(groupedEquipments.entries()).map(([categoryId, categoryEquipments]) => (
                   <optgroup key={categoryId} label={getCategoryName(categoryId)}>
@@ -207,31 +204,30 @@ const MissionModal = ({
                 type="number"
                 min={LIMITS.REQUIREMENT_COUNT_MIN}
                 max={LIMITS.REQUIREMENT_COUNT_MAX}
-                className={`w-20 px-2 py-2 border rounded-lg text-center text-sm ${validationErrors[`req_${req.id}_count`] ? 'border-red-500' : ''
+                {...register(`reqs.${index}.count`)}
+                className={`w-20 px-2 py-2 border rounded-lg text-center text-sm ${errors.reqs?.[index]?.count ? 'border-red-500' : ''
                   }`}
-                value={req.count}
-                onChange={e => updateReq(req.id, 'count', e.target.value)}
               />
-              {/* 最初の1枠のみ削除ボタンを非表示 */}
+              {/* 最初の1枠のみ削除ボタンを非表示（スペーサーで幅を確保） */}
               {index > 0 ? (
                 <button
                   type="button"
-                  onClick={() => removeReq(req.id)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  onClick={() => removeReq(index)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
                   title="削除"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               ) : (
-                <div className="w-10"></div>
+                <div className="w-8 flex-shrink-0"></div>
               )}
             </div>
           ))}
           <button
             type="button"
             onClick={addReq}
-            disabled={reqs.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX}
-            className={`w-full py-2 text-sm rounded-lg flex items-center justify-center gap-1 transition-colors ${reqs.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX
+            disabled={fields.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX}
+            className={`w-full py-2 text-sm rounded-lg flex items-center justify-center gap-1 transition-colors ${fields.length >= LIMITS.REQUIREMENTS_PER_MISSION_MAX
                 ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                 : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
               }`}
