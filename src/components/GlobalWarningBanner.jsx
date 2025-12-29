@@ -54,17 +54,25 @@ const GlobalWarningBanner = ({
   const hasCorruptedData = corruptedEquipments.length > 0 || corruptedMissions.length > 0
   const hasGenericErrors = genericErrors.length > 0
 
-  // エラー件数の合計を計算
-  const totalErrorCount = corruptedEquipments.length + corruptedMissions.length + genericErrors.length
+  // エラー内容のフィンガープリントを計算（件数だけでなく内容の変化も検出）
+  const errorFingerprint = useMemo(() => {
+    const parts = [
+      ...corruptedEquipments.map(e => `eq:${e.id}:${e.reason}`),
+      ...corruptedMissions.map(e => `ms:${e.id}:${e.reason}`),
+      ...genericErrors
+    ]
+    return parts.join('|')
+  }, [corruptedEquipments, corruptedMissions, genericErrors])
 
-  // エラー件数が増えたらdismissedをリセット（新しいエラーを表示するため）
-  const prevCountRef = useRef(totalErrorCount)
+  // エラー内容が変化したらdismissedをリセット（新しいエラーを表示するため）
+  const prevFingerprintRef = useRef(errorFingerprint)
   useEffect(() => {
-    if (totalErrorCount > prevCountRef.current) {
+    // 空→空の変化は無視、それ以外で内容が変わったらリセット
+    if (errorFingerprint !== prevFingerprintRef.current && errorFingerprint !== '') {
       setDismissed(false)
     }
-    prevCountRef.current = totalErrorCount
-  }, [totalErrorCount])
+    prevFingerprintRef.current = errorFingerprint
+  }, [errorFingerprint])
 
   const shouldShow = !dismissed && (hasCorruptedData || hasGenericErrors || customMessage)
 
