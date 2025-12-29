@@ -14,7 +14,6 @@ import StickyDashboard from './components/StickyDashboard'
 import SelectedMissionsSummary from './components/SelectedMissionsSummary'
 import ControlBar from './components/ControlBar'
 import MissionList from './components/MissionList'
-import FooterArea from './components/FooterArea'
 import Modal from './components/Modal'
 import EquipmentModal from './components/EquipmentModal'
 import MissionModal from './components/MissionModal'
@@ -30,10 +29,8 @@ function AppContent() {
   const {
     addUserCategory,
     swapUserCategoryOrder,
-    equipmentsCrudError,
     addUserEquipment,
     swapUserEquipmentOrder,
-    missionsCrudError,
     saveMission,
   } = useData()
 
@@ -79,9 +76,6 @@ function AppContent() {
     filterPeriod,
     setFilterPeriod
   } = useMissionFilter()
-
-  // エラー状態の統合
-  const errorMessage = equipmentsCrudError || missionsCrudError
 
   // Alpha版情報をエラーハンドラーに登録（初期化時のみ）
   useEffect(() => {
@@ -156,6 +150,18 @@ function AppContent() {
         type="info"
       />
 
+      {/* CRUD操作エラーバナー（ErrorContext経由） */}
+      <GlobalWarningBanner
+        tags={['equipment-crud-error', 'mission-crud-error']}
+        type="error"
+      />
+
+      {/* 破壊的操作エラーバナー（ErrorContext経由） */}
+      <GlobalWarningBanner
+        tags={['destructive-op-error']}
+        type="error"
+      />
+
       <StickyDashboard
         scrapList={allScrapList}
         comparison={comparison}
@@ -178,20 +184,12 @@ function AppContent() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 pb-20">
-        {errorMessage && (
-          <p className="text-center py-10 text-red-600">エラー: {errorMessage}</p>
-        )}
-        {!errorMessage && (
-          <MissionList
-            missions={filteredMissions}
-            onDelete={requestDeleteMission}
-            onEdit={handleEditMission}
-          />
-        )}
+        <MissionList
+          missions={filteredMissions}
+          onDelete={requestDeleteMission}
+          onEdit={handleEditMission}
+        />
       </div>
-
-      {/* FooterArea: ErrorContextに移行したため現在未使用 */}
-      <FooterArea errors={[]} onClearErrors={() => { }} />
 
       <Modal
         isOpen={isEquipmentModalOpen}

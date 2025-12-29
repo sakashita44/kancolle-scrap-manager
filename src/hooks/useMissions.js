@@ -108,6 +108,19 @@ export function useMissions() {
     }
   }, [corruptedItems, syncErrors]);
 
+  // CRUDエラーを統合エラーハンドラーに登録
+  useEffect(() => {
+    if (crudError) {
+      syncErrors('mission-crud-error', [{
+        type: ERROR_TYPE.ERROR,
+        message: `任務の操作に失敗しました: ${crudError}`,
+        context: { source: 'crud', dataType: 'mission' },
+      }]);
+    } else {
+      syncErrors('mission-crud-error', []);
+    }
+  }, [crudError, syncErrors]);
+
   return {
     // データ
     masterMissions,

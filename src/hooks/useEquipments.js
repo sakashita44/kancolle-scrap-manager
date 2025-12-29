@@ -112,6 +112,19 @@ export function useEquipments(categories, categoryMap) {
     }
   }, [corruptedItems, syncErrors]);
 
+  // CRUDエラーを統合エラーハンドラーに登録
+  useEffect(() => {
+    if (crudError) {
+      syncErrors('equipment-crud-error', [{
+        type: ERROR_TYPE.ERROR,
+        message: `装備の操作に失敗しました: ${crudError}`,
+        context: { source: 'crud', dataType: 'equipment' },
+      }]);
+    } else {
+      syncErrors('equipment-crud-error', []);
+    }
+  }, [crudError, syncErrors]);
+
   return {
     // データ
     equipments,           // 装備のみ（カテゴリ代表は含まない）
