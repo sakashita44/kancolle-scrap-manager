@@ -1,7 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Search, List, Trash2, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
-import { validateUniqueName, validateName } from '../utils/validation'
+import { validateUniqueName } from '../utils/validation'
 import { LIMITS } from '../types/schema'
+import { equipmentFormSchema, categoryFormSchema } from '../schemas'
 import ValidationErrorDisplay from './ValidationErrorDisplay'
 import { useCategoryData } from '../contexts/CategoryContext'
 import { useEquipmentData } from '../contexts/EquipmentContext'
@@ -24,82 +27,76 @@ const EquipmentModal = ({
     getNextOrder: getNextOrder,
   } = useEquipmentData()
   const [mode, setMode] = useState('equipment') // 'equipment' | 'category'
-  const [name, setName] = useState('')
-  const [category, setCategory] = useState(categories[0] || '')
   const [searchText, setSearchText] = useState('')
   const [isAddFormExpanded, setIsAddFormExpanded] = useState(true)
   const [expandedCategories, setExpandedCategories] = useState(new Set()) // デフォルトクローズ
 
-  // リアルタイムバリデーション
-  const validationErrors = useMemo(() => {
-    const errors = {}
+  // react-hook-form設定（モードに応じてスキーマを切り替え）
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    setError,
+    clearErrors,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: zodResolver(mode === 'equipment' ? equipmentFormSchema : categoryFormSchema),
+    mode: 'onChange',
+    defaultValues: mode === 'equipment'
+      ? { name: '', categoryId: categories[0] || '' }
+      : { name: '' },
+  })
 
-    if (mode === 'equipment') {
-      // 装備モード: 装備名とカテゴリを検証（Zodネイティブ形式）
-      const nameValidation = validateName(name, LIMITS.EQUIPMENT_NAME_MAX)
-      if (!nameValidation.success) {
-        const messages = nameValidation.error?.issues?.map(issue => issue.message) || []
-        errors.name = messages.length > 0 ? messages.join(', ') : '入力に問題があります'
-      } else if (name.length > 0) {
-        if (name.length > LIMITS.EQUIPMENT_NAME_MAX * 0.9) {
-          errors.name = `装備名は${LIMITS.EQUIPMENT_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
-        } else {
-          // 装備名の重複チェック（エラー扱い）
-          const isUnique = validateUniqueName(name, equipments)
-          if (!isUnique) {
-            errors.name = '同じ名前の装備が既に存在します'
-          }
-        }
-      }
+  // モード切り替え時にフォームをリセット
+  useEffect(() => {
+    reset(mode === 'equipment'
+      ? { name: '', categoryId: categories[0] || '' }
+      : { name: '' }
+    )
+  }, [mode, reset, categories])
 
-      // カテゴリ選択のチェック
-      if (!category || category.trim() === '') {
-        errors.category = 'カテゴリを選択してください'
-      }
-    } else {
-      // カテゴリモード: カテゴリ名のみ検証（Zodネイティブ形式）
-      const categoryValidation = validateName(name, LIMITS.CATEGORY_NAME_MAX)
-      if (!categoryValidation.success) {
-        const messages = categoryValidation.error?.issues?.map(issue => issue.message) || []
-        errors.name = messages.length > 0 ? messages.join(', ') : '入力に問題があります'
-      } else if (name.length > 0) {
-        if (name.length > LIMITS.CATEGORY_NAME_MAX * 0.9) {
-          errors.name = `カテゴリ名は${LIMITS.CATEGORY_NAME_MAX}文字以内で入力してください (現在: ${name.length}文字)`
-        } else {
-          // カテゴリ名の重複チェック（エラー扱い）
-          const existingCategoryNames = categories.map(catId => getCategoryName(catId))
-          const isDuplicate = existingCategoryNames.some(catName => catName === name.trim())
-          if (isDuplicate) {
-            errors.name = '同じ名前のカテゴリが既に存在します'
-          }
-        }
-      }
+  // 現在の入力値を監視
+  const watchedName = watch('name', '')
+
+  // 名前の重複チェック（カスタムバリデーション）
+  useEffect(() => {
+    if (!watchedName || watchedName.trim() === '') {
+      clearErrors('name')
+      return
     }
 
-    return errors
-  }, [mode, name, category, categories, getCategoryName, equipments])
+    if (mode === 'equipment') {
+      const isUnique = validateUniqueName(watchedName.trim(), equipments)
+      if (!isUnique) {
+        setError('name', { type: 'custom', message: '同じ名前の装備が既に存在します' })
+      }
+    } else {
+      const existingCategoryNames = categories.map(catId => getCategoryName(catId))
+      const isDuplicate = existingCategoryNames.some(catName => catName === watchedName.trim())
+      if (isDuplicate) {
+        setError('name', { type: 'custom', message: '同じ名前のカテゴリが既に存在します' })
+      }
+    }
+  }, [watchedName, mode, equipments, categories, getCategoryName, setError, clearErrors])
 
-  // 同名チェック（警告） - 現在は使用されていない（validationErrorsでチェック済み）
-  const nameWarning = useMemo(() => {
-    return null
-  }, [])
+  // フォームが有効かどうか（react-hook-formのisValidに加えて重複チェックも考慮）
+  const isFormValid = isValid && !errors.name && watchedName.trim() !== ''
 
-  // フォームが有効かどうか
-  const isFormValid = Object.keys(validationErrors).length === 0 && name.trim() !== ''
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const onSubmit = (data) => {
     if (!isFormValid) return
 
     if (mode === 'equipment') {
-      // 装備を追加
-      onSave({ name, categoryId: category, order: getNextOrder() })
+      onSave({ name: data.name, categoryId: data.categoryId, order: getNextOrder() })
     } else {
-      // カテゴリを追加
-      onSave({ mode: 'category', name, order: getNextCategoryOrder() })
+      onSave({ mode: 'category', name: data.name, order: getNextCategoryOrder() })
     }
 
-    setName('') // 連続追加しやすくするためクリア
+    // 連続追加しやすくするためクリア
+    reset(mode === 'equipment'
+      ? { name: '', categoryId: data.categoryId }
+      : { name: '' }
+    )
   }
 
   // カテゴリ別に装備をグループ化（検索フィルタリング後）
@@ -177,6 +174,9 @@ const EquipmentModal = ({
     onSwapOrder(categoryEquipments[index].id, categoryEquipments[index + 1].id)
   }
 
+  // 文字数カウンターの表示用
+  const maxLength = mode === 'equipment' ? LIMITS.EQUIPMENT_NAME_MAX : LIMITS.CATEGORY_NAME_MAX
+
   return (
     <div className="space-y-6">
       {/* 1. 新規追加フォーム */}
@@ -192,7 +192,7 @@ const EquipmentModal = ({
           <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isAddFormExpanded ? 'rotate-0' : '-rotate-90'}`} />
         </button>
         {isAddFormExpanded && (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* モード切替 */}
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-2">追加モード</label>
@@ -228,35 +228,28 @@ const EquipmentModal = ({
                 <div>
                   <label className="block text-xs font-medium text-slate-500 mb-1">
                     装備名 *
-                    {name && <span className="ml-1 text-[10px] text-slate-400">({name.length}/{LIMITS.EQUIPMENT_NAME_MAX})</span>}
+                    {watchedName && <span className="ml-1 text-[10px] text-slate-400">({watchedName.length}/{maxLength})</span>}
                   </label>
                   <input
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+                    {...register('name')}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${errors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
                       }`}
-                    value={name}
-                    onChange={e => setName(e.target.value)}
                     placeholder="例: 12.7cm連装砲B型改二"
-                    required
                   />
-                  <ValidationErrorDisplay
-                    error={validationErrors.name}
-                    warning={!validationErrors.name ? nameWarning : null}
-                  />
+                  <ValidationErrorDisplay error={errors.name?.message} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-500 mb-1">カテゴリ *</label>
                   <select
-                    className={`w-full px-3 py-2 border rounded-lg text-sm ${validationErrors.category ? 'border-red-500' : ''
+                    {...register('categoryId')}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.categoryId ? 'border-red-500' : ''
                       }`}
-                    value={category}
-                    onChange={e => setCategory(e.target.value)}
-                    required
                   >
                     {categories.map(c => (
                       <option key={c} value={c}>{getCategoryName(c)}</option>
                     ))}
                   </select>
-                  <ValidationErrorDisplay error={validationErrors.category} />
+                  <ValidationErrorDisplay error={errors.categoryId?.message} />
                 </div>
               </>
             ) : (
@@ -264,17 +257,15 @@ const EquipmentModal = ({
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">
                   カテゴリ名 *
-                  {name && <span className="ml-1 text-[10px] text-slate-400">({name.length}/{LIMITS.CATEGORY_NAME_MAX})</span>}
+                  {watchedName && <span className="ml-1 text-[10px] text-slate-400">({watchedName.length}/{maxLength})</span>}
                 </label>
                 <input
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
+                  {...register('name')}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 outline-none text-sm ${errors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'
                     }`}
-                  value={name}
-                  onChange={e => setName(e.target.value)}
                   placeholder="例: カスタムカテゴリA"
-                  required
                 />
-                <ValidationErrorDisplay error={validationErrors.name} />
+                <ValidationErrorDisplay error={errors.name?.message} />
                 <p className="mt-1 text-[10px] text-slate-500">
                   ℹ️ カテゴリ代表装備が自動で作成されます
                 </p>
