@@ -1,6 +1,6 @@
 # v2.0.0 ロードマップ
 
-最終更新: 2025-12-30（#114 clsx+tailwind-merge導入完了）
+最終更新: 2025-12-31（#109 MissionModalフォームロジック分離完了）
 
 ## 概要
 
@@ -276,7 +276,7 @@ ErrorContext    DataContext   SelectionCtx    UIContext    ドメイン分離  M
 | #113  | フォーム管理の刷新             | `react-hook-form` + `@hookform/resolvers` | 中   | #86, #118              |
 | #114  | スタイリングユーティリティ導入 | `clsx` + `tailwind-merge`                 | 小   | -                      |
 | #108  | EquipmentModal分割             | -                                         | 中   | #110 (#127-#129), #113 |
-| #109  | MissionModalフォーム分離       | -                                         | 小   | #110 (#127-#129), #113 |
+| #109  | MissionModalフォーム分離       | -                                         | 小   | #110 (#127-#129), #113 | ✅ 完了 |
 | #106  | Barrel File導入                | -                                         | 小   | #108, #109             |
 | #119  | StickyDashboard分割            | -                                         | 小   | #108, #109             |
 
@@ -516,7 +516,7 @@ v2.0.0リリース後に実装する機能改善。
 | Phase 4B-F3                | #113                     | P2     | 中          | #86, #118       | ✅ 完了              |
 | Phase 4B-F3                | #114                     | P2     | 小          | -               | ✅ 完了              |
 | Phase 4B-F3                | #108                     | P2     | 中          | #127-#129, #113 | 未着手              |
-| Phase 4B-F3                | #109                     | P2     | 小          | #127-#129, #113 | 未着手              |
+| Phase 4B-F3                | #109                     | P2     | 小          | #127-#129, #113 | ✅ 完了 (PR #154)   |
 | Phase 4B-F3                | #106                     | P3     | 小          | #108, #109      | 未着手              |
 | Phase 4B-F3                | #119                     | P3     | 小          | #108, #109      | 未着手              |
 | **バグ修正**               | #140                     | P1     | 小          | -               | ✅ 完了 (PR #144予定) |
@@ -559,7 +559,8 @@ v2.0.0リリース後に実装する機能改善。
   * ✅ #118完了（Zodネイティブ形式移行、zodAdapter.js削除）
   * ✅ #113完了（react-hook-form導入、EquipmentModal/MissionModalリファクタ）
   * ✅ #114完了（clsx+tailwind-merge導入、cn()ユーティリティ関数作成）
-  * 残り: #108, #109, #106, #119
+  * ✅ #109完了（MissionModalフォームロジック分離、useMissionForm.js作成）
+  * 残り: #108, #106, #119
   * ❌ クローズ済み: #84（not planned）, #110（#127-#129へ分割）
 
 ### v2.0.0リリース戦略の明確化
@@ -597,8 +598,8 @@ v2.0.0リリース後に実装する機能改善。
 * ✅ #118: Zodネイティブ結果に移行（P2、アダプター削減）- 完了
 * ✅ #113: react-hook-form導入（P2、フォーム管理刷新）- 完了
 * ✅ #114: clsx+twMerge導入（P2、スタイリング改善）- 完了
+* ✅ #109: MissionModal分割（P2、コード品質）- 完了
 * #108: EquipmentModal分割（P2、コード品質）
-* #109: MissionModal分割（P2、コード品質）
 * #106: Barrel File導入（P3、可読性）
 * #119: StickyDashboard分割（P3、可読性）
 
