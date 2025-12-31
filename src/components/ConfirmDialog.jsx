@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { AlertTriangle } from 'lucide-react'
+import { cn } from '../utils/cn'
 
 /**
  * 汎用確認ダイアログ
@@ -70,7 +71,7 @@ const ConfirmDialog = ({
         <div className="p-6">
           {/* アイコンとタイトル */}
           <div className="flex items-center gap-3 mb-4">
-            <AlertTriangle className={`w-6 h-6 ${styles.icon}`} />
+            <AlertTriangle className={cn('w-6 h-6', styles.icon)} />
             <h3 className="font-bold text-lg text-slate-800">{title}</h3>
           </div>
 
@@ -90,7 +91,7 @@ const ConfirmDialog = ({
             </button>
             <button
               onClick={onConfirm}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${styles.button}`}
+              className={cn('px-4 py-2 rounded-lg font-medium transition-colors', styles.button)}
             >
               {confirmText}
             </button>

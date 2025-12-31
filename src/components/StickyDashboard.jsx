@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Trash2, ChevronUp, ChevronDown, TrendingUp, TrendingDown, Check, AlertTriangle } from 'lucide-react'
 import { groupScrapListByCategory } from '../utils/scrapListFormatters'
 import { useToggle } from '../hooks/useToggle'
+import { cn } from '../utils/cn'
 
 /**
  * 廃棄リストとベース任務達成状況を表示するスティッキーダッシュボード
@@ -90,15 +91,13 @@ const StickyDashboard = ({ scrapList, comparison, hasBaseMission }) => {
                     return (
                       <div
                         key={index}
-                        className={`p-2 rounded border text-xs ${
-                          isNotRequiredByBase
-                            ? 'bg-slate-100 border-slate-300'
-                            : isInsufficient
-                            ? 'bg-red-50 border-red-200'
-                            : isSufficient
-                            ? 'bg-green-50 border-green-200'
-                            : 'bg-blue-50 border-blue-200'
-                        }`}
+                        className={cn(
+                          'p-2 rounded border text-xs',
+                          isNotRequiredByBase && 'bg-slate-100 border-slate-300',
+                          !isNotRequiredByBase && isInsufficient && 'bg-red-50 border-red-200',
+                          !isNotRequiredByBase && !isInsufficient && isSufficient && 'bg-green-50 border-green-200',
+                          !isNotRequiredByBase && !isInsufficient && !isSufficient && 'bg-blue-50 border-blue-200'
+                        )}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
@@ -107,7 +106,7 @@ const StickyDashboard = ({ scrapList, comparison, hasBaseMission }) => {
                               {!isNotRequiredByBase && isSufficient && <Check className="w-3.5 h-3.5 text-green-600" />}
                               {!isNotRequiredByBase && !isInsufficient && !isSufficient && <TrendingUp className="w-3.5 h-3.5 text-blue-600" />}
                               {isNotRequiredByBase && <TrendingUp className="w-3.5 h-3.5 text-slate-400" />}
-                              <span className={`font-semibold ${isNotRequiredByBase ? 'text-slate-500' : 'text-slate-700'}`}>
+                              <span className={cn('font-semibold', isNotRequiredByBase ? 'text-slate-500' : 'text-slate-700')}>
                                 {item.equipmentName}
                               </span>
                             </div>
@@ -116,23 +115,27 @@ const StickyDashboard = ({ scrapList, comparison, hasBaseMission }) => {
                           <div className="text-right flex items-center gap-2">
                             <div className="text-xs">
                               <span className="text-slate-500">ベース </span>
-                              <span className={`font-semibold ${isNotRequiredByBase ? 'text-slate-400' : 'text-slate-700'}`}>{item.baseCount}</span>
+                              <span className={cn('font-semibold', isNotRequiredByBase ? 'text-slate-400' : 'text-slate-700')}>{item.baseCount}</span>
                             </div>
                             <div className="text-xs">
                               <span className="text-slate-500">補助 </span>
-                              <span className={`font-semibold ${isNotRequiredByBase ? 'text-slate-400' : 'text-slate-700'}`}>{item.auxiliaryCount}</span>
+                              <span className={cn('font-semibold', isNotRequiredByBase ? 'text-slate-400' : 'text-slate-700')}>{item.auxiliaryCount}</span>
                             </div>
                             <div className="text-xs min-w-[60px] text-right">
-                              <span className={`font-medium ${
-                                isNotRequiredByBase ? 'text-slate-500' :
-                                isInsufficient ? 'text-red-600' : 'text-blue-600'
-                              }`}>
+                              <span className={cn(
+                                'font-medium',
+                                isNotRequiredByBase && 'text-slate-500',
+                                !isNotRequiredByBase && isInsufficient && 'text-red-600',
+                                !isNotRequiredByBase && !isInsufficient && 'text-blue-600'
+                              )}>
                                 {isInsufficient ? '不足' : '余剰'}{' '}
                               </span>
-                              <span className={`font-bold ${
-                                isNotRequiredByBase ? 'text-slate-600' :
-                                isInsufficient ? 'text-red-700' : 'text-blue-700'
-                              }`}>
+                              <span className={cn(
+                                'font-bold',
+                                isNotRequiredByBase && 'text-slate-600',
+                                !isNotRequiredByBase && isInsufficient && 'text-red-700',
+                                !isNotRequiredByBase && !isInsufficient && 'text-blue-700'
+                              )}>
                                 {item.difference > 0 ? '+' : ''}{item.difference}
                               </span>
                             </div>

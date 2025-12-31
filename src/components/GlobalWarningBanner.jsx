@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { AlertCircle, X } from 'lucide-react'
 import { useErrorHandler } from '../contexts/ErrorContext'
+import { cn } from '../utils/cn'
 
 /**
  * グローバル警告バナーコンポーネント
@@ -169,16 +170,16 @@ const GlobalWarningBanner = ({
   }
 
   return (
-    <div className={`${style.bg} ${style.border} border-l-4 p-4`}>
+    <div className={cn(style.bg, style.border, 'border-l-4 p-4')}>
       <div className="flex items-start">
-        <AlertCircle className={`w-5 h-5 ${style.icon} flex-shrink-0 mt-0.5`} />
-        <div className={`ml-3 flex-1 ${style.text}`}>
+        <AlertCircle className={cn('w-5 h-5 flex-shrink-0 mt-0.5', style.icon)} />
+        <div className={cn('ml-3 flex-1', style.text)}>
           {renderContent()}
         </div>
         {isDismissable && (
           <button
             onClick={() => setDismissed(true)}
-            className={`ml-3 flex-shrink-0 ${style.text} ${style.iconHover} transition-colors`}
+            className={cn('ml-3 flex-shrink-0 transition-colors', style.text, style.iconHover)}
             title="閉じる"
           >
             <X className="w-5 h-5" />
