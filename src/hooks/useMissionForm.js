@@ -60,9 +60,11 @@ export const useMissionForm = ({ editingMission = null, onSave }) => {
     // 装備がロードされ、現在のtargetIdが空の場合にreset
     const currentReqs = watch('reqs')
     if (equipments.length > 0 && currentReqs?.[0]?.targetId === '') {
+      // ユーザー入力済みのname/periodを維持
+      const currentValues = watch()
       reset({
-        name: '',
-        period: 'Weekly',
+        name: currentValues.name,
+        period: currentValues.period,
         reqs: [{ id: crypto.randomUUID(), targetId: equipments[0].id, count: 1 }],
       })
       initializedRef.current = true
