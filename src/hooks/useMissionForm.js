@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useEffect, useRef } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LIMITS, TARGET_TYPE } from '../types/schema'
@@ -21,6 +21,9 @@ export const useMissionForm = ({ editingMission = null, onSave }) => {
   const { allMissions } = useMissionData()
   const isEditMode = editingMission !== null
 
+  // 初期化済みフラグ（装備ロード遅延時のreset用）
+  const initializedRef = useRef(false)
+
   // react-hook-form設定
   const {
     register,
@@ -28,6 +31,7 @@ export const useMissionForm = ({ editingMission = null, onSave }) => {
     handleSubmit,
     watch,
     trigger,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(missionFormSchema),
@@ -44,6 +48,28 @@ export const useMissionForm = ({ editingMission = null, onSave }) => {
         : [{ id: crypto.randomUUID(), targetId: equipments[0]?.id || '', count: 1 }],
     },
   })
+
+  // 装備ロード遅延時の初期値追従
+  // 新規追加モードで、装備が後からロードされた場合にtargetIdを更新
+  useEffect(() => {
+    if (initializedRef.current) return
+    if (isEditMode) {
+      initializedRef.current = true
+      return
+    }
+    // 装備がロードされ、現在のtargetIdが空の場合にreset
+    const currentReqs = watch('reqs')
+    if (equipments.length > 0 && currentReqs?.[0]?.targetId === '') {
+      reset({
+        name: '',
+        period: 'Weekly',
+        reqs: [{ id: crypto.randomUUID(), targetId: equipments[0].id, count: 1 }],
+      })
+      initializedRef.current = true
+    } else if (equipments.length > 0) {
+      initializedRef.current = true
+    }
+  }, [equipments, isEditMode, reset, watch])
 
   // 動的フィールド配列管理（keyName指定でデータ側のidとの衝突を回避）
   const { fields, append, remove } = useFieldArray({
