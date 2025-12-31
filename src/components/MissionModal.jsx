@@ -13,6 +13,7 @@ const MissionModal = ({
     register,
     handleSubmit,
     fields,
+    errors,
     trigger,
     watchedValues,
     groupedEquipments,
@@ -70,7 +71,8 @@ const MissionModal = ({
                   onChange: () => trigger('reqs')
                 })}
                 className={cn(
-                  'flex-1 px-2 py-2 border rounded-lg text-sm'
+                  'flex-1 px-2 py-2 border rounded-lg text-sm',
+                  errors.reqs?.[index]?.targetId && 'border-red-500'
                 )}
               >
                 {Array.from(groupedEquipments.entries()).map(([categoryId, categoryEquipments]) => (
@@ -89,7 +91,8 @@ const MissionModal = ({
                 max={LIMITS.REQUIREMENT_COUNT_MAX}
                 {...register(`reqs.${index}.count`)}
                 className={cn(
-                  'w-20 px-2 py-2 border rounded-lg text-center text-sm'
+                  'w-20 px-2 py-2 border rounded-lg text-center text-sm',
+                  errors.reqs?.[index]?.count && 'border-red-500'
                 )}
               />
               {/* 最初の1枠のみ削除ボタンを非表示（スペーサーで幅を確保） */}
