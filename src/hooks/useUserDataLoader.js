@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { logError } from '../utils/logger.js';
+import { logError } from '../utils';
 
 /**
  * ユーザーデータを読み込む汎用フック

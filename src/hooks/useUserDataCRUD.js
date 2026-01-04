@@ -5,7 +5,7 @@
  */
 
 import { useCallback } from 'react';
-import { logError } from '../utils/logger.js';
+import { logError } from '../utils';
 
 /**
  * ユーザーデータのCRUD操作を提供する汎用フック

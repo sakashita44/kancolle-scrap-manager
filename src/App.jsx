@@ -3,23 +3,26 @@ import { ErrorProvider, useErrorHandler, ERROR_TYPE } from './contexts/ErrorCont
 import { DataProvider, useData } from './contexts/DataContext'
 import { SelectionProvider, useSelection } from './contexts/SelectionContext'
 import { UIProvider, useUI, getConfirmDialogConfig } from './contexts/UIContext'
-import { useScrapComparison } from './hooks/useScrapComparison'
-import { useMissionFilter } from './hooks/useMissionFilter'
-import { useAboutModal } from './hooks/useAboutModal'
-import { useDestructiveOperations } from './hooks/useDestructiveOperations'
-import { generateCategoryId, generateEquipmentId } from './utils/idGenerator'
-import { logInfo } from './utils/logger'
-import Header from './components/Header'
-import StickyDashboard from './components/StickyDashboard'
-import SelectedMissionsSummary from './components/SelectedMissionsSummary'
-import ControlBar from './components/ControlBar'
-import MissionList from './components/MissionList'
-import Modal from './components/Modal'
-import EquipmentModal from './components/EquipmentModal'
-import MissionModal from './components/MissionModal'
-import GlobalWarningBanner from './components/GlobalWarningBanner'
-import ConfirmDialog from './components/ConfirmDialog'
-import AboutModal from './components/AboutModal'
+import {
+  useScrapComparison,
+  useMissionFilter,
+  useAboutModal,
+  useDestructiveOperations,
+} from './hooks'
+import { generateCategoryId, generateEquipmentId, logInfo } from './utils'
+import {
+  Header,
+  StickyDashboard,
+  SelectedMissionsSummary,
+  ControlBar,
+  MissionList,
+  Modal,
+  EquipmentModal,
+  MissionModal,
+  GlobalWarningBanner,
+  ConfirmDialog,
+  AboutModal,
+} from './components'
 
 function AppContent() {
   // エラーハンドラーを取得（Context経由）

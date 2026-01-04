@@ -5,8 +5,8 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { calculateScrapList } from '../domain/scrapCalculation.js';
-import { logError, logInfo } from '../utils/logger.js';
+import { calculateScrapList } from '../domain';
+import { logError, logInfo } from '../utils';
 
 /**
  * 廃棄リスト計算を管理するカスタムフック

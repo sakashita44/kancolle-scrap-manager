@@ -5,8 +5,8 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { calculateScrapComparison, calculateScrapList } from '../domain/scrapCalculation.js';
-import { logError, logInfo } from '../utils/logger.js';
+import { calculateScrapComparison, calculateScrapList } from '../domain';
+import { logError, logInfo } from '../utils';
 import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext.jsx';
 import { useCategoryData } from '../contexts/CategoryContext.jsx';
 import { useEquipmentData } from '../contexts/EquipmentContext.jsx';

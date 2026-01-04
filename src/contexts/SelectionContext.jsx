@@ -8,9 +8,10 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo } 
 import {
   loadSelectedMissions,
   saveSelectedMissions,
-} from '../utils/sessionStorage.js'
+  logError,
+  logWarning,
+} from '../utils'
 import { LIMITS } from '../types/schema.js'
-import { logError, logWarning } from '../utils/logger.js'
 
 const SelectionContext = createContext(null)
 

@@ -5,7 +5,7 @@
  */
 
 import { createContext, useContext } from 'react'
-import { useMissions } from '../hooks/useMissions'
+import { useMissions } from '../hooks'
 
 const MissionContext = createContext(null)
 

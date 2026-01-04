@@ -5,7 +5,7 @@
  */
 
 import { createContext, useContext } from 'react'
-import { useEquipments } from '../hooks/useEquipments'
+import { useEquipments } from '../hooks'
 import { useCategoryData } from './CategoryContext'
 
 const EquipmentContext = createContext(null)

@@ -5,8 +5,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { isAboutShown, saveAboutShown } from '../utils/localStorage.js';
-import { logInfo } from '../utils/logger.js';
+import { isAboutShown, saveAboutShown, logInfo } from '../utils';
 
 /**
  * Aboutモーダルを管理するカスタムフック

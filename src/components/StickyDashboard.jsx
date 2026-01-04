@@ -1,8 +1,7 @@
 import { useMemo } from 'react'
 import { Trash2, ChevronUp, ChevronDown, TrendingUp, TrendingDown, Check, AlertTriangle } from 'lucide-react'
-import { groupScrapListByCategory } from '../utils/scrapListFormatters'
-import { useToggle } from '../hooks/useToggle'
-import { cn } from '../utils/cn'
+import { groupScrapListByCategory, cn } from '../utils'
+import { useToggle } from '../hooks'
 
 /**
  * 廃棄リストとベース任務達成状況を表示するスティッキーダッシュボード

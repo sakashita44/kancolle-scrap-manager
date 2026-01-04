@@ -5,7 +5,7 @@
  */
 
 import { EQUIPMENT_TYPE, LIMITS, TARGET_TYPE } from '../types/schema.js'
-import { WarningCollector } from '../utils/warningCollector.js'
+import { WarningCollector } from '../utils'
 
 /**
  * 廃棄リストを計算（従来の計算ロジック、補助任務用）

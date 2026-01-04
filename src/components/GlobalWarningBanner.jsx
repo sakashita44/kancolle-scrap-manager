@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { AlertCircle, X } from 'lucide-react'
 import { useErrorHandler } from '../contexts/ErrorContext'
-import { cn } from '../utils/cn'
+import { cn } from '../utils'
 
 /**
  * グローバル警告バナーコンポーネント

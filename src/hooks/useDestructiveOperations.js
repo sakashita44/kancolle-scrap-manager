@@ -13,11 +13,8 @@ import { useData } from '../contexts/DataContext'
 import { useSelection } from '../contexts/SelectionContext'
 import { useUI, CONFIRM_DIALOG_TYPE, buildCategoryDeletionMessage } from '../contexts/UIContext'
 import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext'
-import {
-  analyzeCategoryDeletionImpact,
-  calculateCategoryDeletionResult
-} from '../domain/categoryOperations'
-import { saveUserEquipments, clearAllData } from '../utils/localStorage'
+import { analyzeCategoryDeletionImpact, calculateCategoryDeletionResult } from '../domain'
+import { saveUserEquipments, clearAllData } from '../utils'
 
 /**
  * 破壊的操作を統合管理するカスタムフック

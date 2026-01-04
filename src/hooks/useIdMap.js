@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { createIdMap } from '../utils/dataManagement';
+import { createIdMap } from '../utils';
 
 /**
  * ID→オブジェクトのMapを作成してメモ化するカスタムフック
