@@ -86,7 +86,7 @@ const EquipmentList = ({
 
   // カテゴリ内装備の並び替え（カテゴリ代表を除く）
   const handleMoveEquipmentUp = (categoryId, equipmentId) => {
-    const categoryEquipments = groupedEquipments.get(categoryId).filter(e =>
+    const categoryEquipments = (groupedEquipments.get(categoryId) ?? []).filter(e =>
       e.type !== 'category' && e.id.startsWith('u_')
     )
     const index = categoryEquipments.findIndex(e => e.id === equipmentId)
@@ -95,7 +95,7 @@ const EquipmentList = ({
   }
 
   const handleMoveEquipmentDown = (categoryId, equipmentId) => {
-    const categoryEquipments = groupedEquipments.get(categoryId).filter(e =>
+    const categoryEquipments = (groupedEquipments.get(categoryId) ?? []).filter(e =>
       e.type !== 'category' && e.id.startsWith('u_')
     )
     const index = categoryEquipments.findIndex(e => e.id === equipmentId)

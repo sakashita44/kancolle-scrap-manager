@@ -20,7 +20,6 @@ import EquipmentList from './EquipmentList'
  * @param {Function} props.onDeleteCategory - カテゴリ削除ハンドラ
  * @param {Function} props.onSwapOrder - 装備の並び替えハンドラ
  * @param {Function} props.onSwapCategoryOrder - カテゴリの並び替えハンドラ
- * @param {Function} props.onCancel - キャンセルハンドラ
  */
 const EquipmentManager = ({
   onSave,
@@ -28,7 +27,6 @@ const EquipmentManager = ({
   onDeleteCategory,
   onSwapOrder,
   onSwapCategoryOrder,
-  onCancel,
 }) => {
   const {
     categoryIds: categories,
