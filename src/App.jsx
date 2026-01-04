@@ -202,7 +202,6 @@ function AppContent() {
           onSwapCategoryOrder={swapUserCategoryOrder}
           onDelete={requestDeleteEquipment}
           onDeleteCategory={requestDeleteCategory}
-          onCancel={closeModal}
         />
       </Modal>
 
