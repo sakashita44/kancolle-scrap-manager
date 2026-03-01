@@ -11,12 +11,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Tech Stack
 
 - **Frontend**: React, Tailwind CSS, Lucide React
-- **Language / State**: JavaScript (JSX) + Context API ← **Phase 5 (#159) で TypeScript + Zustand に全面リライト予定**
+- **Language**: TypeScript (strict)
+- **State**: Zustand (single store, slice pattern)
 - **Build**: Vite
-- **Validation**: Zod
+- **Validation**: Zod (v4)
 - **Form**: react-hook-form + @hookform/resolvers
 - **Code Quality**: ESLint (flat config), Prettier, markdownlint-cli2, Husky + lint-staged
-- **Hosting**: Lolipop (静的ホスティング)
 
 ## Development Commands
 
@@ -36,6 +36,46 @@ npm run deploy   # dist/ を Lolipop にアップロード
 1. 実装 → ローカル動作確認
 1. タスクが進捗に影響する場合は `docs/progress_v2.md` を更新
 1. コミット → プッシュ → PR作成
+
+## Architecture
+
+### ディレクトリ構成
+
+```text
+src/
+├── schema/          # Zodスキーマ + 型定義（constants, base, category, equipment, mission, forms）
+├── store/           # Zustand store（dataSlice, selectionSlice, uiSlice, storage）
+├── domain-ts/       # 純粋関数のビジネスロジック（scrapCalculation, categoryOperations）
+├── components-tsx/  # UIコンポーネント（TSX）
+├── hooks-ts/        # カスタムhooks（useToggle, useMissionForm）
+├── utils-ts/        # ユーティリティ（cn, displayUtils, scrapListFormatters）
+├── data/            # 公式マスタデータJSON（categories, equipments, missions）
+├── App.tsx          # ルートコンポーネント
+└── index.tsx        # エントリポイント
+```
+
+### 状態管理
+
+単一のZustand storeを3つのsliceに分割:
+
+- **dataSlice**: カテゴリ・装備・任務のCRUD, LocalStorage永続化, 起動時バリデーション
+- **selectionSlice**: 任務選択状態, SessionStorage永続化
+- **uiSlice**: フィルタ, 展開/折りたたみ, モーダル, SessionStorage永続化
+
+コンポーネントはセレクタ経由でstoreに直接アクセスする（Contextプロバイダは不要）.
+
+### ドメインレイヤー
+
+`src/domain-ts/` の計算関数は**純粋関数**のみ. 副作用(状態更新, ストレージ操作)は呼び出し元(App.tsx)が担う.
+
+### 要求(Requirement)モデル
+
+任務の要求は `kind`/`id` で表現:
+
+- `kind: "equipment"` + `id`: 特定装備の廃棄要求
+- `kind: "category"` + `id`: カテゴリ内の任意装備の廃棄要求
+
+カテゴリは直接要求対象として使用可能（カテゴリ代表装備の概念は廃止）.
 
 ## Application Features
 
@@ -64,7 +104,7 @@ npm run deploy   # dist/ を Lolipop にアップロード
 ユーザーは以下のデータを追加・編集・削除できる:
 
 - **カテゴリ**: 装備の分類(例: 小口径主砲, 機銃)
-- **装備**: 廃棄対象の装備. 個別装備とカテゴリ代表の2種で管理
+- **装備**: 廃棄対象の個別装備
 - **任務**: 要求装備リスト(`reqs`)を持つ廃棄任務
 
 公式マスタデータ(`src/data/*.json`)はアプリにバンドルされ, 読み取り専用.
@@ -82,8 +122,6 @@ npm run deploy   # dist/ を Lolipop にアップロード
 
 ## Data Schema Contracts
 
-Phase 5 リライト後も維持される契約.
-
 ### ID 体系
 
 | データ種別       | プレフィックス | 例                   | 生成                  | 削除 |
@@ -96,12 +134,12 @@ Phase 5 リライト後も維持される契約.
 | ユーザー任務     | `u_ms_`        | `u_ms_<UUID>`        | `crypto.randomUUID()` | 可   |
 
 - IDは一度発行したら**変更不可**(ユーザーデータが参照するため)
-- 廃止は`isMaster: true`のデータを`【廃止】...`にリネームして論理削除
+- 廃止はマスタデータを`【廃止】...`にリネームして論理削除
 - プレフィックスは推奨だが必須ではない
 
 ### JSON スキーマ (永続化形式)
 
-保存形式(JSON/LocalStorage)には `isMaster`, `type` フィールドは**含まれない**. ランタイムでデータソースから自動付与する(改竄防止).
+保存形式(JSON/LocalStorage)には `source` フィールドは**含まれない**. ランタイムでデータソースから自動付与する(改竄防止).
 
 ```json
 // categories.json
@@ -111,10 +149,8 @@ Phase 5 リライト後も維持される契約.
 { "version": "1.0.0", "equipments": [{ "id": "m_eq_gun_12cm", "name": "12cm単装砲", "categoryId": "m_cat_gun_s", "order": 100 }] }
 
 // missions.json
-{ "version": "1.0.0", "missions": [{ "id": "m_ms_daily_scrap_1", "name": "装備の整理", "period": "Daily", "reqs": [{ "targetType": "item", "targetId": "m_eq_gun_12cm", "count": 3 }], "order": 0 }] }
+{ "version": "1.0.0", "missions": [{ "id": "m_ms_daily_scrap_1", "name": "装備の整理", "period": "Daily", "reqs": [{ "kind": "equipment", "id": "m_eq_gun_12cm", "count": 3 }], "order": 0 }] }
 ```
-
-> **Note**: Phase 5 (#159) では `targetType`/`targetId` → `kind`/`id` に変更予定. `isMaster` → `source: "master" | "user"` に変更予定.
 
 スキーマバージョニングはSemVer準拠. 後方互換変更のみ許容(フィールド追加のみ, 削除・型変更は不可).
 
@@ -134,7 +170,7 @@ Phase 5 リライト後も維持される契約.
 
 ### 表示順序
 
-全エンティティに `order` フィールド(整数)を持つ. ソートは `isMaster` 降順 → `order` 昇順.
+全エンティティに `order` フィールド(整数)を持つ. ソートは `source` (`"master"` 優先) → `order` 昇順.
 
 公式装備の `order` 割り振り: カテゴリごとに100番台区切り(小口径主砲: 100〜199, 中口径主砲: 200〜299 ...). 詳細は `docs/maintenance.md`.
 
@@ -160,15 +196,9 @@ Phase 5 リライト後も維持される契約.
 - **初回起動モーダル**: `ksp_about_shown` がない場合, Aboutモーダルを自動表示(免責事項). 2回目以降は設定メニューから
 - **データ不変性**: 計算時に元データを変更しない. 計算結果は新規オブジェクトで生成
 
-## Domain Layer Principle
-
-`src/domain/` の計算関数は**純粋関数**のみ. 副作用(状態更新, ストレージ操作)は呼び出し元(コンポーネントまたはhook)が担う.
-
-Phase 5 リライト後もこの原則は維持される.
-
 ## Key Documentation Files
 
-- `docs/progress_v2.md` - ロードマップと進捗(Phase 5 #159 の詳細含む)
+- `docs/progress_v2.md` - ロードマップと進捗
 - `docs/calculation_logic.md` - 廃棄計算アルゴリズム詳細(8フェーズ)
 - `docs/schema.md` - データ構造定義, バリデーションルール, `order` 仕様
 - `docs/ui_specification.md` - UI/UX詳細仕様(モーダル挙動, フィルタ組み合わせ)
