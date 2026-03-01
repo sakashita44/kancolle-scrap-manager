@@ -5,7 +5,7 @@
  */
 
 import { createContext, useContext } from 'react'
-import { useCategories } from '../hooks/useCategories'
+import { useCategories } from '../hooks'
 
 const CategoryContext = createContext(null)
 

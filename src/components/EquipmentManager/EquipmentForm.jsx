@@ -1,6 +1,6 @@
 import { LIMITS } from '../../types/schema'
 import ValidationErrorDisplay from '../ValidationErrorDisplay'
-import { cn } from '../../utils/cn'
+import { cn } from '../../utils'
 
 /**
  * 装備追加フォーム

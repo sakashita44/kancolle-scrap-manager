@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { AlertTriangle } from 'lucide-react'
-import { cn } from '../utils/cn'
+import { cn } from '../utils'
 
 /**
  * 汎用確認ダイアログ

@@ -6,13 +6,21 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import equipmentsData from '../data/equipments.json';
-import { loadUserEquipments, saveUserEquipments } from '../utils/localStorage.js';
-import { getNextOrder as getNextOrderUtil, mergeAndSort, createDefaultSortComparator } from '../utils/dataManagement.js';
+import {
+  loadUserEquipments,
+  saveUserEquipments,
+  getNextOrder as getNextOrderUtil,
+  mergeAndSort,
+  createDefaultSortComparator,
+  toRuntimeEquipments,
+  generateCategoryRepresentatives,
+  addEquipmentType,
+  createEquipmentMap,
+} from '../utils';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
-import { toRuntimeEquipments, generateCategoryRepresentatives, addEquipmentType, createEquipmentMap } from '../utils/dataConverter.js';
 import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext.jsx';
-import { swapEquipmentOrder } from '../domain/equipmentOperations.js';
+import { swapEquipmentOrder } from '../domain';
 
 /**
  * 装備データを管理するカスタムフック

@@ -6,12 +6,18 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import categoriesData from '../data/categories.json';
-import { loadUserCategories, saveUserCategories } from '../utils/localStorage.js';
-import { getNextOrder as getNextOrderUtil, mergeAndSort, createDefaultSortComparator } from '../utils/dataManagement.js';
+import {
+  loadUserCategories,
+  saveUserCategories,
+  getNextOrder as getNextOrderUtil,
+  mergeAndSort,
+  createDefaultSortComparator,
+  toRuntimeCategories,
+  createCategoryMaps,
+} from '../utils';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
-import { toRuntimeCategories, createCategoryMaps } from '../utils/dataConverter.js';
-import { swapCategoryOrder } from '../domain/categoryOperations.js';
+import { swapCategoryOrder } from '../domain';
 
 /**
  * カテゴリデータを管理するカスタムフック

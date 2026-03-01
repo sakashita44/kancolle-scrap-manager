@@ -1,5 +1,5 @@
 import { ChevronUp, ChevronDown, Trash2 } from 'lucide-react'
-import { cn } from '../../utils/cn'
+import { cn } from '../../utils'
 
 /**
  * 装備リストの各行を表示するコンポーネント

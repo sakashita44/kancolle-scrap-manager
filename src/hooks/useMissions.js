@@ -6,15 +6,20 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import missionsData from '../data/missions.json';
-import { loadUserMissions, saveUserMissions } from '../utils/localStorage.js';
 import { PERIOD_ORDER } from '../types/schema.js';
-import { getNextOrder as getNextOrderUtil, mergeAndSort, createMissionSortComparator } from '../utils/dataManagement.js';
+import {
+  loadUserMissions,
+  saveUserMissions,
+  getNextOrder as getNextOrderUtil,
+  mergeAndSort,
+  createMissionSortComparator,
+  toRuntimeMissions,
+  generateMissionId,
+} from '../utils';
 import { useUserDataLoader } from './useUserDataLoader.js';
 import { useUserDataCRUD } from './useUserDataCRUD.js';
-import { toRuntimeMissions } from '../utils/dataConverter.js';
 import { useErrorHandler, ERROR_TYPE } from '../contexts/ErrorContext.jsx';
-import { generateMissionId } from '../utils/idGenerator.js';
-import { prepareMissionForSave } from '../domain/missionRules.js';
+import { prepareMissionForSave } from '../domain';
 
 /**
  * 任務データを管理するカスタムフック

@@ -1,6 +1,6 @@
 import { Anchor, Settings, Download, Upload, Info, ExternalLink, AlertTriangle } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import { useToggle } from '../hooks/useToggle'
+import { useToggle } from '../hooks'
 
 const Header = ({ onAboutOpen, onExport, onImport, onDataReset }) => {
   const [isMenuOpen, { toggle, setFalse }] = useToggle(false)

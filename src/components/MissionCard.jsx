@@ -2,8 +2,7 @@ import { Trash2, Target, Edit2 } from 'lucide-react'
 import { TARGET_TYPE } from '../types/schema'
 import { useCategoryData } from '../contexts/CategoryContext'
 import { useEquipmentData } from '../contexts/EquipmentContext'
-import { getRequirementDisplayName } from '../utils/displayUtils'
-import { cn } from '../utils/cn'
+import { getRequirementDisplayName, cn } from '../utils'
 
 const MissionCard = ({
   mission,

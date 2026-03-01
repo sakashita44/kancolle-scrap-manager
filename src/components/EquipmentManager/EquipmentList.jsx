@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Search, List, ChevronDown, ChevronRight, ChevronUp, Trash2 } from 'lucide-react'
 import EquipmentListItem from './EquipmentListItem'
-import { cn } from '../../utils/cn'
+import { cn } from '../../utils'
 
 /**
  * 装備一覧コンポーネント（カテゴリ別グループ化、検索、並び替え機能付き）
