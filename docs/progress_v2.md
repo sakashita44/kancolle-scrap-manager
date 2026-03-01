@@ -11,7 +11,9 @@ Phase 4A: 破壊的変更（alpha前）── 完了
   ↓
 v2.0.0-alpha ── リリース済み
   ↓
-Phase 4B: リファクタ（alpha後）── ほぼ完了（残り #119, #157）
+Phase 4B: 部分リファクタ ── 完了（#157で終了）
+  ↓
+Phase 5: TS + Zustand フルリライト ── #159
   ↓
 v2.0.0-beta
   ↓
@@ -20,29 +22,53 @@ v2.0.0-beta
 v2.0.0 正式版
 ```
 
-**alpha前後の区分**:
+## Phase 5: フルリライト (#159)
 
-* **alpha前（Phase 4A）**: ユーザーデータに影響する破壊的変更（バリデーション厳格化, データ初期化機能）
-* **alpha後（Phase 4B）**: 動作変更なしのリファクタリング（ユーザーへの影響なし）
+現行の JavaScript + Context API 構成を TypeScript + Zustand に全面リライトする.
+機能・UIは現行と同等を維持し, 内部アーキテクチャのみ刷新する.
 
-## Phase 4B 残タスク
+### 技術スタック変更
 
-| Issue | タイトル | 依存 | ステータス |
-| :---- | :------- | :--- | :--------- |
-| #119 | StickyDashboard分割（ロジック分離+コンポーネント分割） | #108, #109 | 未着手 |
-| #157 | コードベースの重複削除・未使用コード除去・簡素化 | - | PR中 |
+| 項目 | 現行 | 変更後 |
+| :-- | :-- | :-- |
+| 言語 | JavaScript (JSX) | TypeScript (TSX) |
+| 状態管理 | Context API × 7 + Facade | Zustand (単一Store, slice構成) |
+| バリデーション | Zod (部分適用) | Zod (全データ統一) |
+| 永続化 | 各hook/コンポーネントで個別実装 | Zustand persist middleware |
 
-### 別トラック
+### アーキテクチャ
 
-| Issue | タイトル | ステータス |
-| :---- | :------- | :--------- |
-| #126 | アーキテクチャ配置ルールの確立と段階的適用（meta） | 継続 |
-| #130 | ドキュメント最新化（現行実装への追従） | 継続 |
+4区分構成. 中間層(services, repositories, adapters)は作らない.
+
+```
+src/
+  store/        # Zustand store + slices (data, selection, ui)
+  domain/       # 純粋計算関数(廃棄計算等)
+  schema/       # Zod スキーマ定義(型生成含む)
+  components/   # UIコンポーネント
+  data/         # マスターデータJSON
+  hooks/        # 必要最小限のカスタムhook
+```
+
+### 設計判断
+
+* データは配列のまま管理する(正規化 byId/allIds は不採用. この規模では変換コストが増えるだけ)
+* エラーは専用Sliceを持たず, 通知UI(トースト)のみ軽量実装
+* 層分離は可読性のためのみ. 拡張性のための抽象化は行わない
+* ドメイン層の純粋関数原則は維持
+
+### 維持する事項
+
+* データID体系(m_cat_, u_eq_ 等のプレフィックス)
+* LocalStorage/SessionStorage のキー名と保存内容
+* UI/UXの挙動(モーダル, フィルタ, 廃棄計算結果表示等)
+* マスターデータJSON形式
 
 ## Phase 4B 完了済みタスク
 
 | Issue | タイトル |
 | :---- | :------- |
+| #157 | コードベースの重複削除・未使用コード除去・簡素化 |
 | #85 | エラーハンドリング統一（ErrorContext導入） |
 | #107 Step1-4 | Context API導入（Error/Data/Selection/UI） |
 | #127 | category/equipment operationsの純粋関数化 |
@@ -57,6 +83,19 @@ v2.0.0 正式版
 | #106 | Barrel File導入 |
 | #140 | 微細なバグ修正 |
 
+### Phase 4Bで中止したタスク
+
+#159(フルリライト)で対応するため中止.
+
+* #119: StickyDashboard分割 → リライトで構成ごと書き直す
+* #126: アーキテクチャ配置ルール(meta) → Zustand + 4区分で構造的に解決
+
+### 別トラック
+
+| Issue | タイトル | ステータス |
+| :---- | :------- | :--------- |
+| #130 | ドキュメント最新化（現行実装への追従） | #159完了後に再開 |
+
 ## v2.0.0-beta後 → 正式版
 
 | Issue | タイトル | ステータス |
@@ -70,6 +109,13 @@ v2.0.0 正式版
 | Zod | #86 | スキーマベースバリデーション（Parse, don't validate） |
 | react-hook-form + @hookform/resolvers | #113 | 宣言的フォーム管理, Zodスキーマ統合 |
 | clsx + tailwind-merge | #114 | 条件付きクラス名結合, Tailwind衝突解決 |
+
+### Phase 5 で追加予定
+
+| ライブラリ | 用途 |
+| :--------- | :--- |
+| Zustand | 状態管理(Context API置換) |
+| TypeScript | 型安全性 |
 
 ## v2.1.0以降
 
