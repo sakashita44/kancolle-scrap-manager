@@ -28,20 +28,6 @@ export function getNextOrder(items) {
 }
 
 /**
- * IDで検索する関数を生成する高階関数
- * @param {Array} items - 検索対象の配列
- * @returns {Function} IDで検索する関数
- */
-export function createFindById(items) {
-  return (id) => {
-    if (!Array.isArray(items)) {
-      return null;
-    }
-    return items.find((item) => item.id === id) || null;
-  };
-}
-
-/**
  * マスタデータとユーザーデータをマージしてソートする
  * @param {Array} masterData - マスタデータ配列
  * @param {Array} userData - ユーザーデータ配列
@@ -54,35 +40,24 @@ export function mergeAndSort(masterData, userData, sortCompareFn) {
 }
 
 /**
- * デフォルトのソート比較関数を作成（isMaster優先 → order昇順）
+ * ソート比較関数を作成（isMaster優先 → order昇順、オプションでperiod順を先行）
+ * @param {Object} [options] - オプション
+ * @param {Array} [options.periodOrder] - 周期の優先順位配列（指定時はperiod順を最優先）
  * @returns {Function} ソート比較関数
  */
-export function createDefaultSortComparator() {
+export function createSortComparator(options = {}) {
+  const { periodOrder } = options;
   return (a, b) => {
+    // 周期順（periodOrderが指定されている場合のみ）
+    if (periodOrder) {
+      const periodIndexA = periodOrder.indexOf(a.period);
+      const periodIndexB = periodOrder.indexOf(b.period);
+      if (periodIndexA !== periodIndexB) {
+        return periodIndexA - periodIndexB;
+      }
+    }
+
     // 公式優先（isMasterがtrueなら先頭）
-    if (a.isMaster !== b.isMaster) {
-      return b.isMaster ? 1 : -1;
-    }
-    // 同じグループ内ではorder順
-    return a.order - b.order;
-  };
-}
-
-/**
- * 任務用のソート比較関数を作成（period順 → isMaster優先 → order昇順）
- * @param {Array} periodOrder - 周期の優先順位配列（PERIOD_ORDER）
- * @returns {Function} ソート比較関数
- */
-export function createMissionSortComparator(periodOrder) {
-  return (a, b) => {
-    // 周期順（PERIOD_ORDERに基づく）
-    const periodIndexA = periodOrder.indexOf(a.period);
-    const periodIndexB = periodOrder.indexOf(b.period);
-    if (periodIndexA !== periodIndexB) {
-      return periodIndexA - periodIndexB;
-    }
-
-    // 同じ周期内では公式優先（isMasterがtrueなら先頭）
     if (a.isMaster !== b.isMaster) {
       return b.isMaster ? 1 : -1;
     }

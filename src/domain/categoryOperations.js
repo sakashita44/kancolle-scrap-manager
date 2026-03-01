@@ -5,6 +5,8 @@
  * 全ての関数は純粋関数として実装（副作用を持たない）
  */
 
+import { swapItemOrder } from './commonOperations'
+
 /**
  * カテゴリのorder値を交換した新しい配列を返す（純粋関数）
  *
@@ -14,20 +16,7 @@
  * @returns {{ nextList: Array, swapped: boolean }} 交換後の配列と成功フラグ
  */
 export function swapCategoryOrder(categories, id1, id2) {
-  const cat1 = categories.find(c => c.id === id1)
-  const cat2 = categories.find(c => c.id === id2)
-
-  if (!cat1 || !cat2) {
-    return { nextList: categories, swapped: false }
-  }
-
-  const nextList = categories.map(cat => {
-    if (cat.id === id1) return { ...cat, order: cat2.order }
-    if (cat.id === id2) return { ...cat, order: cat1.order }
-    return cat
-  })
-
-  return { nextList, swapped: true }
+  return swapItemOrder(categories, id1, id2)
 }
 
 /**

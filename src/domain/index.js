@@ -1,6 +1,9 @@
 // Barrel File for domain
 // ドメインロジック（純粋関数）を一括でエクスポート
 
+// 共通操作
+export { swapItemOrder } from './commonOperations'
+
 // 廃棄計算
 export {
   calculateScrapList,

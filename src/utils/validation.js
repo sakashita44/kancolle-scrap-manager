@@ -4,8 +4,8 @@
  * @module utils/validation
  */
 
-import { ID_PREFIX } from '../types/schema.js';
 import {
+  DANGEROUS_PATTERN,
   persistedEquipmentSchema,
   persistedMissionSchema,
   selectedMissionsSchema,
@@ -18,8 +18,7 @@ import {
  * @returns {boolean} 安全な場合true
  */
 export function isSafeString(value) {
-  const dangerousPattern = /<script|<iframe|javascript:|on\w+=/i;
-  return !dangerousPattern.test(value);
+  return !DANGEROUS_PATTERN.test(value);
 }
 
 
@@ -107,36 +106,6 @@ export function validateNoDuplicateNames(items) {
     valid: duplicates.length === 0,
     duplicates,
   };
-}
-
-
-
-/**
- * ユーザー定義装備IDの妥当性チェック
- * プレフィックスが正しく、ID部分が空でなければ有効
- * @param {string} equipmentId - 装備ID
- * @returns {boolean} 妥当な場合true
- */
-export function isValidUserEquipmentId(equipmentId) {
-  if (!equipmentId.startsWith(ID_PREFIX.USER_EQUIPMENT)) {
-    return false;
-  }
-  const idPart = equipmentId.substring(ID_PREFIX.USER_EQUIPMENT.length);
-  return idPart.length > 0;
-}
-
-/**
- * ユーザー定義任務IDの妥当性チェック
- * プレフィックスが正しく、ID部分が空でなければ有効
- * @param {string} missionId - 任務ID
- * @returns {boolean} 妥当な場合true
- */
-export function isValidUserMissionId(missionId) {
-  if (!missionId.startsWith(ID_PREFIX.USER_MISSION)) {
-    return false;
-  }
-  const idPart = missionId.substring(ID_PREFIX.USER_MISSION.length);
-  return idPart.length > 0;
 }
 
 // ==================== Zodベースバリデーション関数（ネイティブ形式） ====================
