@@ -4,300 +4,174 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-艦これ 工廠任務廃棄マネージャー (Kancolle Scrap Manager) is a web application that calculates the optimal minimum equipment scrap list when managing multiple Kancolle factory missions in parallel to prevent wasteful scrapping.
+艦これ 工廠任務廃棄マネージャー (Kancolle Scrap Manager) は, 艦これの複数の工廠任務(廃棄任務)を並列遂行する際に, 廃棄すべき装備の**必要最小限リスト**を算出するWebアプリケーション.
+
+サーバーレス. 全データ処理はブラウザ内で完結する(プライバシー機能として告知).
 
 ## Tech Stack
 
-* **Frontend**: React, Tailwind CSS, Lucide React
-* **Build Tool**: Vite
-* **Hosting**: Static hosting on Lolipop
-* **Master Data**: Bundled in application (`src/data/*.json`)
-* **Data Storage**: Browser LocalStorage (user data), SessionStorage (selected state)
+- **Frontend**: React, Tailwind CSS, Lucide React
+- **Language / State**: JavaScript (JSX) + Context API ← **Phase 5 (#159) で TypeScript + Zustand に全面リライト予定**
+- **Build**: Vite
+- **Validation**: Zod
+- **Form**: react-hook-form + @hookform/resolvers
+- **Code Quality**: ESLint (flat config), Prettier, markdownlint-cli2, Husky + lint-staged
+- **Hosting**: Lolipop (静的ホスティング)
 
 ## Development Commands
 
-* `npm run dev` - Start development server
-* `npm run build` - Build for production (outputs to `dist/`)
-* `npm run test` - Run tests (not yet implemented)
+```bash
+npm run dev      # 開発サーバー起動
+npm run build    # プロダクションビルド (dist/ に出力)
+npm run lint     # ESLint + markdownlint チェック
+npm run format   # Prettier + ESLint --fix + markdownlint --fix
+npm run deploy   # dist/ を Lolipop にアップロード
+```
 
 ### Development Flow
 
-1. check current branch status with `git status`
-1. check issue and `docs/progress_v2.md` for next tasks
-    * Must: check comments of related issues for additional context
-1. create branch with rule in `copilot-instructions.md` from main branch
-    * `<prefix>/<yyyymm>/sakashita44/<issue-number: if exists>-<short-description>`
-    * e.g. `feat/202511/sakashita44/5-add-validation`
-1. implement feature / fix bug
-1. test locally
-1. update `docs/progress_v2.md` if task affects progress
-1. commit with rule in `copilot-instructions.md`
-1. push to remote
-1. create pull request
-1. return to step 1 after merge
+1. `git status` でブランチ状態確認
+1. issue と `docs/progress_v2.md` で次タスク確認 (issueのコメントも必ず確認)
+1. `main` からブランチ作成: `<prefix>/<yyyymm>/sakashita44/<issue番号>-<内容>`
+1. 実装 → ローカル動作確認
+1. タスクが進捗に影響する場合は `docs/progress_v2.md` を更新
+1. コミット → プッシュ → PR作成
 
-## Data Architecture
+## Application Features
 
-### ID Naming Convention
+### 廃棄リスト計算(コア機能)
 
-The project uses prefix-based namespacing to prevent data conflicts:
+選択した任務(最大8件)から, 廃棄すべき最小装備セットを算出する. 計算ルール:
 
-| Data Type          | Prefix   | Format Example       | Generation Method     | Deletable |
-| :----------------- | :------- | :------------------- | :-------------------- | :-------- |
-| Official Category  | `m_cat_` | `m_cat_gun_s`        | Manual definition     | No        |
-| Official Equipment | `m_eq_`  | `m_eq_gun_12cm`      | Manual definition     | No        |
-| Official Mission   | `m_ms_`  | `m_ms_daily_scrap_1` | Manual definition     | No        |
-| User Category      | `u_cat_` | `u_cat_<UUID>`       | `crypto.randomUUID()` | Yes       |
-| User Equipment     | `u_eq_`  | `u_eq_<UUID>`        | `crypto.randomUUID()` | Yes       |
-| User Mission       | `u_ms_`  | `u_ms_<UUID>`        | `crypto.randomUUID()` | Yes       |
-
-**Critical Rules**:
-
-* Prefixes are recommended for readability but not mandatory (validation checks prefix format if present)
-* Official master data IDs are **immutable** once published (to prevent breaking user data references)
-* Deprecated items should be logically deleted by renaming to "【廃止】..." rather than removing the ID
-* UUIDs are generated using `crypto.randomUUID()`, requiring HTTPS or localhost environment
-* `isMaster` flag is **never stored** in JSON files - it's automatically assigned at runtime based on data source (bundled `src/data/*.json` → true, LocalStorage → false)
-* `type` field (equipment only) is **never stored** in JSON files - it's automatically assigned at runtime (`"item"` for individual equipment, `"category"` for category representatives)
-* **Category Representative Equipment**: Dynamically generated at runtime for all categories (both official and user-defined), not stored in JSON files
-
-### Data Flow Strategy
-
-The app bundles master data directly into the application:
-
-**Data Loading**:
-
-1. **Master Data**: JSON files in `src/data/` are imported directly in custom hooks (`useCategories`, `useEquipments`, `useMissions`)
-   * No network requests required
-   * Instant startup with zero latency
-   * App and data versions are always in sync
-2. **User Data**: Loaded from LocalStorage with validation
-   * Merged with master data after loading
-   * Invalid entries are auto-removed with warnings
-
-**Validation on Startup**:
-
-* **LocalStorage Validation**: User-defined data is validated on load, corrupt entries are auto-removed with warning display
-* **Auto-Recovery**: Corrupt data is silently removed from LocalStorage to maintain app stability
-
-### Storage Locations
-
-**LocalStorage** (persists across sessions):
-
-* `ksp_app_version` - App version
-* `ksp_user_categories` - User-defined categories
-* `ksp_user_equipments` - User-defined equipment list
-* `ksp_user_missions` - User-defined missions list
-* `ksp_about_shown` - About modal display flag (initial launch)
-
-**SessionStorage** (cleared on tab/window close):
-
-* `ksp_selected_missions` - Currently selected mission IDs
-* `ksp_filter_period` - Period filter selection
-* `ksp_filter_category` - Equipment category filter selection
-* `ksp_mission_list_expanded` - Mission list expand/collapse state
-
-**Data Sources**:
-
-* **`src/data/`**: Official master data bundled directly in application code
-
-## Core Calculation Logic
-
-The calculation algorithm determines the **minimum** equipment to scrap when multiple missions are selected in parallel.
-
-### Algorithm Phases
-
-1. **Pre-check**: Return empty list if no missions selected, error if >8 missions selected
-2. **Expand Requirements**: Extract all requirements from selected missions
-3. **Integrity Check**: Filter out requirements based on `targetType`:
-   * `targetType="category"`: Validate category ID exists in category master
-   * `targetType="item"`: Validate equipment ID exists in equipment master
-   * Display warnings for non-existent IDs
-4. **Group by Type**: Separate requirements based on `targetType` field:
-   * `targetType="item"` → Item requirements
-   * `targetType="category"` → Category requirements
-5. **MAX Aggregation (Items)**: For same equipment ID, use maximum count (not sum)
-6. **MAX Aggregation (Categories)**: For same category ID, use maximum count (not sum)
-7. **Inclusion Resolution (OR Condition)**: Subtract Item counts from Category counts within same category
-   * If Category count ≤ Item total → Remove category requirement (Items satisfy it)
-   * If Category count > Item total → Keep remaining count
-8. **Generate Result**: Combine Item and Category results, sort by category name
-
-### Example Calculation
+- **AND条件**: 同一任務内の要求は全て満たす必要がある
+- **MAX集計**: 同じ装備を要求する複数任務がある場合, 最大値を使用(合計ではない)
+- **OR条件(包含)**: カテゴリ要求と個別装備要求が混在する場合, 個別装備はカテゴリ要求を部分的に充足する
 
 ```text
-Selected missions:
-- Mission A: 機銃(Category) ×5
-- Mission B: 25mm単装機銃(Item, category="機銃") ×2
+例:
+  任務A: 機銃(カテゴリ) ×5
+  任務B: 25mm単装機銃(個別) ×2
 
-Result:
-- 25mm単装機銃: 2 pieces
-- 機銃(Category): 3 pieces  ← (5 - 2 = 3)
+  結果:
+  - 25mm単装機銃: 2個
+  - 機銃(カテゴリ): 3個  ← 5 - 2 = 3
 ```
 
-See `docs/calculation_logic.md` for detailed implementation with test cases.
+詳細: `docs/calculation_logic.md`
 
-## Deployment Process
+### データ管理
 
-1. Run `npm run build` to generate `dist/` folder
-2. Upload `dist/` contents to Lolipop
+ユーザーは以下のデータを追加・編集・削除できる:
 
-Master data **must** be placed in `src/data/` directory so it's:
+- **カテゴリ**: 装備の分類(例: 小口径主砲, 機銃)
+- **装備**: 廃棄対象の装備. 個別装備とカテゴリ代表の2種で管理
+- **任務**: 要求装備リスト(`reqs`)を持つ廃棄任務
 
-* Bundled into the application by Vite during build
-* Always in sync with the deployed application version
+公式マスタデータ(`src/data/*.json`)はアプリにバンドルされ, 読み取り専用.
+ユーザー定義データはLocalStorageに保存.
 
-## Text and Documentation Conventions
+### Import / Export
 
-From `.github/copilot-instructions.md`:
+ユーザー定義の装備・任務をJSONファイルでエクスポート/インポートできる.
+インポートはZodで全フィールドをバリデーションし, エラーがあれば取り込みを中断する.
 
-### Japanese Text Rules
+エクスポートファイル名:
 
-* Use `,` and `.` instead of `、` and `。`
-* Use direct form, not polite form (`~する` not `~します`)
-* Use plain dictionary form for verbs in documentation
+- 装備: `kancolle_scrap_equipments_YYYYMMDD.json`
+- 任務: `kancolle_scrap_missions_YYYYMMDD.json`
 
-### Markdown Rules
+## Data Schema Contracts
 
-* Use `*` for unordered lists
-* Use continuous `1.` for ordered lists (not `2.`, `3.`)
-* Add line breaks after all headings and around lists
-* Use 4 spaces for indentation
-* Add 1 space after `#` and list markers
-* Use backticks for code, filenames, and technical terms
+Phase 5 リライト後も維持される契約.
 
-### File Naming
+### ID 体系
 
-* Repository meta files: UPPERCASE (README.md, LICENSE)
-* Project documents: PascalCase (Setup.md, Workflow.md)
-* Scripts: snake_case with verb prefix (process_data.py)
-* Directories: singular lowercase (script/, data/)
+| データ種別       | プレフィックス | 例                   | 生成                  | 削除 |
+| :--------------- | :------------- | :------------------- | :-------------------- | :--- |
+| 公式カテゴリ     | `m_cat_`       | `m_cat_gun_s`        | 手動定義              | 不可 |
+| 公式装備         | `m_eq_`        | `m_eq_gun_12cm`      | 手動定義              | 不可 |
+| 公式任務         | `m_ms_`        | `m_ms_daily_scrap_1` | 手動定義              | 不可 |
+| ユーザーカテゴリ | `u_cat_`       | `u_cat_<UUID>`       | `crypto.randomUUID()` | 可   |
+| ユーザー装備     | `u_eq_`        | `u_eq_<UUID>`        | `crypto.randomUUID()` | 可   |
+| ユーザー任務     | `u_ms_`        | `u_ms_<UUID>`        | `crypto.randomUUID()` | 可   |
 
-### Git Commit Prefixes
+- IDは一度発行したら**変更不可**(ユーザーデータが参照するため)
+- 廃止は`isMaster: true`のデータを`【廃止】...`にリネームして論理削除
+- プレフィックスは推奨だが必須ではない
 
-* `feat:` - New features
-* `fix:` - Bug fixes
-* `refactor:` - Code refactoring including formatting
-* `test:` - Adding or modifying tests
-* `docs:` - Documentation changes
-* `chore:` - Build process, tooling, libraries
+### JSON スキーマ (永続化形式)
 
-## Error Handling Strategy
+保存形式(JSON/LocalStorage)には `isMaster`, `type` フィールドは**含まれない**. ランタイムでデータソースから自動付与する(改竄防止).
 
-The app implements 4-level error classification with comprehensive recovery strategies (see `docs/error_handling.md`):
+```json
+// categories.json
+{ "version": "1.0.0", "categories": [{ "id": "m_cat_gun_s", "name": "小口径主砲", "order": 1 }] }
 
-### Error Levels
+// equipments.json
+{ "version": "1.0.0", "equipments": [{ "id": "m_eq_gun_12cm", "name": "12cm単装砲", "categoryId": "m_cat_gun_s", "order": 100 }] }
 
-| Level    | Impact          | User Action | Recovery                             |
-| :------- | :-------------- | :---------- | :----------------------------------- |
-| Critical | App cannot run  | Required    | Display modal, reload required       |
-| Error    | Feature blocked | Recommended | Disable feature, other features work |
-| Warning  | Continues       | Optional    | Show warning, all features available |
-| Info     | No error        | None        | Informational notification only      |
-
-### Key Error Scenarios
-
-**Data Integrity**:
-
-* Missing equipment IDs in missions → Warning icon on mission card, exclude from calculation
-* LocalStorage data corruption on startup → Auto-remove corrupt entries, display warning with details
-* ID conflicts → Last-loaded wins (user data overrides official), log warning
-
-**Storage Issues**:
-
-* LocalStorage quota exceeded → Block save, prompt user to export data
-* Private browsing mode → Read-only mode, disable edit UI
-* Cross-tab data updates → Display reload notification (no auto-merge)
-
-**Import/Export**:
-
-* JSON syntax error → Block import, display detailed error
-* Schema validation failure → Block import, show field-level errors
-* Import success → Complete overwrite of target data type with confirmation
-
-## Architecture and Design Principles
-
-### Domain Layer Design (Critical)
-
-**Pure Function Requirement**: All domain logic in `src/domain/` **must** be implemented as pure functions.
-
-**NG (Bad)**: Domain functions that accept state update functions as arguments and execute them internally (side effects):
-
-```javascript
-// ❌ BAD: Domain function with side effects
-export function swapEquipmentOrder(id1, id2, equipments, updateEquipment) {
-  const eq1 = equipments.find(e => e.id === id1)
-  const eq2 = equipments.find(e => e.id === id2)
-
-  updateEquipment(id1, { ...eq1, order: eq2.order })  // ❌ Side effect
-  updateEquipment(id2, { ...eq2, order: tempOrder })  // ❌ Side effect
-}
+// missions.json
+{ "version": "1.0.0", "missions": [{ "id": "m_ms_daily_scrap_1", "name": "装備の整理", "period": "Daily", "reqs": [{ "targetType": "item", "targetId": "m_eq_gun_12cm", "count": 3 }], "order": 0 }] }
 ```
 
-**OK (Good)**: Domain functions that return calculation results or new objects/arrays without side effects:
+> **Note**: Phase 5 (#159) では `targetType`/`targetId` → `kind`/`id` に変更予定. `isMaster` → `source: "master" | "user"` に変更予定.
 
-```javascript
-// ✅ GOOD: Pure domain function
-export function calculateSwappedEquipments(id1, id2, equipments) {
-  const eq1 = equipments.find(e => e.id === id1)
-  const eq2 = equipments.find(e => e.id === id2)
+スキーマバージョニングはSemVer準拠. 後方互換変更のみ許容(フィールド追加のみ, 削除・型変更は不可).
 
-  return equipments.map(eq => {
-    if (eq.id === id1) return { ...eq, order: eq2.order }
-    if (eq.id === id2) return { ...eq, order: eq1.order }
-    return eq
-  })
-}
+### Storage Keys
 
-// Caller (UI component or hook) handles state updates:
-const newEquipments = calculateSwappedEquipments(id1, id2, equipments)
-setEquipments(newEquipments)
-```
+| ストレージ     | キー                        | 内容                     |
+| :------------- | :-------------------------- | :----------------------- |
+| LocalStorage   | `ksp_app_version`           | アプリバージョン         |
+| LocalStorage   | `ksp_user_categories`       | ユーザー定義カテゴリ     |
+| LocalStorage   | `ksp_user_equipments`       | ユーザー定義装備         |
+| LocalStorage   | `ksp_user_missions`         | ユーザー定義任務         |
+| LocalStorage   | `ksp_about_shown`           | Aboutモーダル表示フラグ  |
+| SessionStorage | `ksp_selected_missions`     | 選択中の任務IDリスト     |
+| SessionStorage | `ksp_filter_period`         | 期間フィルタ選択状態     |
+| SessionStorage | `ksp_filter_category`       | カテゴリフィルタ選択状態 |
+| SessionStorage | `ksp_mission_list_expanded` | 任務リスト展開状態       |
 
-**Enforcement**: Issue #110 must enforce this principle and refactor existing domain functions that violate it.
+### 表示順序
 
-## Important Implementation Notes
+全エンティティに `order` フィールド(整数)を持つ. ソートは `isMaster` 降順 → `order` 昇順.
 
-1. **No Server Backend**: All data processing happens client-side. Emphasize this in UI (privacy feature).
+公式装備の `order` 割り振り: カテゴリごとに100番台区切り(小口径主砲: 100〜199, 中口径主砲: 200〜299 ...). 詳細は `docs/maintenance.md`.
 
-2. **HTTPS Required**: `crypto.randomUUID()` requires secure context. App must run on HTTPS or localhost.
+## Error Handling
 
-3. **Schema Versioning**: All JSON files have a `version` field following Semantic Versioning. Validation checks schema structure, not version numbers. Future schema changes must maintain backward compatibility (add fields only, never remove/change types).
+4レベルで分類する:
 
-4. **Display Order Management**:
-   * Each data type has an `order` field (integer) for sort order
-   * Data is sorted first by `isMaster` flag (official first), then by `order` ascending
-   * User additions get max(existing order) + 1 within their data source (auto-increment from 0, category-agnostic)
-   * **Master Equipment Order Rules**:
-     * Individual equipment: 100-interval per category (e.g., small guns: 100-199, medium guns: 200-299)
-     * Category representative equipment: Dynamically generated with `order` inherited from category (1, 2, 3, 4...)
-     * See `docs/maintenance.md` for detailed allocation rules
-   * **Master Mission Order Rules**:
-     * Grouped by `period` (Daily/Weekly/etc.), numbered from 0 within each period
-   * When updating master data, strictly follow the order allocation rules documented in `docs/maintenance.md`
+| レベル   | 影響       | 対応                              |
+| :------- | :--------- | :-------------------------------- |
+| Critical | アプリ停止 | モーダル表示, リロード必須        |
+| Error    | 機能停止   | 該当機能無効化, 他機能は継続      |
+| Warning  | 継続可能   | 警告表示のみ(GlobalWarningBanner) |
+| Info     | なし       | 情報通知                          |
 
-5. **Max Selection Limit**: UI must enforce max 8 simultaneous mission selections (game constraint).
+起動時にLocalStorageデータをZodでバリデーション. 壊れたエントリは自動除去して警告表示.
 
-6. **Validation UX**: Use disabled button pattern instead of post-submit error messages. Invalid forms should disable save buttons with inline error indicators.
+詳細: `docs/error_handling.md`
 
-7. **Data Immutability**: Never mutate original mission data during calculation. Always create new objects for results.
+## UI / UX Constraints
 
-8. **About Modal on First Launch**: Display About modal automatically on first app launch (check `localStorage['ksp_about_shown']`). This serves as disclaimer confirmation. On subsequent launches, only show via settings menu.
+- **最大8任務同時選択**: ゲームの制約. UIで選択数を制御(超過時は選択不可)
+- **バリデーションUX**: 無効フォームは保存ボタンをdisabled, インラインエラー表示. エラーポップアップは使わない
+- **初回起動モーダル**: `ksp_about_shown` がない場合, Aboutモーダルを自動表示(免責事項). 2回目以降は設定メニューから
+- **データ不変性**: 計算時に元データを変更しない. 計算結果は新規オブジェクトで生成
 
-9. **Equipment Management Modal**:
-   * Uses a two-section modal (add form + list) that stays open for continuous additions
-   * **Mode Selection**: Radio buttons toggle between "Add Equipment" and "Add Category" modes
-   * **Add Equipment Mode**: Shows equipment name input and category selection (datalist for auto-suggestion)
-   * **Add Category Mode**: Shows category name input only (category representative equipment is auto-generated at runtime)
-   * Category deletion automatically deletes all equipment in that category (with confirmation dialog)
+## Domain Layer Principle
+
+`src/domain/` の計算関数は**純粋関数**のみ. 副作用(状態更新, ストレージ操作)は呼び出し元(コンポーネントまたはhook)が担う.
+
+Phase 5 リライト後もこの原則は維持される.
 
 ## Key Documentation Files
 
-* `docs/design.md` - System architecture and detailed specifications
-* `docs/calculation_logic.md` - Algorithm implementation with test cases (8 phases detailed)
-* `docs/schema.md` - Complete data structure definitions, validation rules, and `order`/`isMaster` specifications
-* `docs/ui_specification.md` - Detailed UI/UX specifications including modal behaviors and filter combinations
-* `docs/error_handling.md` - Error classification (4 levels), recovery strategies, and validation on startup
-* `docs/import_export.md` - Import/export file formats, validation flow, and filename generation rules
-* `docs/progress_v2.md` - v2.0.0 roadmap and progress tracking (current)
-* `docs/progress.md` - v1.0.0 progress tracking (archived)
+- `docs/progress_v2.md` - ロードマップと進捗(Phase 5 #159 の詳細含む)
+- `docs/calculation_logic.md` - 廃棄計算アルゴリズム詳細(8フェーズ)
+- `docs/schema.md` - データ構造定義, バリデーションルール, `order` 仕様
+- `docs/ui_specification.md` - UI/UX詳細仕様(モーダル挙動, フィルタ組み合わせ)
+- `docs/error_handling.md` - エラー分類と回復戦略
+- `docs/import_export.md` - インポート/エクスポート仕様
+- `docs/maintenance.md` - マスタデータ更新ルール(`order` 割り振り等)
