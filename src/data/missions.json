@@ -1,179 +1,162 @@
 {
-  "version": "1.0.0-dummy",
-  "missions": [
-    {
-      "id": "m_ms_daily_scrap_1",
-      "name": "装備開発力の整備",
-      "period": "Daily",
-      "order": 1,
-      "reqs": [
+    "version": "2.0.0-dummy",
+    "missions": [
         {
-          "id": "req_1",
-          "targetType": "category",
-          "targetId": "m_cat_gun_s",
-          "count": 4
-        }
-      ]
-    },
-    {
-      "id": "m_ms_daily_scrap_2",
-      "name": "工廠環境の整備",
-      "period": "Daily",
-      "order": 2,
-      "reqs": [
-        {
-          "id": "req_1",
-          "targetType": "category",
-          "targetId": "m_cat_mg",
-          "count": 3
-        }
-      ]
-    },
-    {
-      "id": "m_ms_weekly_scrap_1",
-      "name": "対空機銃量産",
-      "period": "Weekly",
-      "order": 1,
-      "reqs": [
-        {
-          "id": "req_1",
-          "targetType": "category",
-          "targetId": "m_cat_mg",
-          "count": 6
-        }
-      ]
-    },
-    {
-      "id": "m_ms_weekly_scrap_2",
-      "name": "主砲兵装の整備",
-      "period": "Weekly",
-      "order": 2,
-      "reqs": [
-        {
-          "id": "req_1",
-          "targetType": "category",
-          "targetId": "m_cat_gun_s",
-          "count": 4
+            "id": "m_ms_daily_scrap_1",
+            "name": "装備開発力の整備",
+            "period": "Daily",
+            "order": 1,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_gun_s",
+                    "count": 4
+                }
+            ]
         },
         {
-          "id": "req_2",
-          "targetType": "category",
-          "targetId": "m_cat_gun_m",
-          "count": 3
+            "id": "m_ms_daily_scrap_2",
+            "name": "工廠環境の整備",
+            "period": "Daily",
+            "order": 2,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_mg",
+                    "count": 3
+                }
+            ]
+        },
+        {
+            "id": "m_ms_weekly_scrap_1",
+            "name": "対空機銃量産",
+            "period": "Weekly",
+            "order": 1,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_mg",
+                    "count": 6
+                }
+            ]
+        },
+        {
+            "id": "m_ms_weekly_scrap_2",
+            "name": "主砲兵装の整備",
+            "period": "Weekly",
+            "order": 2,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_gun_s",
+                    "count": 4
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_gun_m",
+                    "count": 3
+                }
+            ]
+        },
+        {
+            "id": "m_ms_weekly_scrap_3",
+            "name": "魚雷兵装の整備",
+            "period": "Weekly",
+            "order": 3,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_torpedo",
+                    "count": 5
+                }
+            ]
+        },
+        {
+            "id": "m_ms_weekly_scrap_4",
+            "name": "対潜兵装の整備",
+            "period": "Weekly",
+            "order": 4,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_dc",
+                    "count": 3
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_sonar",
+                    "count": 3
+                }
+            ]
+        },
+        {
+            "id": "m_ms_monthly_scrap_1",
+            "name": "艦載機の整備",
+            "period": "Monthly",
+            "order": 1,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_fighter",
+                    "count": 3
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_bomber",
+                    "count": 3
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_tb",
+                    "count": 3
+                }
+            ]
+        },
+        {
+            "id": "m_ms_monthly_scrap_2",
+            "name": "大口径主砲の整備",
+            "period": "Monthly",
+            "order": 2,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_gun_l",
+                    "count": 4
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_gun_35_6cm",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "m_ms_quarterly_scrap_1",
+            "name": "兵装の大規模整理",
+            "period": "Quarterly",
+            "order": 1,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_gun_s",
+                    "count": 10
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_gun_m",
+                    "count": 8
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_mg",
+                    "count": 12
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_torpedo",
+                    "count": 8
+                }
+            ]
         }
-      ]
-    },
-    {
-      "id": "m_ms_weekly_scrap_3",
-      "name": "魚雷兵装の整備",
-      "period": "Weekly",
-      "order": 3,
-      "reqs": [
-        {
-          "id": "req_1",
-          "targetType": "category",
-          "targetId": "m_cat_torpedo",
-          "count": 5
-        }
-      ]
-    },
-    {
-      "id": "m_ms_weekly_scrap_4",
-      "name": "対潜兵装の整備",
-      "period": "Weekly",
-      "order": 4,
-      "reqs": [
-        {
-          "id": "req_1",
-          "targetType": "category",
-          "targetId": "m_cat_dc",
-          "count": 3
-        },
-        {
-          "id": "req_2",
-          "targetType": "category",
-          "targetId": "m_cat_sonar",
-          "count": 3
-        }
-      ]
-    },
-    {
-      "id": "m_ms_monthly_scrap_1",
-      "name": "艦載機の整備",
-      "period": "Monthly",
-      "order": 1,
-      "reqs": [
-        {
-          "id": "req_1",
-          "targetType": "category",
-          "targetId": "m_cat_fighter",
-          "count": 3
-        },
-        {
-          "id": "req_2",
-          "targetType": "category",
-          "targetId": "m_cat_bomber",
-          "count": 3
-        },
-        {
-          "id": "req_3",
-          "targetType": "category",
-          "targetId": "m_cat_tb",
-          "count": 3
-        }
-      ]
-    },
-    {
-      "id": "m_ms_monthly_scrap_2",
-      "name": "大口径主砲の整備",
-      "period": "Monthly",
-      "order": 2,
-      "reqs": [
-        {
-          "id": "req_1",
-          "targetType": "category",
-          "targetId": "m_cat_gun_l",
-          "count": 4
-        },
-        {
-          "id": "req_2",
-          "targetType": "item",
-          "targetId": "m_eq_gun_35_6cm",
-          "count": 2
-        }
-      ]
-    },
-    {
-      "id": "m_ms_quarterly_scrap_1",
-      "name": "兵装の大規模整理",
-      "period": "Quarterly",
-      "order": 1,
-      "reqs": [
-        {
-          "id": "req_1",
-          "targetType": "category",
-          "targetId": "m_cat_gun_s",
-          "count": 10
-        },
-        {
-          "id": "req_2",
-          "targetType": "category",
-          "targetId": "m_cat_gun_m",
-          "count": 8
-        },
-        {
-          "id": "req_3",
-          "targetType": "category",
-          "targetId": "m_cat_mg",
-          "count": 12
-        },
-        {
-          "id": "req_4",
-          "targetType": "category",
-          "targetId": "m_cat_torpedo",
-          "count": 8
-        }
-      ]
-    }
-  ]
+    ]
 }
