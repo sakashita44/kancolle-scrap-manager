@@ -8,26 +8,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-* **Frontend**: React, Tailwind CSS, Lucide React
-* **Build Tool**: Vite
-* **Hosting**: Static hosting on Lolipop
-* **Master Data**: Bundled in application (`src/data/*.json`)
-* **Data Storage**: Browser LocalStorage (user data), SessionStorage (selected state)
+- **Frontend**: React, Tailwind CSS, Lucide React
+- **Language**: JavaScript (JSX) ← Phase 5 (#159) で TypeScript (TSX) へ移行予定
+- **State Management**: Context API ← Phase 5 (#159) で Zustand へ移行予定
+- **Build Tool**: Vite
+- **Hosting**: Static hosting on Lolipop
+- **Master Data**: Bundled in application (`src/data/*.json`)
+- **Data Storage**: Browser LocalStorage (user data), SessionStorage (selected state)
+- **Code Quality**: ESLint (flat config), Prettier, markdownlint-cli2
+- **Git Hooks**: Husky + lint-staged
 
 ## Development Commands
 
-* `npm run dev` - Start development server
-* `npm run build` - Build for production (outputs to `dist/`)
-* `npm run test` - Run tests (not yet implemented)
+- `npm run dev` - Start development server
+- `npm run build` - Build for production (outputs to `dist/`)
+- `npm run lint` - ESLint + markdownlint チェック
+- `npm run format` - Prettier + ESLint --fix + markdownlint --fix
 
 ### Development Flow
 
 1. check current branch status with `git status`
 1. check issue and `docs/progress_v2.md` for next tasks
-    * Must: check comments of related issues for additional context
+    - Must: check comments of related issues for additional context
 1. create branch with rule in `copilot-instructions.md` from main branch
-    * `<prefix>/<yyyymm>/sakashita44/<issue-number: if exists>-<short-description>`
-    * e.g. `feat/202511/sakashita44/5-add-validation`
+    - `<prefix>/<yyyymm>/sakashita44/<issue-number: if exists>-<short-description>`
+    - e.g. `feat/202511/sakashita44/5-add-validation`
 1. implement feature / fix bug
 1. test locally
 1. update `docs/progress_v2.md` if task affects progress
@@ -53,13 +58,13 @@ The project uses prefix-based namespacing to prevent data conflicts:
 
 **Critical Rules**:
 
-* Prefixes are recommended for readability but not mandatory (validation checks prefix format if present)
-* Official master data IDs are **immutable** once published (to prevent breaking user data references)
-* Deprecated items should be logically deleted by renaming to "【廃止】..." rather than removing the ID
-* UUIDs are generated using `crypto.randomUUID()`, requiring HTTPS or localhost environment
-* `isMaster` flag is **never stored** in JSON files - it's automatically assigned at runtime based on data source (bundled `src/data/*.json` → true, LocalStorage → false)
-* `type` field (equipment only) is **never stored** in JSON files - it's automatically assigned at runtime (`"item"` for individual equipment, `"category"` for category representatives)
-* **Category Representative Equipment**: Dynamically generated at runtime for all categories (both official and user-defined), not stored in JSON files
+- Prefixes are recommended for readability but not mandatory (validation checks prefix format if present)
+- Official master data IDs are **immutable** once published (to prevent breaking user data references)
+- Deprecated items should be logically deleted by renaming to "【廃止】..." rather than removing the ID
+- UUIDs are generated using `crypto.randomUUID()`, requiring HTTPS or localhost environment
+- `isMaster` flag is **never stored** in JSON files - it's automatically assigned at runtime based on data source (bundled `src/data/*.json` → true, LocalStorage → false)
+- `type` field (equipment only) is **never stored** in JSON files - it's automatically assigned at runtime (`"item"` for individual equipment, `"category"` for category representatives)
+- **Category Representative Equipment**: Dynamically generated at runtime for all categories (both official and user-defined), not stored in JSON files
 
 ### Data Flow Strategy
 
@@ -68,38 +73,38 @@ The app bundles master data directly into the application:
 **Data Loading**:
 
 1. **Master Data**: JSON files in `src/data/` are imported directly in custom hooks (`useCategories`, `useEquipments`, `useMissions`)
-   * No network requests required
-   * Instant startup with zero latency
-   * App and data versions are always in sync
-2. **User Data**: Loaded from LocalStorage with validation
-   * Merged with master data after loading
-   * Invalid entries are auto-removed with warnings
+    - No network requests required
+    - Instant startup with zero latency
+    - App and data versions are always in sync
+1. **User Data**: Loaded from LocalStorage with validation
+    - Merged with master data after loading
+    - Invalid entries are auto-removed with warnings
 
 **Validation on Startup**:
 
-* **LocalStorage Validation**: User-defined data is validated on load, corrupt entries are auto-removed with warning display
-* **Auto-Recovery**: Corrupt data is silently removed from LocalStorage to maintain app stability
+- **LocalStorage Validation**: User-defined data is validated on load, corrupt entries are auto-removed with warning display
+- **Auto-Recovery**: Corrupt data is silently removed from LocalStorage to maintain app stability
 
 ### Storage Locations
 
 **LocalStorage** (persists across sessions):
 
-* `ksp_app_version` - App version
-* `ksp_user_categories` - User-defined categories
-* `ksp_user_equipments` - User-defined equipment list
-* `ksp_user_missions` - User-defined missions list
-* `ksp_about_shown` - About modal display flag (initial launch)
+- `ksp_app_version` - App version
+- `ksp_user_categories` - User-defined categories
+- `ksp_user_equipments` - User-defined equipment list
+- `ksp_user_missions` - User-defined missions list
+- `ksp_about_shown` - About modal display flag (initial launch)
 
 **SessionStorage** (cleared on tab/window close):
 
-* `ksp_selected_missions` - Currently selected mission IDs
-* `ksp_filter_period` - Period filter selection
-* `ksp_filter_category` - Equipment category filter selection
-* `ksp_mission_list_expanded` - Mission list expand/collapse state
+- `ksp_selected_missions` - Currently selected mission IDs
+- `ksp_filter_period` - Period filter selection
+- `ksp_filter_category` - Equipment category filter selection
+- `ksp_mission_list_expanded` - Mission list expand/collapse state
 
 **Data Sources**:
 
-* **`src/data/`**: Official master data bundled directly in application code
+- **`src/data/`**: Official master data bundled directly in application code
 
 ## Core Calculation Logic
 
@@ -108,20 +113,20 @@ The calculation algorithm determines the **minimum** equipment to scrap when mul
 ### Algorithm Phases
 
 1. **Pre-check**: Return empty list if no missions selected, error if >8 missions selected
-2. **Expand Requirements**: Extract all requirements from selected missions
-3. **Integrity Check**: Filter out requirements based on `targetType`:
-   * `targetType="category"`: Validate category ID exists in category master
-   * `targetType="item"`: Validate equipment ID exists in equipment master
-   * Display warnings for non-existent IDs
-4. **Group by Type**: Separate requirements based on `targetType` field:
-   * `targetType="item"` → Item requirements
-   * `targetType="category"` → Category requirements
-5. **MAX Aggregation (Items)**: For same equipment ID, use maximum count (not sum)
-6. **MAX Aggregation (Categories)**: For same category ID, use maximum count (not sum)
-7. **Inclusion Resolution (OR Condition)**: Subtract Item counts from Category counts within same category
-   * If Category count ≤ Item total → Remove category requirement (Items satisfy it)
-   * If Category count > Item total → Keep remaining count
-8. **Generate Result**: Combine Item and Category results, sort by category name
+1. **Expand Requirements**: Extract all requirements from selected missions
+1. **Integrity Check**: Filter out requirements based on `targetType`:
+    - `targetType="category"`: Validate category ID exists in category master
+    - `targetType="item"`: Validate equipment ID exists in equipment master
+    - Display warnings for non-existent IDs
+1. **Group by Type**: Separate requirements based on `targetType` field:
+    - `targetType="item"` → Item requirements
+    - `targetType="category"` → Category requirements
+1. **MAX Aggregation (Items)**: For same equipment ID, use maximum count (not sum)
+1. **MAX Aggregation (Categories)**: For same category ID, use maximum count (not sum)
+1. **Inclusion Resolution (OR Condition)**: Subtract Item counts from Category counts within same category
+    - If Category count ≤ Item total → Remove category requirement (Items satisfy it)
+    - If Category count > Item total → Keep remaining count
+1. **Generate Result**: Combine Item and Category results, sort by category name
 
 ### Example Calculation
 
@@ -140,12 +145,12 @@ See `docs/calculation_logic.md` for detailed implementation with test cases.
 ## Deployment Process
 
 1. Run `npm run build` to generate `dist/` folder
-2. Upload `dist/` contents to Lolipop
+1. Upload `dist/` contents to Lolipop
 
 Master data **must** be placed in `src/data/` directory so it's:
 
-* Bundled into the application by Vite during build
-* Always in sync with the deployed application version
+- Bundled into the application by Vite during build
+- Always in sync with the deployed application version
 
 ## Text and Documentation Conventions
 
@@ -153,34 +158,34 @@ From `.github/copilot-instructions.md`:
 
 ### Japanese Text Rules
 
-* Use `,` and `.` instead of `、` and `。`
-* Use direct form, not polite form (`~する` not `~します`)
-* Use plain dictionary form for verbs in documentation
+- Use `,` and `.` instead of `、` and `。`
+- Use direct form, not polite form (`~する` not `~します`)
+- Use plain dictionary form for verbs in documentation
 
 ### Markdown Rules
 
-* Use `*` for unordered lists
-* Use continuous `1.` for ordered lists (not `2.`, `3.`)
-* Add line breaks after all headings and around lists
-* Use 4 spaces for indentation
-* Add 1 space after `#` and list markers
-* Use backticks for code, filenames, and technical terms
+- Use `-` for unordered lists (enforced by markdownlint MD004)
+- Use continuous `1.` for ordered lists (not `2.`, `3.`)
+- Add line breaks after all headings and around lists
+- Use 4 spaces for indentation
+- Add 1 space after `#` and list markers
+- Use backticks for code, filenames, and technical terms
 
 ### File Naming
 
-* Repository meta files: UPPERCASE (README.md, LICENSE)
-* Project documents: PascalCase (Setup.md, Workflow.md)
-* Scripts: snake_case with verb prefix (process_data.py)
-* Directories: singular lowercase (script/, data/)
+- Repository meta files: UPPERCASE (README.md, LICENSE)
+- Project documents: PascalCase (Setup.md, Workflow.md)
+- Scripts: snake_case with verb prefix (process_data.py)
+- Directories: singular lowercase (script/, data/)
 
 ### Git Commit Prefixes
 
-* `feat:` - New features
-* `fix:` - Bug fixes
-* `refactor:` - Code refactoring including formatting
-* `test:` - Adding or modifying tests
-* `docs:` - Documentation changes
-* `chore:` - Build process, tooling, libraries
+- `feat:` - New features
+- `fix:` - Bug fixes
+- `refactor:` - Code refactoring including formatting
+- `test:` - Adding or modifying tests
+- `docs:` - Documentation changes
+- `chore:` - Build process, tooling, libraries
 
 ## Error Handling Strategy
 
@@ -199,21 +204,21 @@ The app implements 4-level error classification with comprehensive recovery stra
 
 **Data Integrity**:
 
-* Missing equipment IDs in missions → Warning icon on mission card, exclude from calculation
-* LocalStorage data corruption on startup → Auto-remove corrupt entries, display warning with details
-* ID conflicts → Last-loaded wins (user data overrides official), log warning
+- Missing equipment IDs in missions → Warning icon on mission card, exclude from calculation
+- LocalStorage data corruption on startup → Auto-remove corrupt entries, display warning with details
+- ID conflicts → Last-loaded wins (user data overrides official), log warning
 
 **Storage Issues**:
 
-* LocalStorage quota exceeded → Block save, prompt user to export data
-* Private browsing mode → Read-only mode, disable edit UI
-* Cross-tab data updates → Display reload notification (no auto-merge)
+- LocalStorage quota exceeded → Block save, prompt user to export data
+- Private browsing mode → Read-only mode, disable edit UI
+- Cross-tab data updates → Display reload notification (no auto-merge)
 
 **Import/Export**:
 
-* JSON syntax error → Block import, display detailed error
-* Schema validation failure → Block import, show field-level errors
-* Import success → Complete overwrite of target data type with confirmation
+- JSON syntax error → Block import, display detailed error
+- Schema validation failure → Block import, show field-level errors
+- Import success → Complete overwrite of target data type with confirmation
 
 ## Architecture and Design Principles
 
@@ -226,11 +231,11 @@ The app implements 4-level error classification with comprehensive recovery stra
 ```javascript
 // ❌ BAD: Domain function with side effects
 export function swapEquipmentOrder(id1, id2, equipments, updateEquipment) {
-  const eq1 = equipments.find(e => e.id === id1)
-  const eq2 = equipments.find(e => e.id === id2)
+    const eq1 = equipments.find((e) => e.id === id1);
+    const eq2 = equipments.find((e) => e.id === id2);
 
-  updateEquipment(id1, { ...eq1, order: eq2.order })  // ❌ Side effect
-  updateEquipment(id2, { ...eq2, order: tempOrder })  // ❌ Side effect
+    updateEquipment(id1, { ...eq1, order: eq2.order }); // ❌ Side effect
+    updateEquipment(id2, { ...eq2, order: tempOrder }); // ❌ Side effect
 }
 ```
 
@@ -239,65 +244,65 @@ export function swapEquipmentOrder(id1, id2, equipments, updateEquipment) {
 ```javascript
 // ✅ GOOD: Pure domain function
 export function calculateSwappedEquipments(id1, id2, equipments) {
-  const eq1 = equipments.find(e => e.id === id1)
-  const eq2 = equipments.find(e => e.id === id2)
+    const eq1 = equipments.find((e) => e.id === id1);
+    const eq2 = equipments.find((e) => e.id === id2);
 
-  return equipments.map(eq => {
-    if (eq.id === id1) return { ...eq, order: eq2.order }
-    if (eq.id === id2) return { ...eq, order: eq1.order }
-    return eq
-  })
+    return equipments.map((eq) => {
+        if (eq.id === id1) return { ...eq, order: eq2.order };
+        if (eq.id === id2) return { ...eq, order: eq1.order };
+        return eq;
+    });
 }
 
 // Caller (UI component or hook) handles state updates:
-const newEquipments = calculateSwappedEquipments(id1, id2, equipments)
-setEquipments(newEquipments)
+const newEquipments = calculateSwappedEquipments(id1, id2, equipments);
+setEquipments(newEquipments);
 ```
 
-**Enforcement**: Issue #110 must enforce this principle and refactor existing domain functions that violate it.
+**Enforcement**: この原則は #127-#129 で確立済み. 新規実装時も必ず純粋関数として実装すること.
 
 ## Important Implementation Notes
 
 1. **No Server Backend**: All data processing happens client-side. Emphasize this in UI (privacy feature).
 
-2. **HTTPS Required**: `crypto.randomUUID()` requires secure context. App must run on HTTPS or localhost.
+1. **HTTPS Required**: `crypto.randomUUID()` requires secure context. App must run on HTTPS or localhost.
 
-3. **Schema Versioning**: All JSON files have a `version` field following Semantic Versioning. Validation checks schema structure, not version numbers. Future schema changes must maintain backward compatibility (add fields only, never remove/change types).
+1. **Schema Versioning**: All JSON files have a `version` field following Semantic Versioning. Validation checks schema structure, not version numbers. Future schema changes must maintain backward compatibility (add fields only, never remove/change types).
 
-4. **Display Order Management**:
-   * Each data type has an `order` field (integer) for sort order
-   * Data is sorted first by `isMaster` flag (official first), then by `order` ascending
-   * User additions get max(existing order) + 1 within their data source (auto-increment from 0, category-agnostic)
-   * **Master Equipment Order Rules**:
-     * Individual equipment: 100-interval per category (e.g., small guns: 100-199, medium guns: 200-299)
-     * Category representative equipment: Dynamically generated with `order` inherited from category (1, 2, 3, 4...)
-     * See `docs/maintenance.md` for detailed allocation rules
-   * **Master Mission Order Rules**:
-     * Grouped by `period` (Daily/Weekly/etc.), numbered from 0 within each period
-   * When updating master data, strictly follow the order allocation rules documented in `docs/maintenance.md`
+1. **Display Order Management**:
+    - Each data type has an `order` field (integer) for sort order
+    - Data is sorted first by `isMaster` flag (official first), then by `order` ascending
+    - User additions get max(existing order) + 1 within their data source (auto-increment from 0, category-agnostic)
+    - **Master Equipment Order Rules**:
+        - Individual equipment: 100-interval per category (e.g., small guns: 100-199, medium guns: 200-299)
+        - Category representative equipment: Dynamically generated with `order` inherited from category (1, 2, 3, 4...)
+        - See `docs/maintenance.md` for detailed allocation rules
+    - **Master Mission Order Rules**:
+        - Grouped by `period` (Daily/Weekly/etc.), numbered from 0 within each period
+    - When updating master data, strictly follow the order allocation rules documented in `docs/maintenance.md`
 
-5. **Max Selection Limit**: UI must enforce max 8 simultaneous mission selections (game constraint).
+1. **Max Selection Limit**: UI must enforce max 8 simultaneous mission selections (game constraint).
 
-6. **Validation UX**: Use disabled button pattern instead of post-submit error messages. Invalid forms should disable save buttons with inline error indicators.
+1. **Validation UX**: Use disabled button pattern instead of post-submit error messages. Invalid forms should disable save buttons with inline error indicators.
 
-7. **Data Immutability**: Never mutate original mission data during calculation. Always create new objects for results.
+1. **Data Immutability**: Never mutate original mission data during calculation. Always create new objects for results.
 
-8. **About Modal on First Launch**: Display About modal automatically on first app launch (check `localStorage['ksp_about_shown']`). This serves as disclaimer confirmation. On subsequent launches, only show via settings menu.
+1. **About Modal on First Launch**: Display About modal automatically on first app launch (check `localStorage['ksp_about_shown']`). This serves as disclaimer confirmation. On subsequent launches, only show via settings menu.
 
-9. **Equipment Management Modal**:
-   * Uses a two-section modal (add form + list) that stays open for continuous additions
-   * **Mode Selection**: Radio buttons toggle between "Add Equipment" and "Add Category" modes
-   * **Add Equipment Mode**: Shows equipment name input and category selection (datalist for auto-suggestion)
-   * **Add Category Mode**: Shows category name input only (category representative equipment is auto-generated at runtime)
-   * Category deletion automatically deletes all equipment in that category (with confirmation dialog)
+1. **Equipment Management Modal**:
+    - Uses a two-section modal (add form + list) that stays open for continuous additions
+    - **Mode Selection**: Radio buttons toggle between "Add Equipment" and "Add Category" modes
+    - **Add Equipment Mode**: Shows equipment name input and category selection (datalist for auto-suggestion)
+    - **Add Category Mode**: Shows category name input only (category representative equipment is auto-generated at runtime)
+    - Category deletion automatically deletes all equipment in that category (with confirmation dialog)
 
 ## Key Documentation Files
 
-* `docs/design.md` - System architecture and detailed specifications
-* `docs/calculation_logic.md` - Algorithm implementation with test cases (8 phases detailed)
-* `docs/schema.md` - Complete data structure definitions, validation rules, and `order`/`isMaster` specifications
-* `docs/ui_specification.md` - Detailed UI/UX specifications including modal behaviors and filter combinations
-* `docs/error_handling.md` - Error classification (4 levels), recovery strategies, and validation on startup
-* `docs/import_export.md` - Import/export file formats, validation flow, and filename generation rules
-* `docs/progress_v2.md` - v2.0.0 roadmap and progress tracking (current)
-* `docs/progress.md` - v1.0.0 progress tracking (archived)
+- `docs/design.md` - System architecture and detailed specifications
+- `docs/calculation_logic.md` - Algorithm implementation with test cases (8 phases detailed)
+- `docs/schema.md` - Complete data structure definitions, validation rules, and `order`/`isMaster` specifications
+- `docs/ui_specification.md` - Detailed UI/UX specifications including modal behaviors and filter combinations
+- `docs/error_handling.md` - Error classification (4 levels), recovery strategies, and validation on startup
+- `docs/import_export.md` - Import/export file formats, validation flow, and filename generation rules
+- `docs/progress_v2.md` - v2.0.0 roadmap and progress tracking (current)
+- `docs/progress.md` - v1.0.0 progress tracking (archived)

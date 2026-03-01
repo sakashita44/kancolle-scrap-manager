@@ -1,0 +1,7 @@
+{
+    // markdownlint 設定は既存の .markdownlint.jsonc を継承
+    "config": {
+        "extends": ".markdownlint.jsonc"
+    },
+    "ignores": ["node_modules/", "dist/"]
+}
