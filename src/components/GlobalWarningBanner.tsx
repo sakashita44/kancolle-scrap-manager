@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
 import { cn } from '../utils';
 
@@ -54,6 +54,19 @@ export default function GlobalWarningBanner({
     type = 'warning',
 }: GlobalWarningBannerProps) {
     const [dismissed, setDismissed] = useState(false);
+
+    const messageFingerprint = useMemo(() => messages.join('\n'), [messages]);
+    const previousFingerprintRef = useRef(messageFingerprint);
+
+    useEffect(() => {
+        if (
+            messageFingerprint !== previousFingerprintRef.current &&
+            messageFingerprint !== ''
+        ) {
+            setDismissed(false);
+        }
+        previousFingerprintRef.current = messageFingerprint;
+    }, [messageFingerprint]);
 
     if (dismissed || messages.length === 0) return null;
 

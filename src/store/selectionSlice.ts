@@ -46,6 +46,10 @@ function totalSelected(
     return (base ? 1 : 0) + aux.length;
 }
 
+function clampMissionCount(count: number): number {
+    return Math.max(1, Math.min(99, count));
+}
+
 // --- Slice 生成 ---
 
 export const createSelectionSlice: StateCreator<
@@ -73,11 +77,17 @@ export const createSelectionSlice: StateCreator<
 
     selectBaseMission: (missionId) => {
         const { auxiliaryMissions, baseMission } = get();
+        const selectedAuxMission = auxiliaryMissions.find(
+            (m) => m.missionId === missionId,
+        );
         // 既に補助任務として選択されている場合は除外
         const filteredAux = auxiliaryMissions.filter(
             (m) => m.missionId !== missionId,
         );
-        const newBase: SelectedMissionEntry = { missionId, count: 1 };
+        const newBase: SelectedMissionEntry = {
+            missionId,
+            count: selectedAuxMission?.count ?? 1,
+        };
 
         // 旧ベース任務を補助に移動
         let newAux = filteredAux;
@@ -87,7 +97,10 @@ export const createSelectionSlice: StateCreator<
         ) {
             newAux = [
                 ...filteredAux,
-                { missionId: baseMission.missionId, count: 1 },
+                {
+                    missionId: baseMission.missionId,
+                    count: baseMission.count,
+                },
             ];
         }
 
@@ -140,7 +153,7 @@ export const createSelectionSlice: StateCreator<
     updateBaseMissionCount: (count) => {
         const { baseMission, auxiliaryMissions } = get();
         if (!baseMission) return;
-        const updated = { ...baseMission, count };
+        const updated = { ...baseMission, count: clampMissionCount(count) };
         set({ baseMission: updated });
         persistSelection(updated, auxiliaryMissions);
     },
@@ -148,7 +161,9 @@ export const createSelectionSlice: StateCreator<
     updateAuxiliaryMissionCount: (missionId, count) => {
         const { baseMission, auxiliaryMissions } = get();
         const newAux = auxiliaryMissions.map((m) =>
-            m.missionId === missionId ? { ...m, count } : m,
+            m.missionId === missionId
+                ? { ...m, count: clampMissionCount(count) }
+                : m,
         );
         set({ auxiliaryMissions: newAux });
         persistSelection(baseMission, newAux);

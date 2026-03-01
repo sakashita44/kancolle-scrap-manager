@@ -11,7 +11,11 @@ import {
     analyzeCategoryDeletionImpact,
     buildCategoryDeletionMessage,
 } from './domain';
-import type { Mission, MissionFormValues } from './schema';
+import {
+    REQUIREMENT_KIND,
+    type Mission,
+    type MissionFormValues,
+} from './schema';
 import {
     Header,
     StickyDashboard,
@@ -136,14 +140,29 @@ export default function App() {
             if (filterPeriods.size > 0 && !filterPeriods.has(m.period))
                 return false;
             if (filterCategories.size > 0) {
-                const hasMatchingReq = m.reqs.some((req) =>
-                    filterCategories.has(req.id),
-                );
+                const hasMatchingReq = m.reqs.some((req) => {
+                    if (req.kind === REQUIREMENT_KIND.CATEGORY) {
+                        return filterCategories.has(req.id);
+                    }
+                    if (req.kind === REQUIREMENT_KIND.EQUIPMENT) {
+                        const equipment = equipmentMap.get(req.id);
+                        return equipment
+                            ? filterCategories.has(equipment.categoryId)
+                            : false;
+                    }
+                    return false;
+                });
                 if (!hasMatchingReq) return false;
             }
             return true;
         });
-    }, [allMissions, filterText, filterPeriods, filterCategories]);
+    }, [
+        allMissions,
+        filterText,
+        filterPeriods,
+        filterCategories,
+        equipmentMap,
+    ]);
 
     // --- フィルタハンドラ（単一選択を維持するシンプルなラッパー） ---
 
