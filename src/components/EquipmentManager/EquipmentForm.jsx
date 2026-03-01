@@ -1,5 +1,5 @@
 import { LIMITS } from '../../types/schema'
-import { ValidationErrorDisplay } from '../'
+import ValidationErrorDisplay from '../ValidationErrorDisplay'
 import { cn } from '../../utils'
 
 /**

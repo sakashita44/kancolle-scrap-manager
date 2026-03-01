@@ -17,7 +17,7 @@ import {
   ControlBar,
   MissionList,
   Modal,
-  EquipmentModal,
+  EquipmentManager,
   MissionModal,
   GlobalWarningBanner,
   ConfirmDialog,
@@ -199,7 +199,7 @@ function AppContent() {
         title="装備の管理・追加"
         onClose={closeModal}
       >
-        <EquipmentModal
+        <EquipmentManager
           onSave={handleAddEquipment}
           onSwapOrder={swapUserEquipmentOrder}
           onSwapCategoryOrder={swapUserCategoryOrder}

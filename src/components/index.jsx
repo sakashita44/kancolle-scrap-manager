@@ -20,8 +20,6 @@ export { default as SelectedMissionsSummary } from './SelectedMissionsSummary'
 
 // 装備関連
 export { default as EquipmentManager } from './EquipmentManager'
-// 後方互換性のためのエイリアス
-export { default as EquipmentModal } from './EquipmentModal'
 
 // その他モーダル
 export { default as AboutModal } from './AboutModal'

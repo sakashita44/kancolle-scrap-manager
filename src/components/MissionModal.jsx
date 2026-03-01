@@ -1,6 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react'
 import { PERIOD, LIMITS } from '../types/schema'
-import { ValidationErrorDisplay } from './'
+import ValidationErrorDisplay from './ValidationErrorDisplay'
 import { useMissionForm } from '../hooks'
 import { cn } from '../utils'
 
