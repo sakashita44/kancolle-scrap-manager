@@ -42,10 +42,10 @@ JavaScript + Context API 構成を TypeScript + Zustand に全面リライトし
 src/
   schema/          # Zodスキーマ + 型定義
   store/           # Zustand store + slices (data, selection, ui)
-  domain-ts/       # 純粋計算関数（廃棄計算等）
-  components-tsx/  # UIコンポーネント
-  hooks-ts/        # カスタムhook（useToggle, useMissionForm）
-  utils-ts/        # ユーティリティ（cn, displayUtils, scrapListFormatters）
+  domain/          # 純粋計算関数（廃棄計算等）
+  components/      # UIコンポーネント
+  hooks/           # カスタムhook（useToggle, useMissionForm）
+  utils/           # ユーティリティ（cn, displayUtils, scrapListFormatters）
   data/            # マスターデータJSON
 ```
 

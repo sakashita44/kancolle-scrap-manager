@@ -8,7 +8,7 @@ import {
     Target,
 } from 'lucide-react';
 import { LIMITS, REQUIREMENT_KIND } from '../schema';
-import { useToggle } from '../hooks-ts';
+import { useToggle } from '../hooks';
 import {
     useStore,
     selectCategoryMap,
@@ -16,7 +16,7 @@ import {
     selectMissionMap,
     selectSelectedCount,
 } from '../store';
-import { getRequirementDisplayName, cn } from '../utils-ts';
+import { getRequirementDisplayName, cn } from '../utils';
 
 export default function SelectedMissionsSummary() {
     const categoryMap = useStore(selectCategoryMap);

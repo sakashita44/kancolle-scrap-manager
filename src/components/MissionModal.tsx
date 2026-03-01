@@ -6,8 +6,8 @@ import {
     type MissionFormValues,
 } from '../schema';
 import ValidationErrorDisplay from './ValidationErrorDisplay';
-import { useMissionForm } from '../hooks-ts';
-import { cn } from '../utils-ts';
+import { useMissionForm } from '../hooks';
+import { cn } from '../utils';
 
 interface MissionModalProps {
     editingMission: PersistedMission | null;

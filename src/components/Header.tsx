@@ -8,7 +8,7 @@ import {
     AlertTriangle,
 } from 'lucide-react';
 import { useEffect, useRef } from 'react';
-import { useToggle } from '../hooks-ts';
+import { useToggle } from '../hooks';
 
 interface HeaderProps {
     onAboutOpen: () => void;

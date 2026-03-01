@@ -2,7 +2,7 @@ import type { UseFormRegister } from 'react-hook-form';
 import { LIMITS } from '../../schema';
 import type { Category } from '../../schema';
 import ValidationErrorDisplay from '../ValidationErrorDisplay';
-import { cn } from '../../utils-ts';
+import { cn } from '../../utils';
 
 interface EquipmentFormProps {
     register: UseFormRegister<{ name: string; categoryId: string }>;

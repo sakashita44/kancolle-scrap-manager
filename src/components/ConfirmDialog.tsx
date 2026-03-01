@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { cn } from '../utils-ts';
+import { cn } from '../utils';
 
 type Variant = 'danger' | 'warning' | 'info';
 

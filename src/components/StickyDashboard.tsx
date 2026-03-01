@@ -8,9 +8,9 @@ import {
     Check,
     AlertTriangle,
 } from 'lucide-react';
-import { groupScrapListByCategory, cn } from '../utils-ts';
-import { useToggle } from '../hooks-ts';
-import type { ScrapListItem, ComparisonItem } from '../domain-ts';
+import { groupScrapListByCategory, cn } from '../utils';
+import { useToggle } from '../hooks';
+import type { ScrapListItem, ComparisonItem } from '../domain';
 
 interface StickyDashboardProps {
     scrapList: ScrapListItem[];

@@ -3,7 +3,7 @@
  */
 
 import { REQUIREMENT_KIND } from '../schema';
-import type { ScrapListItem } from '../domain-ts';
+import type { ScrapListItem } from '../domain';
 
 export interface CategoryGroup {
     categoryName: string;

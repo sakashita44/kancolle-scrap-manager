@@ -1,6 +1,6 @@
 import { ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
 import { SOURCE, type Equipment } from '../../schema';
-import { cn } from '../../utils-ts';
+import { cn } from '../../utils';
 
 interface EquipmentListItemProps {
     equipment: Equipment;

@@ -1,7 +1,7 @@
 import { Trash2, Target, Edit2 } from 'lucide-react';
 import { REQUIREMENT_KIND, SOURCE, type Mission } from '../schema';
 import { useStore, selectCategoryMap, selectEquipmentMap } from '../store';
-import { getRequirementDisplayName, cn } from '../utils-ts';
+import { getRequirementDisplayName, cn } from '../utils';
 
 interface MissionCardProps {
     mission: Mission;

@@ -45,10 +45,10 @@ npm run deploy   # dist/ を Lolipop にアップロード
 src/
 ├── schema/          # Zodスキーマ + 型定義（constants, base, category, equipment, mission, forms）
 ├── store/           # Zustand store（dataSlice, selectionSlice, uiSlice, storage）
-├── domain-ts/       # 純粋関数のビジネスロジック（scrapCalculation, categoryOperations）
-├── components-tsx/  # UIコンポーネント（TSX）
-├── hooks-ts/        # カスタムhooks（useToggle, useMissionForm）
-├── utils-ts/        # ユーティリティ（cn, displayUtils, scrapListFormatters）
+├── domain/       # 純粋関数のビジネスロジック（scrapCalculation, categoryOperations）
+├── components/  # UIコンポーネント（TSX）
+├── hooks/        # カスタムhooks（useToggle, useMissionForm）
+├── utils/        # ユーティリティ（cn, displayUtils, scrapListFormatters）
 ├── data/            # 公式マスタデータJSON（categories, equipments, missions）
 ├── App.tsx          # ルートコンポーネント
 └── index.tsx        # エントリポイント
@@ -66,7 +66,7 @@ src/
 
 ### ドメインレイヤー
 
-`src/domain-ts/` の計算関数は**純粋関数**のみ. 副作用(状態更新, ストレージ操作)は呼び出し元(App.tsx)が担う.
+`src/domain/` の計算関数は**純粋関数**のみ. 副作用(状態更新, ストレージ操作)は呼び出し元(App.tsx)が担う.
 
 ### 要求(Requirement)モデル
 

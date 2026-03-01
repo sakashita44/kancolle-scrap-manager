@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import EquipmentListItem from './EquipmentListItem';
 import { SOURCE, type Category, type Equipment } from '../../schema';
-import { cn } from '../../utils-ts';
+import { cn } from '../../utils';
 
 interface EquipmentListProps {
     equipments: Equipment[];

@@ -8,7 +8,7 @@ import {
     type EquipmentFormValues,
     type CategoryFormValues,
 } from '../../schema';
-import { cn } from '../../utils-ts';
+import { cn } from '../../utils';
 import {
     useStore,
     selectAllCategories,

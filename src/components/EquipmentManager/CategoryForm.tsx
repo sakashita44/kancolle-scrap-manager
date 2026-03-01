@@ -1,7 +1,7 @@
 import type { UseFormRegister } from 'react-hook-form';
 import { LIMITS } from '../../schema';
 import ValidationErrorDisplay from '../ValidationErrorDisplay';
-import { cn } from '../../utils-ts';
+import { cn } from '../../utils';
 
 interface CategoryFormProps {
     register: UseFormRegister<{ name: string }>;

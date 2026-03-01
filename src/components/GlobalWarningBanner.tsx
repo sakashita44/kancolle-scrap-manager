@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
-import { cn } from '../utils-ts';
+import { cn } from '../utils';
 
 type BannerType = 'critical' | 'error' | 'warning' | 'info';
 

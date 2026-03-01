@@ -6,11 +6,11 @@ import {
     selectCategoryMap,
     selectEquipmentMap,
 } from './store';
-import { calculateScrapComparison, calculateScrapList } from './domain-ts';
+import { calculateScrapComparison, calculateScrapList } from './domain';
 import {
     analyzeCategoryDeletionImpact,
     buildCategoryDeletionMessage,
-} from './domain-ts';
+} from './domain';
 import type { Mission, MissionFormValues } from './schema';
 import {
     Header,
@@ -24,7 +24,7 @@ import {
     GlobalWarningBanner,
     ConfirmDialog,
     AboutModal,
-} from './components-tsx';
+} from './components';
 
 // --- 確認ダイアログの設定 ---
 
