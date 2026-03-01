@@ -11,7 +11,7 @@ import {
   saveUserCategories,
   getNextOrder as getNextOrderUtil,
   mergeAndSort,
-  createDefaultSortComparator,
+  createSortComparator,
   toRuntimeCategories,
   createCategoryMaps,
 } from '../utils';
@@ -40,7 +40,7 @@ export function useCategories() {
 
   // 公式マスタとユーザー定義をマージしてソート
   useEffect(() => {
-    const merged = mergeAndSort(masterCategories, userCategories, createDefaultSortComparator());
+    const merged = mergeAndSort(masterCategories, userCategories, createSortComparator());
     setAllCategories(merged);
   }, [masterCategories, userCategories]);
 

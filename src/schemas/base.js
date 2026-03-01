@@ -8,10 +8,10 @@ import { z } from 'zod';
 import { ID_PREFIX, LIMITS } from '../types/schema.js';
 
 /**
- * XSS対策済み文字列スキーマ
- * HTMLタグやスクリプトを含まない安全な文字列
+ * XSS対策用の危険パターン正規表現
+ * HTMLタグやスクリプトを含む文字列を検出
  */
-const DANGEROUS_PATTERN = /<script|<iframe|javascript:|on\w+=/i;
+export const DANGEROUS_PATTERN = /<script|<iframe|javascript:|on\w+=/i;
 
 export const safeString = z
   .string({ required_error: '入力は必須です' })

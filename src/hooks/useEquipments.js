@@ -11,7 +11,7 @@ import {
   saveUserEquipments,
   getNextOrder as getNextOrderUtil,
   mergeAndSort,
-  createDefaultSortComparator,
+  createSortComparator,
   toRuntimeEquipments,
   generateCategoryRepresentatives,
   addEquipmentType,
@@ -48,7 +48,7 @@ export function useEquipments(categories, categoryMap) {
 
   // 公式マスタとユーザー定義をマージしてソート（装備のみ、カテゴリ代表は含まない）
   useEffect(() => {
-    const merged = mergeAndSort(masterEquipments, userEquipments, createDefaultSortComparator());
+    const merged = mergeAndSort(masterEquipments, userEquipments, createSortComparator());
     setEquipments(merged);
   }, [masterEquipments, userEquipments]);
 

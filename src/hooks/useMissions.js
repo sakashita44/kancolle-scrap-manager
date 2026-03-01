@@ -12,7 +12,7 @@ import {
   saveUserMissions,
   getNextOrder as getNextOrderUtil,
   mergeAndSort,
-  createMissionSortComparator,
+  createSortComparator,
   toRuntimeMissions,
   generateMissionId,
 } from '../utils';
@@ -45,7 +45,7 @@ export function useMissions() {
 
   // 公式マスタとユーザー定義をマージしてソート
   useEffect(() => {
-    const merged = mergeAndSort(masterMissions, userMissions, createMissionSortComparator(PERIOD_ORDER));
+    const merged = mergeAndSort(masterMissions, userMissions, createSortComparator({ periodOrder: PERIOD_ORDER }));
     setAllMissions(merged);
   }, [masterMissions, userMissions]);
 

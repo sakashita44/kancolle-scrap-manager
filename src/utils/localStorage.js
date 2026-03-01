@@ -9,7 +9,7 @@ import { createStorageHelper } from './storageHelper.js';
 import { logError, logWarning, logInfo } from './logger.js';
 import { toRuntimeCategories, toRuntimeEquipments, toRuntimeMissions, toPersistCategories, toPersistEquipments, toPersistMissions } from './dataConverter.js';
 import { sanitizeDataList } from './dataSanitizer.js';
-import { persistedEquipmentSchema, persistedMissionSchema } from '../schemas/index.js';
+import { persistedCategorySchema, persistedEquipmentSchema, persistedMissionSchema } from '../schemas/index.js';
 
 // LocalStorage操作用のヘルパー関数
 const { getItem, setItem, removeItem } = createStorageHelper(localStorage, 'LocalStorage');
@@ -73,23 +73,32 @@ function loadAndValidateUserData(storageKey, dataKey, schema, toRuntimeFn, saveF
 }
 
 /**
+ * ユーザーデータ保存関数の共通処理
+ * @param {string} storageKey - StorageKey
+ * @param {string} dataKey - データキー名（'categories'/'equipments'/'missions'）
+ * @param {Function} toPersistFn - ランタイム形式→永続化形式変換関数
+ * @param {string} dataType - データ種別（ログ用）
+ * @param {Array} items - 保存するデータ配列
+ */
+function saveUserData(storageKey, dataKey, toPersistFn, dataType, items) {
+  const persistedItems = toPersistFn(items);
+  setItem(storageKey, {
+    version: SCHEMA_VERSION,
+    [dataKey]: persistedItems,
+  });
+  logInfo(`Saved user ${dataType}`, {
+    function: `saveUser${dataType}`,
+    count: persistedItems.length,
+  });
+}
+
+/**
  * ユーザー定義カテゴリを保存
  * @param {Array} categories - カテゴリデータの配列
  * @throws {Error} 保存に失敗した場合
  */
 export function saveUserCategories(categories) {
-  // ランタイム形式 → 永続化形式に変換
-  const persistedCategories = toPersistCategories(categories);
-
-  const data = {
-    version: SCHEMA_VERSION,
-    categories: persistedCategories,
-  };
-  setItem(STORAGE_KEYS.USER_CATEGORIES, data);
-  logInfo('Saved user categories', {
-    function: 'saveUserCategories',
-    count: persistedCategories.length,
-  });
+  saveUserData(STORAGE_KEYS.USER_CATEGORIES, 'categories', toPersistCategories, 'categories', categories);
 }
 
 /**
@@ -97,51 +106,10 @@ export function saveUserCategories(categories) {
  * @returns {{data: Array, corruptedItems: Array}} カテゴリデータと破損アイテム情報
  */
 export function loadUserCategories() {
-  const rawData = getItem(STORAGE_KEYS.USER_CATEGORIES);
-  if (!rawData || !rawData.categories) {
-    logInfo('No user categories found', { function: 'loadUserCategories' });
-    return { data: [], corruptedItems: [] };
-  }
-
-  // 簡易バリデーション
-  const validPersistedItems = [];
-  const corruptedItems = [];
-
-  rawData.categories.forEach((item) => {
-    // 必須フィールドのチェック
-    if (!item.id || !item.name || typeof item.order !== 'number') {
-      logWarning('Corrupted category detected', {
-        function: 'loadUserCategories',
-        id: item.id || 'unknown',
-      });
-      corruptedItems.push({
-        id: item.id || 'unknown',
-        name: item.name || 'unknown',
-        type: 'category',
-        errors: ['必須フィールドが不足しています'],
-      });
-    } else {
-      validPersistedItems.push(item);
-    }
-  });
-
-  // 永続化形式 → ランタイム形式に変換
-  const validItems = toRuntimeCategories(validPersistedItems, false);
-
-  // 破損データがあれば正常なデータのみで上書き保存
-  if (corruptedItems.length > 0) {
-    logInfo(`Removing ${corruptedItems.length} corrupted category(s)`, {
-      function: 'loadUserCategories',
-      corruptedCount: corruptedItems.length,
-    });
-    saveUserCategories(validItems);
-  }
-
-  logInfo('Loaded user categories', {
-    function: 'loadUserCategories',
-    count: validItems.length,
-  });
-  return { data: validItems, corruptedItems };
+  return loadAndValidateUserData(
+    STORAGE_KEYS.USER_CATEGORIES, 'categories', persistedCategorySchema,
+    toRuntimeCategories, saveUserCategories, 'category'
+  );
 }
 
 /**
@@ -150,18 +118,7 @@ export function loadUserCategories() {
  * @throws {Error} 保存に失敗した場合
  */
 export function saveUserEquipments(equipments) {
-  // ランタイム形式 → 永続化形式に変換
-  const persistedEquipments = toPersistEquipments(equipments);
-
-  const data = {
-    version: SCHEMA_VERSION,
-    equipments: persistedEquipments,
-  };
-  setItem(STORAGE_KEYS.USER_EQUIPMENTS, data);
-  logInfo('Saved user equipments', {
-    function: 'saveUserEquipments',
-    count: persistedEquipments.length,
-  });
+  saveUserData(STORAGE_KEYS.USER_EQUIPMENTS, 'equipments', toPersistEquipments, 'equipments', equipments);
 }
 
 /**
@@ -170,12 +127,8 @@ export function saveUserEquipments(equipments) {
  */
 export function loadUserEquipments() {
   return loadAndValidateUserData(
-    STORAGE_KEYS.USER_EQUIPMENTS,
-    'equipments',
-    persistedEquipmentSchema,
-    toRuntimeEquipments,
-    saveUserEquipments,
-    'equipment'
+    STORAGE_KEYS.USER_EQUIPMENTS, 'equipments', persistedEquipmentSchema,
+    toRuntimeEquipments, saveUserEquipments, 'equipment'
   );
 }
 
@@ -185,18 +138,7 @@ export function loadUserEquipments() {
  * @throws {Error} 保存に失敗した場合
  */
 export function saveUserMissions(missions) {
-  // ランタイム形式 → 永続化形式に変換
-  const persistedMissions = toPersistMissions(missions);
-
-  const data = {
-    version: SCHEMA_VERSION,
-    missions: persistedMissions,
-  };
-  setItem(STORAGE_KEYS.USER_MISSIONS, data);
-  logInfo('Saved user missions', {
-    function: 'saveUserMissions',
-    count: persistedMissions.length,
-  });
+  saveUserData(STORAGE_KEYS.USER_MISSIONS, 'missions', toPersistMissions, 'missions', missions);
 }
 
 /**
@@ -205,12 +147,8 @@ export function saveUserMissions(missions) {
  */
 export function loadUserMissions() {
   return loadAndValidateUserData(
-    STORAGE_KEYS.USER_MISSIONS,
-    'missions',
-    persistedMissionSchema,
-    toRuntimeMissions,
-    saveUserMissions,
-    'mission'
+    STORAGE_KEYS.USER_MISSIONS, 'missions', persistedMissionSchema,
+    toRuntimeMissions, saveUserMissions, 'mission'
   );
 }
 

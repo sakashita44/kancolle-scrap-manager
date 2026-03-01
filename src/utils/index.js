@@ -44,10 +44,8 @@ export {
 export {
   createIdMap,
   getNextOrder,
-  createFindById,
   mergeAndSort,
-  createDefaultSortComparator,
-  createMissionSortComparator,
+  createSortComparator,
 } from './dataManagement'
 
 // ID生成
@@ -66,8 +64,6 @@ export {
   validateUniqueName,
   validateNoDuplicateIds,
   validateNoDuplicateNames,
-  isValidUserEquipmentId,
-  isValidUserMissionId,
   validateEquipment,
   validateMission,
   validateSelectedMissions,
