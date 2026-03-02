@@ -16,16 +16,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Build**: Vite
 - **Validation**: Zod (v4)
 - **Form**: react-hook-form + @hookform/resolvers
+- **Testing**: Vitest (純粋関数テストのみ, jsdom不要)
 - **Code Quality**: ESLint (flat config), Prettier, markdownlint-cli2, Husky + lint-staged
 
 ## Development Commands
 
 ```bash
-npm run dev      # 開発サーバー起動
-npm run build    # プロダクションビルド (dist/ に出力)
-npm run lint     # ESLint + markdownlint チェック
-npm run format   # Prettier + ESLint --fix + markdownlint --fix
-npm run deploy   # dist/ を Lolipop にアップロード
+npm run dev        # 開発サーバー起動
+npm run build      # プロダクションビルド (dist/ に出力)
+npm test           # テスト実行 (vitest run)
+npm run test:watch # テスト監視モード (vitest)
+npm run lint       # ESLint + markdownlint チェック
+npm run format     # Prettier + ESLint --fix + markdownlint --fix
+npm run deploy     # dist/ を Lolipop にアップロード
 ```
 
 ### Development Flow
@@ -45,7 +48,7 @@ npm run deploy   # dist/ を Lolipop にアップロード
 src/
 ├── schema/          # Zodスキーマ + 型定義（constants, base, category, equipment, mission, forms）
 ├── store/           # Zustand store（dataSlice, selectionSlice, uiSlice, storage）
-├── domain/       # 純粋関数のビジネスロジック（scrapCalculation, categoryOperations）
+├── domain/       # 純粋関数のビジネスロジック（scrapCalculation, categoryOperations, missionFilter）
 ├── components/  # UIコンポーネント（TSX）
 ├── hooks/        # カスタムhooks（useToggle, useMissionForm）
 ├── utils/        # ユーティリティ（cn, displayUtils, scrapListFormatters）
