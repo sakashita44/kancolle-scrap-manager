@@ -13,7 +13,7 @@ v2.0.0-alpha ── リリース済み
   ↓
 Phase 4B: 部分リファクタ ── 完了（#157で終了）
   ↓
-Phase 5: TS + Zustand フルリライト ── #159
+Phase 5: TS + Zustand フルリライト ── #159 ── 完了
   ↓
 v2.0.0-beta
   ↓
@@ -22,47 +22,40 @@ v2.0.0-beta
 v2.0.0 正式版
 ```
 
-## Phase 5: フルリライト (#159)
+## Phase 5: フルリライト (#159) ── 完了
 
-現行の JavaScript + Context API 構成を TypeScript + Zustand に全面リライトする.
-機能・UIは現行と同等を維持し, 内部アーキテクチャのみ刷新する.
+JavaScript + Context API 構成を TypeScript + Zustand に全面リライトした.
+機能・UIは同等を維持し, 内部アーキテクチャを刷新.
 
 ### 技術スタック変更
 
-| 項目           | 現行                            | 変更後                         |
+| 項目           | 旧構成                          | 現行                           |
 | :------------- | :------------------------------ | :----------------------------- |
 | 言語           | JavaScript (JSX)                | TypeScript (TSX)               |
 | 状態管理       | Context API × 7 + Facade        | Zustand (単一Store, slice構成) |
-| バリデーション | Zod (部分適用)                  | Zod (全データ統一)             |
-| 永続化         | 各hook/コンポーネントで個別実装 | Zustand persist middleware     |
+| バリデーション | Zod (部分適用)                  | Zod v4 (全データ統一)          |
+| 永続化         | 各hook/コンポーネントで個別実装 | Store actions内で明示的に実行  |
 
 ### アーキテクチャ
 
-4区分構成. 中間層(services, repositories, adapters)は作らない.
-
 ```text
 src/
-  store/        # Zustand store + slices (data, selection, ui)
-  domain/       # 純粋計算関数(廃棄計算等)
-  schema/       # Zod スキーマ定義(型生成含む)
-  components/   # UIコンポーネント
-  data/         # マスターデータJSON
-  hooks/        # 必要最小限のカスタムhook
+  schema/          # Zodスキーマ + 型定義
+  store/           # Zustand store + slices (data, selection, ui)
+  domain/          # 純粋計算関数（廃棄計算等）
+  components/      # UIコンポーネント
+  hooks/           # カスタムhook（useToggle, useMissionForm）
+  utils/           # ユーティリティ（cn, displayUtils, scrapListFormatters）
+  data/            # マスターデータJSON
 ```
 
-### 設計判断
+### 主な設計変更
 
-- データは配列のまま管理する(正規化 byId/allIds は不採用. この規模では変換コストが増えるだけ)
-- エラーは専用Sliceを持たず, 通知UI(トースト)のみ軽量実装
-- 層分離は可読性のためのみ. 拡張性のための抽象化は行わない
-- ドメイン層の純粋関数原則は維持
-
-### 維持する事項
-
-- データID体系(m*cat*, u*eq* 等のプレフィックス)
-- LocalStorage/SessionStorage のキー名と保存内容
-- UI/UXの挙動(モーダル, フィルタ, 廃棄計算結果表示等)
-- マスターデータJSON形式
+- `targetType`/`targetId` → `kind`/`id`（要求モデル）
+- `isMaster: boolean` → `source: "master" | "user"`（ランタイム付与）
+- カテゴリ代表装備の概念を廃止（カテゴリを直接要求対象に使用）
+- Context providers (7個) → Zustand single store
+- 要求セレクタに composite `kind:id` 値エンコーディングを採用
 
 ## Phase 4B 完了済みタスク
 
@@ -106,16 +99,11 @@ Issue #159(フルリライト)で対応するため中止.
 
 | ライブラリ                            | 導入Issue | 用途                                                  |
 | :------------------------------------ | :-------- | :---------------------------------------------------- |
-| Zod                                   | #86       | スキーマベースバリデーション（Parse, don't validate） |
+| Zod (v4)                              | #86, #159 | スキーマベースバリデーション（Parse, don't validate） |
 | react-hook-form + @hookform/resolvers | #113      | 宣言的フォーム管理, Zodスキーマ統合                   |
 | clsx + tailwind-merge                 | #114      | 条件付きクラス名結合, Tailwind衝突解決                |
-
-### Phase 5 で追加予定
-
-| ライブラリ | 用途                      |
-| :--------- | :------------------------ |
-| Zustand    | 状態管理(Context API置換) |
-| TypeScript | 型安全性                  |
+| Zustand                               | #159      | 状態管理(Context API置換)                             |
+| TypeScript                            | #159      | 型安全性                                              |
 
 ## v2.1.0以降
 
@@ -135,7 +123,7 @@ Issue #159(フルリライト)で対応するため中止.
 
 ## 棚上げ/実装不要
 
-- ❌ #8: ネットワークリトライ・タイムアウト — データバンドル化により不要
-- ❌ #45: LocalStorage容量警告 — 保存失敗時のエラー表示で十分
-- ❌ #84: フック統合 — DataContext導入で不要
-- ❌ #110: ドメイン分離 — #127-#129へ分割完了
+- #8: ネットワークリトライ・タイムアウト — データバンドル化により不要
+- #45: LocalStorage容量警告 — 保存失敗時のエラー表示で十分
+- #84: フック統合 — DataContext導入で不要
+- #110: ドメイン分離 — #127-#129へ分割完了
