@@ -173,7 +173,7 @@ export const createSelectionSlice: StateCreator<
     toggleMission: (missionId) => {
         const { baseMission, auxiliaryMissions } = get();
         if (baseMission?.missionId === missionId) {
-            get().deselectBaseMission();
+            get().deselectMission(missionId);
         } else if (auxiliaryMissions.some((m) => m.missionId === missionId)) {
             get().deselectAuxiliaryMission(missionId);
         } else {
