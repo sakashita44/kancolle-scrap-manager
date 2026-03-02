@@ -34,25 +34,12 @@ export default function AboutModal({ isOpen, onClose }: Props) {
                     </p>
                 </div>
 
-                <div className="bg-teal-50 border border-teal-200 rounded p-3">
-                    <h5 className="font-semibold text-teal-800 mb-2">
-                        【v2.0.0-alpha 新機能】
-                    </h5>
-                    <ul className="text-sm text-teal-700 leading-relaxed space-y-1 list-disc list-inside">
-                        <li>ベース任務/副任務の概念導入</li>
-                        <li>
-                            データ初期化機能（設定メニューから全データを削除可能）
-                        </li>
-                        <li>任務の編集機能</li>
-                    </ul>
-                </div>
-
                 <div className="bg-blue-50 border border-blue-200 rounded p-3">
                     <h5 className="font-semibold text-blue-800 mb-2">
-                        【Alpha版について】
+                        【Beta版について】
                     </h5>
                     <p className="text-sm text-blue-700 leading-relaxed">
-                        本バージョンは開発中のアルファ版です。開発途中のため、仕様変更が発生する可能性があります。
+                        本バージョンはベータ版です。仕様変更が発生する可能性があります。
                     </p>
                     <p className="text-sm text-blue-700 leading-relaxed mt-2">
                         また、本アプリに含まれる任務・装備のマスタデータにはダミーデータが含まれています。必要に応じてご自身で装備・任務を追加してください。

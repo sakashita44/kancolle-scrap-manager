@@ -309,7 +309,7 @@ export default function App() {
 
             <GlobalWarningBanner
                 messages={[
-                    'Alpha版です。マスタデータ（任務・装備）にはダミーデータが含まれています。必要に応じてご自身で追加してください。',
+                    'Beta版です。マスタデータ（任務・装備）にはダミーデータが含まれています。必要に応じてご自身で追加してください。',
                 ]}
                 type="info"
             />
