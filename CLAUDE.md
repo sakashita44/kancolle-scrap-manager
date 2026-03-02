@@ -34,10 +34,10 @@ npm run deploy     # dist/ を Lolipop にアップロード
 ### Development Flow
 
 1. `git status` でブランチ状態確認
-1. issue と `docs/progress_v2.md` で次タスク確認 (issueのコメントも必ず確認)
+1. issue と `docs/progress.md` で次タスク確認 (issueのコメントも必ず確認)
 1. `main` からブランチ作成: `<prefix>/<yyyymm>/sakashita44/<issue番号>-<内容>`
 1. 実装 → ローカル動作確認
-1. タスクが進捗に影響する場合は `docs/progress_v2.md` を更新
+1. タスクが進捗に影響する場合は `docs/progress.md` を更新
 1. コミット → プッシュ → PR作成
 
 ## Architecture
@@ -201,7 +201,7 @@ src/
 
 ## Key Documentation Files
 
-- `docs/progress_v2.md` - ロードマップと進捗
+- `docs/progress.md` - ロードマップと進捗
 - `docs/calculation_logic.md` - 廃棄計算アルゴリズム詳細(8フェーズ)
 - `docs/schema.md` - データ構造定義, バリデーションルール, `order` 仕様
 - `docs/ui_specification.md` - UI/UX詳細仕様(モーダル挙動, フィルタ組み合わせ)

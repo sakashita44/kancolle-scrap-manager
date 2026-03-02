@@ -13,46 +13,12 @@
 - 日付フォーマット: ローカルタイムゾーン基準、`YYYYMMDD`形式
 - 例: 2025年11月23日にエクスポートした場合 → `kancolle_scrap_equipments_20251123.json`
 
-### 実装例
-
-```javascript
-/**
- * エクスポートファイル名を生成
- * @param {string} type - データタイプ ('equipments' | 'missions')
- * @returns {string} ファイル名
- */
-function generateExportFilename(type) {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const dateStr = `${year}${month}${day}`;
-    return `kancolle_scrap_${type}_${dateStr}.json`;
-}
-```
-
 ### エクスポート処理フロー
 
-1. LocalStorageからユーザー定義データを取得
-1. JSON文字列化
-1. `Blob`オブジェクト作成
-1. `<a download>`でダウンロード
-
-```javascript
-function exportData(type, data) {
-    const filename = generateExportFilename(type);
-    const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-
-    URL.revokeObjectURL(url);
-}
-```
+1. Zustand store からユーザー定義データを取得
+1. スキーマバージョン付きのJSONオブジェクトを構築
+1. JSON文字列化 → `Blob` オブジェクト作成
+1. `<a download>` でダウンロード
 
 ## インポート
 
@@ -68,7 +34,7 @@ function exportData(type, data) {
 
 1. **JSON構文チェック**
     - パース失敗時: エラーモーダル表示、インポート中断
-    - エラーメッセージ: `docs/error_handling.md:122-129`参照
+    - エラーメッセージ: `docs/error_handling.md` セクション3参照
 
 1. **ファイル判別**
     - `equipments`配列が存在 → 装備データ
@@ -77,23 +43,22 @@ function exportData(type, data) {
     - 両方とも存在しない → エラー、インポート中断
 
 1. **スキーマバリデーション**
-    - `src/utils/validation.js`の`validateEquipment` / `validateMission`を使用
+    - `src/schema/` のZodスキーマ(`equipmentFileSchema` / `missionFileSchema`)を使用
     - バリデーション失敗時: 詳細エラーモーダル表示、インポート中断
-    - エラーメッセージ: `docs/error_handling.md:132-139`参照
+    - エラーメッセージ: `docs/error_handling.md` セクション3参照
 
 1. **上書き確認ダイアログ表示**
     - インポート対象の概要を表示(件数等)
     - 「既存データは上書きされます」の警告表示
-    - UI仕様: `docs/ui_specification.md:723-750`参照
+    - UI仕様: `docs/ui_specification.md` インポート確認ダイアログ参照
 
-1. **LocalStorageに保存**
+1. **Zustand store に反映・LocalStorageに保存**
     - ユーザーが[インポート]ボタンをクリック
-    - `src/utils/localStorage.js`の`saveUserEquipments` / `saveUserMissions`を使用
+    - Zustand store の `dataSlice` アクション経由でデータを更新・永続化
     - 保存成功時: 成功通知表示
 
 1. **UI更新**
-    - カスタムフック(`useEquipments` / `useMissions`)が自動的にデータを再読込
-    - 画面に反映
+    - Zustand store の更新によりコンポーネントが自動的に再レンダリング
 
 ### エラーハンドリング
 
@@ -121,7 +86,7 @@ function exportData(type, data) {
 1. 参照整合性チェック(警告レベル、インポートは継続)
 1. 重複チェック(警告レベル)
 
-詳細: `docs/schema.md:279-297`
+詳細: `docs/schema.md` バリデーションルールセクション参照
 
 ## データ形式
 
@@ -131,13 +96,13 @@ function exportData(type, data) {
 
 ```json
 {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "equipments": [
         {
             "id": "u_eq_123e4567-e89b-12d3-a456-426614174000",
             "name": "カスタム砲",
-            "category": "主砲",
-            "type": "Item"
+            "categoryId": "m_cat_gun_s",
+            "order": 1000
         }
     ]
 }
@@ -147,7 +112,7 @@ function exportData(type, data) {
 
 ```json
 {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "missions": [
         {
             "id": "u_ms_123e4567-e89b-12d3-a456-426614174001",
@@ -155,11 +120,12 @@ function exportData(type, data) {
             "period": "Weekly",
             "reqs": [
                 {
-                    "id": "req_1",
-                    "targetId": "m_eq_gun_12cm",
+                    "kind": "equipment",
+                    "id": "m_eq_gun_12cm",
                     "count": 3
                 }
-            ]
+            ],
+            "order": 1000
         }
     ]
 }
