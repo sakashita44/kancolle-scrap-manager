@@ -21,6 +21,7 @@ export interface SelectionSlice {
     deselectBaseMission: () => void;
     selectAuxiliaryMission: (missionId: string) => void;
     deselectAuxiliaryMission: (missionId: string) => void;
+    deselectMission: (missionId: string) => void;
     toggleMission: (missionId: string) => void;
     updateBaseMissionCount: (count: number) => void;
     updateAuxiliaryMissionCount: (missionId: string, count: number) => void;
@@ -109,9 +110,11 @@ export const createSelectionSlice: StateCreator<
     },
 
     deselectBaseMission: () => {
-        const { auxiliaryMissions } = get();
-        set({ baseMission: null });
-        persistSelection(null, auxiliaryMissions);
+        const { baseMission, auxiliaryMissions } = get();
+        if (!baseMission) return;
+        const newAux = [...auxiliaryMissions, baseMission];
+        set({ baseMission: null, auxiliaryMissions: newAux });
+        persistSelection(null, newAux);
     },
 
     selectAuxiliaryMission: (missionId) => {
@@ -137,6 +140,17 @@ export const createSelectionSlice: StateCreator<
         );
         set({ auxiliaryMissions: newAux });
         persistSelection(baseMission, newAux);
+    },
+
+    deselectMission: (missionId) => {
+        const { baseMission, auxiliaryMissions } = get();
+        if (baseMission?.missionId === missionId) {
+            const newAux = auxiliaryMissions;
+            set({ baseMission: null });
+            persistSelection(null, newAux);
+        } else if (auxiliaryMissions.some((m) => m.missionId === missionId)) {
+            get().deselectAuxiliaryMission(missionId);
+        }
     },
 
     toggleMission: (missionId) => {

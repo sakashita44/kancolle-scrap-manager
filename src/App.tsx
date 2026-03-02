@@ -81,10 +81,12 @@ export default function App() {
     const saveMission = useStore((s) => s.saveMission);
     const deleteUserEquipment = useStore((s) => s.deleteUserEquipment);
     const deleteUserMission = useStore((s) => s.deleteUserMission);
+    const deselectMission = useStore((s) => s.deselectMission);
     const deleteCategoryWithDependents = useStore(
         (s) => s.deleteCategoryWithDependents,
     );
     const resetAllUserData = useStore((s) => s.resetAllUserData);
+    const clearSelection = useStore((s) => s.clearSelection);
 
     // --- 初期化 ---
 
@@ -241,9 +243,11 @@ export default function App() {
                 deleteCategoryWithDependents(id);
                 break;
             case 'deleteMission':
+                deselectMission(id);
                 deleteUserMission(id);
                 break;
             case 'resetData':
+                clearSelection();
                 resetAllUserData();
                 break;
         }
@@ -252,7 +256,9 @@ export default function App() {
         confirmDialog,
         deleteUserEquipment,
         deleteCategoryWithDependents,
+        deselectMission,
         deleteUserMission,
+        clearSelection,
         resetAllUserData,
         closeConfirmDialog,
     ]);
