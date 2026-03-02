@@ -56,7 +56,7 @@ export default function EquipmentList({
                     }
                     return a.order - b.order;
                 });
-            if (catEquipments.length > 0) {
+            if (catEquipments.length > 0 || cat.source === SOURCE.USER) {
                 groups.set(cat.id, catEquipments);
             }
         }
