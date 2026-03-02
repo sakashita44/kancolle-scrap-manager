@@ -211,7 +211,7 @@
 | **CRITICAL** | **不可**               | アプリ継続不能な例外, 致命的な不整合         | 濃い赤色 / 閉じるボタンなし |
 | **ERROR**    | **可**                 | 保存失敗, CRUD操作エラー, インポート失敗     | 赤色 / 閉じるボタンあり     |
 | **WARNING**  | **可**                 | 破損データの自動削除通知, 軽微な整合性エラー | 黄色 / 閉じるボタンあり     |
-| **INFO**     | **可**                 | Alpha版通知, 成功メッセージ等                | 青色 / 閉じるボタンあり     |
+| **INFO**     | **可**                 | Beta版通知, 成功メッセージ等                 | 青色 / 閉じるボタンあり     |
 
 **注**: CRITICALタイプは将来拡張用として定義済み. 現時点では使用箇所なし.
 
@@ -221,7 +221,7 @@
 | :------------------- | :-------------------------------- | :----------- |
 | corrupted-equipments | 破損装備データの自動削除通知      | warning      |
 | corrupted-missions   | 破損任務データの自動削除通知      | warning      |
-| alpha-info           | Alpha版の注意事項                 | info         |
+| alpha-info           | Beta版の注意事項                  | info         |
 | equipment-crud-error | 装備CRUD操作のエラー              | error        |
 | mission-crud-error   | 任務CRUD操作のエラー              | error        |
 | destructive-op-error | 破壊的操作(削除/リセット)のエラー | error        |
