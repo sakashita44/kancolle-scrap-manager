@@ -21,7 +21,7 @@ dotenv.config({ path: join(__dirname, '..', '.env') })
  */
 const FTP_CONFIG = {
   port: 21,
-  deleteRemote: false, // trueにするとサーバー上の不要ファイルを削除
+  deleteRemote: true, // サーバー上の不要ファイル（旧ハッシュのアセット等）を削除
   forcePasv: true,
   secure: false, // 通常のFTP接続
 }
