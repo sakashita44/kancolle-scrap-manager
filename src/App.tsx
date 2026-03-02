@@ -92,7 +92,11 @@ export default function App() {
 
     useEffect(() => {
         initData();
-        initSelection();
+        // initData 後のストアから全任務IDを取得し、選択復元時の整合性チェックに使用
+        const missionIds = new Set(
+            selectAllMissions(useStore.getState()).map((m) => m.id),
+        );
+        initSelection(missionIds);
         initAbout();
         initFilters();
         initExpanded();

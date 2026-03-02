@@ -16,7 +16,7 @@ export interface SelectionSlice {
     selectionInitialized: boolean;
 
     // アクション
-    initSelection: () => void;
+    initSelection: (validMissionIds: Set<string>) => void;
     selectBaseMission: (missionId: string) => void;
     deselectBaseMission: () => void;
     selectAuxiliaryMission: (missionId: string) => void;
@@ -63,14 +63,31 @@ export const createSelectionSlice: StateCreator<
     auxiliaryMissions: [],
     selectionInitialized: false,
 
-    initSelection: () => {
+    initSelection: (validMissionIds) => {
         const saved = loadSelectedMissions();
         if (saved) {
+            const base =
+                saved.baseMission &&
+                validMissionIds.has(saved.baseMission.missionId)
+                    ? saved.baseMission
+                    : null;
+            const aux = saved.auxiliaryMissions.filter((m) =>
+                validMissionIds.has(m.missionId),
+            );
+
             set({
-                baseMission: saved.baseMission,
-                auxiliaryMissions: saved.auxiliaryMissions,
+                baseMission: base,
+                auxiliaryMissions: aux,
                 selectionInitialized: true,
             });
+
+            // 無効エントリを除去した場合はストレージも更新
+            if (
+                base !== saved.baseMission ||
+                aux.length !== saved.auxiliaryMissions.length
+            ) {
+                persistSelection(base, aux);
+            }
         } else {
             set({ selectionInitialized: true });
         }
