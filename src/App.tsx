@@ -11,11 +11,8 @@ import {
     analyzeCategoryDeletionImpact,
     buildCategoryDeletionMessage,
 } from './domain';
-import {
-    REQUIREMENT_KIND,
-    type Mission,
-    type MissionFormValues,
-} from './schema';
+import { matchesCategoryFilter } from './domain/missionFilter';
+import { type Mission, type MissionFormValues } from './schema';
 import {
     Header,
     StickyDashboard,
@@ -147,19 +144,14 @@ export default function App() {
             if (filterPeriods.size > 0 && !filterPeriods.has(m.period))
                 return false;
             if (filterCategories.size > 0) {
-                const hasMatchingReq = m.reqs.some((req) => {
-                    if (req.kind === REQUIREMENT_KIND.CATEGORY) {
-                        return filterCategories.has(req.id);
-                    }
-                    if (req.kind === REQUIREMENT_KIND.EQUIPMENT) {
-                        const equipment = equipmentMap.get(req.id);
-                        return equipment
-                            ? filterCategories.has(equipment.categoryId)
-                            : false;
-                    }
+                if (
+                    !matchesCategoryFilter(
+                        m.reqs,
+                        filterCategories,
+                        equipmentMap,
+                    )
+                )
                     return false;
-                });
-                if (!hasMatchingReq) return false;
             }
             return true;
         });

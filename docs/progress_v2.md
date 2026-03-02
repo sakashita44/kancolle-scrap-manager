@@ -15,12 +15,22 @@ Phase 4B: 部分リファクタ ── 完了（#157で終了）
   ↓
 Phase 5: TS + Zustand フルリライト ── #159 ── 完了
   ↓
+#163: 回帰防止の最小テスト導入 ── 完了
+  ↓
 v2.0.0-beta
   ↓
 #142: マスタデータ拡充
   ↓
 v2.0.0 正式版
 ```
+
+## #163: 回帰防止の最小テスト導入 ── 完了
+
+Vitest導入、回帰しやすいロジックに限定した最小テスト（10本）を追加.
+
+- `src/domain/__tests__/scrapCalculation.test.ts`: 廃棄計算（MAX集計, 包含解決, count乗算, 過不足比較）
+- `src/domain/__tests__/missionFilter.test.ts`: カテゴリフィルタ判定（App.tsxから純粋関数として抽出）
+- `src/store/__tests__/selectionSlice.test.ts`: 選択スライス（ベース/補助切替count維持, countクランプ）
 
 ## Phase 5: フルリライト (#159) ── 完了
 
@@ -104,6 +114,7 @@ Issue #159(フルリライト)で対応するため中止.
 | clsx + tailwind-merge                 | #114      | 条件付きクラス名結合, Tailwind衝突解決                |
 | Zustand                               | #159      | 状態管理(Context API置換)                             |
 | TypeScript                            | #159      | 型安全性                                              |
+| Vitest                                | #163      | 純粋関数の回帰テスト                                  |
 
 ## v2.1.0以降
 
