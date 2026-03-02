@@ -222,7 +222,9 @@ export default function SelectedMissionsSummary() {
                                                 <input
                                                     type="number"
                                                     min="1"
-                                                    max="99"
+                                                    max={
+                                                        LIMITS.MISSION_COUNT_MAX
+                                                    }
                                                     value={selected.count}
                                                     onChange={(e) => {
                                                         const value = parseInt(
@@ -263,7 +265,8 @@ export default function SelectedMissionsSummary() {
                                                               )
                                                     }
                                                     disabled={
-                                                        selected.count >= 99
+                                                        selected.count >=
+                                                        LIMITS.MISSION_COUNT_MAX
                                                     }
                                                     className={cn(
                                                         'p-0.5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors',

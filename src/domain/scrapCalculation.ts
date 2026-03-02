@@ -275,7 +275,7 @@ function generateScrapList(
         if (equipment) {
             const category = categoryMap.get(equipment.categoryId);
             scrapList.push({
-                targetKind: REQUIREMENT_KIND.EQUIPMENT as RequirementKind,
+                targetKind: REQUIREMENT_KIND.EQUIPMENT,
                 targetId: equipment.id,
                 name: equipment.name,
                 categoryName: category?.name ?? equipment.categoryId,
@@ -288,7 +288,7 @@ function generateScrapList(
         const category = categoryMap.get(categoryId);
         if (category) {
             scrapList.push({
-                targetKind: REQUIREMENT_KIND.CATEGORY as RequirementKind,
+                targetKind: REQUIREMENT_KIND.CATEGORY,
                 targetId: categoryId,
                 name: category.name + '（種別不問）',
                 categoryName: category.name,

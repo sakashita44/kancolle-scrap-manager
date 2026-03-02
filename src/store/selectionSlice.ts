@@ -47,7 +47,7 @@ function totalSelected(
 }
 
 function clampMissionCount(count: number): number {
-    return Math.max(1, Math.min(99, count));
+    return Math.max(1, Math.min(LIMITS.MISSION_COUNT_MAX, count));
 }
 
 // --- Slice 生成 ---

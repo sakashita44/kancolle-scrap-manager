@@ -72,10 +72,11 @@ export default function App() {
     const closeModal = useStore((s) => s.closeModal);
     const openConfirmDialog = useStore((s) => s.openConfirmDialog);
     const closeConfirmDialog = useStore((s) => s.closeConfirmDialog);
+    const openAbout = useStore((s) => s.openAbout);
     const markAboutShown = useStore((s) => s.markAboutShown);
     const setFilterText = useStore((s) => s.setFilterText);
-    const toggleFilterPeriod = useStore((s) => s.toggleFilterPeriod);
-    const toggleFilterCategory = useStore((s) => s.toggleFilterCategory);
+    const setFilterPeriods = useStore((s) => s.setFilterPeriods);
+    const setFilterCategories = useStore((s) => s.setFilterCategories);
 
     const saveMission = useStore((s) => s.saveMission);
     const deleteUserEquipment = useStore((s) => s.deleteUserEquipment);
@@ -164,43 +165,28 @@ export default function App() {
         equipmentMap,
     ]);
 
-    // --- フィルタハンドラ（単一選択を維持するシンプルなラッパー） ---
+    // --- フィルタハンドラ（単一選択） ---
 
     const handleFilterPeriodChange = useCallback(
         (period: string) => {
-            if (period === 'ALL') {
-                // 全選択解除
-                for (const p of filterPeriods) {
-                    toggleFilterPeriod(p);
-                }
+            if (period === 'ALL' || filterPeriods.has(period)) {
+                setFilterPeriods(new Set());
             } else {
-                // 既存のフィルタをクリアして新しいものを設定
-                for (const p of filterPeriods) {
-                    if (p !== period) toggleFilterPeriod(p);
-                }
-                if (!filterPeriods.has(period)) toggleFilterPeriod(period);
-                else toggleFilterPeriod(period); // トグルオフ
+                setFilterPeriods(new Set([period]));
             }
         },
-        [filterPeriods, toggleFilterPeriod],
+        [filterPeriods, setFilterPeriods],
     );
 
     const handleFilterCategoryChange = useCallback(
         (categoryId: string) => {
-            if (categoryId === 'ALL') {
-                for (const c of filterCategories) {
-                    toggleFilterCategory(c);
-                }
+            if (categoryId === 'ALL' || filterCategories.has(categoryId)) {
+                setFilterCategories(new Set());
             } else {
-                for (const c of filterCategories) {
-                    if (c !== categoryId) toggleFilterCategory(c);
-                }
-                if (!filterCategories.has(categoryId))
-                    toggleFilterCategory(categoryId);
-                else toggleFilterCategory(categoryId);
+                setFilterCategories(new Set([categoryId]));
             }
         },
-        [filterCategories, toggleFilterCategory],
+        [filterCategories, setFilterCategories],
     );
 
     // --- 確認ダイアログ ---
@@ -305,10 +291,7 @@ export default function App() {
     return (
         <div className="min-h-screen bg-slate-100 text-slate-800 font-sans relative">
             <Header
-                onAboutOpen={() => {
-                    // Aboutモーダルを開くためにaboutShownをリセット（UISliceにはopenAboutがないので直接操作）
-                    useStore.setState({ aboutShown: false });
-                }}
+                onAboutOpen={openAbout}
                 onExport={() => {
                     /* TODO: issue #12 */
                 }}

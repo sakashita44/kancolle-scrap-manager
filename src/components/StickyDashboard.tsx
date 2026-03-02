@@ -30,6 +30,18 @@ export default function StickyDashboard({
         [scrapList],
     );
 
+    const comparisonSummary = useMemo(() => {
+        const insufficient = comparison.filter(
+            (i) => i.status === 'insufficient',
+        ).length;
+        const exact = comparison.filter((i) => i.difference === 0).length;
+        const surplus = comparison.filter(
+            (i) => i.difference > 0 && i.status !== 'excess',
+        ).length;
+        const excess = comparison.filter((i) => i.status === 'excess').length;
+        return { insufficient, exact, surplus, excess };
+    }, [comparison]);
+
     return (
         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur shadow-md border-b border-slate-200 transition-all">
             <div className="max-w-3xl mx-auto px-4 py-2">
@@ -254,69 +266,42 @@ export default function StickyDashboard({
                                                 全{comparison.length}種類
                                             </span>
                                             <div className="flex gap-3">
-                                                {comparison.filter(
-                                                    (i) =>
-                                                        i.status ===
-                                                        'insufficient',
-                                                ).length > 0 && (
+                                                {comparisonSummary.insufficient >
+                                                    0 && (
                                                     <span className="text-red-600">
                                                         不足:{' '}
                                                         {
-                                                            comparison.filter(
-                                                                (i) =>
-                                                                    i.status ===
-                                                                    'insufficient',
-                                                            ).length
+                                                            comparisonSummary.insufficient
                                                         }
                                                         種
                                                     </span>
                                                 )}
-                                                {comparison.filter(
-                                                    (i) => i.difference === 0,
-                                                ).length > 0 && (
+                                                {comparisonSummary.exact >
+                                                    0 && (
                                                     <span className="text-green-600">
                                                         過不足なし:{' '}
                                                         {
-                                                            comparison.filter(
-                                                                (i) =>
-                                                                    i.difference ===
-                                                                    0,
-                                                            ).length
+                                                            comparisonSummary.exact
                                                         }
                                                         種
                                                     </span>
                                                 )}
-                                                {comparison.filter(
-                                                    (i) =>
-                                                        i.difference > 0 &&
-                                                        i.status !== 'excess',
-                                                ).length > 0 && (
+                                                {comparisonSummary.surplus >
+                                                    0 && (
                                                     <span className="text-blue-600">
                                                         余剰:{' '}
                                                         {
-                                                            comparison.filter(
-                                                                (i) =>
-                                                                    i.difference >
-                                                                        0 &&
-                                                                    i.status !==
-                                                                        'excess',
-                                                            ).length
+                                                            comparisonSummary.surplus
                                                         }
                                                         種
                                                     </span>
                                                 )}
-                                                {comparison.filter(
-                                                    (i) =>
-                                                        i.status === 'excess',
-                                                ).length > 0 && (
+                                                {comparisonSummary.excess >
+                                                    0 && (
                                                     <span className="text-slate-500">
                                                         ベース不要:{' '}
                                                         {
-                                                            comparison.filter(
-                                                                (i) =>
-                                                                    i.status ===
-                                                                    'excess',
-                                                            ).length
+                                                            comparisonSummary.excess
                                                         }
                                                         種
                                                     </span>

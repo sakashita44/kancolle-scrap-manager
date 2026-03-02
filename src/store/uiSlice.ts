@@ -58,6 +58,7 @@ export interface UISlice {
 
     // アクション: About
     initAbout: () => void;
+    openAbout: () => void;
     markAboutShown: () => void;
 
     // アクション: フィルタ
@@ -129,6 +130,10 @@ export const createUISlice: StateCreator<AppState, [], [], UISlice> = (
 
     initAbout: () => {
         set({ aboutShown: isAboutShown() });
+    },
+
+    openAbout: () => {
+        set({ aboutShown: false });
     },
 
     markAboutShown: () => {
