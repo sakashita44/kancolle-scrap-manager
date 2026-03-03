@@ -5,12 +5,7 @@
 
 import { z } from 'zod/v4';
 import { safeString, missionIdSchema, nonNegativeInteger } from './base';
-import {
-    LIMITS,
-    PERIOD_VALUES,
-    REQUIREMENT_KIND,
-    type Source,
-} from './constants';
+import { LIMITS, PERIOD, REQUIREMENT_KIND, type Source } from './constants';
 
 // --- 要求装備スキーマ ---
 
@@ -49,7 +44,14 @@ export type Requirement = z.infer<typeof requirementSchema>;
 
 // --- 任務スキーマ ---
 
-const periodValues = PERIOD_VALUES as [string, ...string[]];
+const periodValues = [
+    PERIOD.DAILY,
+    PERIOD.WEEKLY,
+    PERIOD.MONTHLY,
+    PERIOD.QUARTERLY,
+    PERIOD.YEARLY,
+    PERIOD.ONE_TIME,
+] as const;
 
 const baseMissionSchema = z
     .object({

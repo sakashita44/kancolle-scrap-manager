@@ -11,6 +11,7 @@ import {
     SOURCE,
     REQUIREMENT_KIND,
     LIMITS,
+    type RequirementKind,
     type Category,
     type Equipment,
     type Mission,
@@ -275,7 +276,12 @@ export const selectRequirementOptions = createSelector(
         allCategories: Category[],
         allEquipments: Equipment[],
         getCategoryName: (id: string) => string,
-    ): { kind: string; id: string; label: string; group: string }[] => {
+    ): {
+        kind: RequirementKind;
+        id: string;
+        label: string;
+        group: string;
+    }[] => {
         const categoryGroupOptions = allRequirementCategoryGroups.map(
             (group) => ({
                 kind: REQUIREMENT_KIND.CATEGORY_GROUP,

@@ -6,6 +6,7 @@
 import {
     LIMITS,
     REQUIREMENT_KIND,
+    type RequirementKind,
     type Mission,
     type Category,
     type Equipment,
