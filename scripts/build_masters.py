@@ -23,7 +23,7 @@ MISSIONS_FILE = SCRIPT_DIR / "output" / "missions.json"
 CATEGORIES_JSONL = SCRIPT_DIR / "intermediate" / "all_categories.jsonl"
 EQUIPMENTS_JSONL = SCRIPT_DIR / "intermediate" / "all_equipments.jsonl"
 REQUIREMENT_CATEGORY_GROUPS_FILE = (
-    SCRIPT_DIR / "config" / "requirement_category_groups.json"
+    SCRIPT_DIR.parent / "src" / "data" / "requirementCategoryGroups.json"
 )
 OUTPUT_DIR = SCRIPT_DIR / "output"
 SCHEMA_VERSION = "2.0.0"
@@ -77,7 +77,7 @@ def load_requirement_category_groups(path: Path) -> list[dict]:
     groups = data.get("requirementCategoryGroups")
     if not isinstance(groups, list):
         print(
-            "エラー: requirement_category_groups.json の requirementCategoryGroups が不正です"
+            "エラー: requirementCategoryGroups.json の requirementCategoryGroups が不正です"
         )
         sys.exit(1)
 
@@ -298,25 +298,6 @@ def main() -> None:
         ],
     }
 
-    requirement_category_groups_json = {
-        "version": SCHEMA_VERSION,
-        "requirementCategoryGroups": [
-            {
-                "id": requirement_category_group["id"],
-                "name": requirement_category_group["name"],
-                "categoryIds": requirement_category_group["categoryIds"],
-                "order": requirement_category_group["order"],
-            }
-            for requirement_category_group in sorted(
-                [
-                    requirement_category_group_by_id[group_id]
-                    for group_id in referenced_requirement_category_group_ids
-                ],
-                key=lambda group: group.get("order", 10**9),
-            )
-        ],
-    }
-
     print("--- 出力 ---")
     missions_json = {
         "version": SCHEMA_VERSION,
@@ -325,10 +306,6 @@ def main() -> None:
     write_json(missions_json, OUTPUT_DIR / "missions.json")
     write_json(categories_json, OUTPUT_DIR / "categories.json")
     write_json(equipments_json, OUTPUT_DIR / "equipments.json")
-    write_json(
-        requirement_category_groups_json,
-        OUTPUT_DIR / "requirementCategoryGroups.json",
-    )
     print()
     print("完了!")
 
