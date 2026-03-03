@@ -193,10 +193,28 @@
             ]
         },
         {
+            "id": "m_ms_fq6",
+            "name": "対空兵装の整備拡充",
+            "period": "Quarterly",
+            "order": 12,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_anti_air_machine_gun",
+                    "count": 4
+                },
+                {
+                    "kind": "categoryGroup",
+                    "id": "m_rcg_radar",
+                    "count": 4
+                }
+            ]
+        },
+        {
             "id": "m_ms_fq7",
             "name": "戦時改修A型高角砲の量産",
             "period": "Quarterly",
-            "order": 12,
+            "order": 13,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -214,7 +232,7 @@
             "id": "m_ms_fq8",
             "name": "航空戦力の強化",
             "period": "Quarterly",
-            "order": 13,
+            "order": 14,
             "reqs": [
                 {
                     "kind": "category",
@@ -242,7 +260,7 @@
             "id": "m_ms_fq9",
             "name": "工廠稼働！次期作戦準備！",
             "period": "Quarterly",
-            "order": 14,
+            "order": 15,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -255,7 +273,7 @@
             "id": "m_ms_f13",
             "name": "機種転換",
             "period": "OneTime",
-            "order": 15,
+            "order": 16,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -268,7 +286,7 @@
             "id": "m_ms_f14",
             "name": "機種転換",
             "period": "OneTime",
-            "order": 16,
+            "order": 17,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -281,7 +299,7 @@
             "id": "m_ms_f15",
             "name": "機種転換",
             "period": "OneTime",
-            "order": 17,
+            "order": 18,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -294,7 +312,7 @@
             "id": "m_ms_f19",
             "name": "精鋭「九七式艦攻」部隊の編成",
             "period": "OneTime",
-            "order": 18,
+            "order": 19,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -307,7 +325,7 @@
             "id": "m_ms_f20",
             "name": "機種転換",
             "period": "OneTime",
-            "order": 19,
+            "order": 20,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -320,7 +338,7 @@
             "id": "m_ms_f24",
             "name": "機種転換",
             "period": "OneTime",
-            "order": 20,
+            "order": 21,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -333,7 +351,7 @@
             "id": "m_ms_f26",
             "name": "「艦戦」隊の再編成",
             "period": "OneTime",
-            "order": 21,
+            "order": 22,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -346,7 +364,7 @@
             "id": "m_ms_f27",
             "name": "機種転換＆部隊再編",
             "period": "OneTime",
-            "order": 22,
+            "order": 23,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -359,7 +377,7 @@
             "id": "m_ms_f28",
             "name": "「艦戦」隊の再編成",
             "period": "OneTime",
-            "order": 23,
+            "order": 24,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -372,7 +390,7 @@
             "id": "m_ms_f29",
             "name": "機種転換",
             "period": "OneTime",
-            "order": 24,
+            "order": 25,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -385,7 +403,7 @@
             "id": "m_ms_f30",
             "name": "機種転換＆部隊再編",
             "period": "OneTime",
-            "order": 25,
+            "order": 26,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -398,7 +416,7 @@
             "id": "m_ms_f33",
             "name": "上陸戦用新装備の調達",
             "period": "OneTime",
-            "order": 26,
+            "order": 27,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -416,7 +434,7 @@
             "id": "m_ms_f37",
             "name": "「航空基地設営」事前準備",
             "period": "OneTime",
-            "order": 27,
+            "order": 28,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -429,7 +447,7 @@
             "id": "m_ms_f42",
             "name": "「特注家具」の調達",
             "period": "OneTime",
-            "order": 28,
+            "order": 29,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -442,7 +460,7 @@
             "id": "m_ms_f43",
             "name": "中部海域「基地航空隊」展開！",
             "period": "OneTime",
-            "order": 29,
+            "order": 30,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -455,7 +473,7 @@
             "id": "m_ms_f44",
             "name": "「特注家具」の調達",
             "period": "OneTime",
-            "order": 30,
+            "order": 31,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -468,7 +486,7 @@
             "id": "m_ms_f45",
             "name": "新機軸偵察機の開発",
             "period": "OneTime",
-            "order": 31,
+            "order": 32,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -481,7 +499,7 @@
             "id": "m_ms_f46",
             "name": "噴式戦闘爆撃機の開発",
             "period": "OneTime",
-            "order": 32,
+            "order": 33,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -494,7 +512,7 @@
             "id": "m_ms_f47",
             "name": "ネ式エンジンの増産",
             "period": "OneTime",
-            "order": 33,
+            "order": 34,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -507,7 +525,7 @@
             "id": "m_ms_f48",
             "name": "「特注家具」の調達",
             "period": "OneTime",
-            "order": 34,
+            "order": 35,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -520,7 +538,7 @@
             "id": "m_ms_f50",
             "name": "潜水艦武装の強化",
             "period": "OneTime",
-            "order": 35,
+            "order": 36,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -533,7 +551,7 @@
             "id": "m_ms_f51",
             "name": "精鋭「水戦」隊の新編成",
             "period": "OneTime",
-            "order": 36,
+            "order": 37,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -551,7 +569,7 @@
             "id": "m_ms_f52",
             "name": "精鋭「水戦」隊の増勢",
             "period": "OneTime",
-            "order": 37,
+            "order": 38,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -569,7 +587,7 @@
             "id": "m_ms_f53",
             "name": "新型砲熕兵装、戦力化開始！",
             "period": "OneTime",
-            "order": 38,
+            "order": 39,
             "reqs": [
                 {
                     "kind": "category",
@@ -582,7 +600,7 @@
             "id": "m_ms_f54",
             "name": "新型艤装の開発研究",
             "period": "OneTime",
-            "order": 39,
+            "order": 40,
             "reqs": [
                 {
                     "kind": "category",
@@ -592,10 +610,23 @@
             ]
         },
         {
+            "id": "m_ms_f56",
+            "name": "電探技術の射撃装置への活用",
+            "period": "OneTime",
+            "order": 41,
+            "reqs": [
+                {
+                    "kind": "categoryGroup",
+                    "id": "m_rcg_radar",
+                    "count": 10
+                }
+            ]
+        },
+        {
             "id": "m_ms_f57",
             "name": "民生産業への協力",
             "period": "OneTime",
-            "order": 40,
+            "order": 42,
             "reqs": [
                 {
                     "kind": "category",
@@ -608,7 +639,7 @@
             "id": "m_ms_f58",
             "name": "精鋭「瑞雲」隊の編成",
             "period": "OneTime",
-            "order": 41,
+            "order": 43,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -621,7 +652,7 @@
             "id": "m_ms_f59",
             "name": "民生産業への協力を継続せよ！",
             "period": "OneTime",
-            "order": 42,
+            "order": 44,
             "reqs": [
                 {
                     "kind": "category",
@@ -634,7 +665,7 @@
             "id": "m_ms_f61",
             "name": "夜戦型艦上戦闘機の開発",
             "period": "OneTime",
-            "order": 43,
+            "order": 45,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -652,7 +683,7 @@
             "id": "m_ms_f62",
             "name": "夜間作戦型艦上攻撃機の開発",
             "period": "OneTime",
-            "order": 44,
+            "order": 46,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -670,7 +701,7 @@
             "id": "m_ms_f63",
             "name": "夜戦型艦上戦闘機の性能強化",
             "period": "OneTime",
-            "order": 45,
+            "order": 47,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -685,10 +716,23 @@
             ]
         },
         {
+            "id": "m_ms_f64",
+            "name": "「遊撃部隊」艦隊司令部の創設",
+            "period": "OneTime",
+            "order": 48,
+            "reqs": [
+                {
+                    "kind": "categoryGroup",
+                    "id": "m_rcg_radar",
+                    "count": 3
+                }
+            ]
+        },
+        {
             "id": "m_ms_f71",
             "name": "対空兵装の拡充",
             "period": "OneTime",
-            "order": 46,
+            "order": 49,
             "reqs": [
                 {
                     "kind": "category",
@@ -706,7 +750,7 @@
             "id": "m_ms_f73",
             "name": "「海防艦」整備計画",
             "period": "OneTime",
-            "order": 47,
+            "order": 50,
             "reqs": [
                 {
                     "kind": "category",
@@ -724,7 +768,7 @@
             "id": "m_ms_f74",
             "name": "航空戦艦用強化型新主砲の研究",
             "period": "OneTime",
-            "order": 48,
+            "order": 51,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -742,7 +786,7 @@
             "id": "m_ms_f75",
             "name": "精鋭「航空戦艦」彗星隊の編成",
             "period": "OneTime",
-            "order": 49,
+            "order": 52,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -760,7 +804,7 @@
             "id": "m_ms_f76",
             "name": "駆逐艦主砲兵装の戦時改修",
             "period": "OneTime",
-            "order": 50,
+            "order": 53,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -778,7 +822,7 @@
             "id": "m_ms_f78",
             "name": "駆逐艦主砲兵装の戦時改修【II】",
             "period": "OneTime",
-            "order": 51,
+            "order": 54,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -796,7 +840,7 @@
             "id": "m_ms_f80",
             "name": "戦闘機隊戦力の拡充",
             "period": "OneTime",
-            "order": 52,
+            "order": 55,
             "reqs": [
                 {
                     "kind": "category",
@@ -819,7 +863,7 @@
             "id": "m_ms_f81",
             "name": "基地航空隊戦力の拡充",
             "period": "OneTime",
-            "order": 53,
+            "order": 56,
             "reqs": [
                 {
                     "kind": "category",
@@ -842,7 +886,7 @@
             "id": "m_ms_f82",
             "name": "提督室のリフォーム",
             "period": "OneTime",
-            "order": 54,
+            "order": 57,
             "reqs": [
                 {
                     "kind": "category",
@@ -865,7 +909,7 @@
             "id": "m_ms_f83",
             "name": "水上艦艇装備工廠の整備",
             "period": "OneTime",
-            "order": 55,
+            "order": 58,
             "reqs": [
                 {
                     "kind": "category",
@@ -888,7 +932,7 @@
             "id": "m_ms_f84",
             "name": "回転翼機の開発",
             "period": "OneTime",
-            "order": 56,
+            "order": 59,
             "reqs": [
                 {
                     "kind": "category",
@@ -911,7 +955,7 @@
             "id": "m_ms_f85",
             "name": "新型航空艤装の研究",
             "period": "OneTime",
-            "order": 57,
+            "order": 60,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -934,7 +978,7 @@
             "id": "m_ms_f86",
             "name": "「彗星」艦爆の新運用研究",
             "period": "OneTime",
-            "order": 58,
+            "order": 61,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -957,7 +1001,7 @@
             "id": "m_ms_f87",
             "name": "最精鋭「瑞雲」隊の編成",
             "period": "OneTime",
-            "order": 59,
+            "order": 62,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -980,7 +1024,7 @@
             "id": "m_ms_f88",
             "name": "一航戦精鋭「流星改」隊の編成",
             "period": "OneTime",
-            "order": 60,
+            "order": 63,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1003,7 +1047,7 @@
             "id": "m_ms_f89",
             "name": "陸戦用装備の艦載運用研究",
             "period": "OneTime",
-            "order": 61,
+            "order": 64,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1026,7 +1070,7 @@
             "id": "m_ms_f91",
             "name": "新鋭対潜哨戒航空戦力の導入",
             "period": "OneTime",
-            "order": 62,
+            "order": 65,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1049,7 +1093,7 @@
             "id": "m_ms_f96",
             "name": "海軍工廠の再整備",
             "period": "OneTime",
-            "order": 63,
+            "order": 66,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1062,7 +1106,7 @@
             "id": "m_ms_f97",
             "name": "工廠による装備兵装の強化準備",
             "period": "OneTime",
-            "order": 64,
+            "order": 67,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1075,7 +1119,7 @@
             "id": "m_ms_f101",
             "name": "精鋭三座水上偵察機隊の前線投入",
             "period": "OneTime",
-            "order": 65,
+            "order": 68,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1093,7 +1137,7 @@
             "id": "m_ms_f103",
             "name": "調整改良型「水中探信儀」の増産",
             "period": "OneTime",
-            "order": 66,
+            "order": 69,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1111,7 +1155,7 @@
             "id": "m_ms_f104",
             "name": "上陸作戦支援用装備の配備",
             "period": "OneTime",
-            "order": 67,
+            "order": 70,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1129,7 +1173,7 @@
             "id": "m_ms_f106",
             "name": "鎮守府「大掃除」祭り！",
             "period": "OneTime",
-            "order": 68,
+            "order": 71,
             "reqs": [
                 {
                     "kind": "category",
@@ -1152,7 +1196,7 @@
             "id": "m_ms_f108",
             "name": "【工廠任務】新装備開発計画I",
             "period": "OneTime",
-            "order": 69,
+            "order": 72,
             "reqs": [
                 {
                     "kind": "category",
@@ -1175,7 +1219,7 @@
             "id": "m_ms_f109",
             "name": "【工廠任務】新装備開発計画II",
             "period": "OneTime",
-            "order": 70,
+            "order": 73,
             "reqs": [
                 {
                     "kind": "category",
@@ -1198,7 +1242,7 @@
             "id": "m_ms_f110",
             "name": "【工廠任務】新装備開発計画III",
             "period": "OneTime",
-            "order": 71,
+            "order": 74,
             "reqs": [
                 {
                     "kind": "category",
@@ -1218,10 +1262,56 @@
             ]
         },
         {
+            "id": "m_ms_f118",
+            "name": "大規模改装の工廠準備",
+            "period": "OneTime",
+            "order": 75,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_anti_air_machine_gun",
+                    "count": 3
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_engine_boost",
+                    "count": 3
+                },
+                {
+                    "kind": "categoryGroup",
+                    "id": "m_rcg_bulge",
+                    "count": 3
+                }
+            ]
+        },
+        {
+            "id": "m_ms_f119",
+            "name": "砲熕兵装の整備",
+            "period": "OneTime",
+            "order": 76,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_small_caliber_main_gun",
+                    "count": 18
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_medium_caliber_main_gun",
+                    "count": 12
+                },
+                {
+                    "kind": "categoryGroup",
+                    "id": "m_rcg_depth_charge",
+                    "count": 6
+                }
+            ]
+        },
+        {
             "id": "m_ms_f123",
             "name": "鵜来型海防艦兵装の開発",
             "period": "OneTime",
-            "order": 72,
+            "order": 77,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1244,7 +1334,7 @@
             "id": "m_ms_f124",
             "name": "【艦隊通信能力の強化】通信要員の育成",
             "period": "OneTime",
-            "order": 73,
+            "order": 78,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1267,7 +1357,7 @@
             "id": "m_ms_f125",
             "name": "【新鋭海外艦装備】新型四連装主砲の開発",
             "period": "OneTime",
-            "order": 74,
+            "order": 79,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1280,7 +1370,7 @@
             "id": "m_ms_f126",
             "name": "最新改修型三座水上偵察機の開発",
             "period": "OneTime",
-            "order": 75,
+            "order": 80,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1293,7 +1383,7 @@
             "id": "m_ms_f127",
             "name": "最精鋭「天山」装備艦攻隊の配備",
             "period": "OneTime",
-            "order": 76,
+            "order": 81,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1306,7 +1396,7 @@
             "id": "m_ms_f128",
             "name": "「霧島改二丙」改装工廠任務",
             "period": "OneTime",
-            "order": 77,
+            "order": 82,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1319,7 +1409,7 @@
             "id": "m_ms_f129",
             "name": "【工廠任務】伊号潜水艦装備の拡充",
             "period": "OneTime",
-            "order": 78,
+            "order": 83,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1337,7 +1427,7 @@
             "id": "m_ms_f130",
             "name": "【対空兵装の拡充】94式高射装置の増加配備",
             "period": "OneTime",
-            "order": 79,
+            "order": 84,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1355,7 +1445,7 @@
             "id": "m_ms_f131",
             "name": "陸軍戦闘機及び海外戦闘機の増備",
             "period": "OneTime",
-            "order": 80,
+            "order": 85,
             "reqs": [
                 {
                     "kind": "category",
@@ -1378,7 +1468,7 @@
             "id": "m_ms_f132",
             "name": "【対潜戦力強化】海防艦対潜兵装の強化",
             "period": "OneTime",
-            "order": 81,
+            "order": 86,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1391,7 +1481,7 @@
             "id": "m_ms_f133",
             "name": "【続：対潜戦力強化】対潜兵装のさらなる拡充",
             "period": "OneTime",
-            "order": 82,
+            "order": 87,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1404,7 +1494,7 @@
             "id": "m_ms_f134",
             "name": "【新型対潜兵装開発】対潜噴進爆雷砲の開発",
             "period": "OneTime",
-            "order": 83,
+            "order": 88,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -1417,7 +1507,7 @@
             "id": "m_ms_f135",
             "name": "秋月型防空駆逐艦用兵装の拡充",
             "period": "OneTime",
-            "order": 84,
+            "order": 89,
             "reqs": [
                 {
                     "kind": "equipment",

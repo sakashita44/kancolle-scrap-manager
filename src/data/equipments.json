@@ -197,61 +197,61 @@
             "id": "m_eq_35",
             "name": "三式弾",
             "categoryId": "m_cat_anti_air_shell",
-            "order": 1700
+            "order": 1900
         },
         {
             "id": "m_eq_37",
             "name": "7.7mm機銃",
             "categoryId": "m_cat_anti_air_machine_gun",
-            "order": 1800
+            "order": 2000
         },
         {
             "id": "m_eq_38",
             "name": "12.7mm単装機銃",
             "categoryId": "m_cat_anti_air_machine_gun",
-            "order": 1801
+            "order": 2001
         },
         {
             "id": "m_eq_49",
             "name": "25mm単装機銃",
             "categoryId": "m_cat_anti_air_machine_gun",
-            "order": 1802
+            "order": 2002
         },
         {
             "id": "m_eq_51",
             "name": "12cm30連装噴進砲",
             "categoryId": "m_cat_anti_air_machine_gun",
-            "order": 1803
+            "order": 2003
         },
         {
             "id": "m_eq_68",
             "name": "大発動艇",
             "categoryId": "m_cat_landing_craft",
-            "order": 1900
+            "order": 2100
         },
         {
             "id": "m_eq_75",
             "name": "ドラム缶(輸送用)",
             "categoryId": "m_cat_simple_transport_material",
-            "order": 2000
+            "order": 2400
         },
         {
             "id": "m_eq_120",
             "name": "91式高射装置",
             "categoryId": "m_cat_anti_air_director",
-            "order": 2100
+            "order": 2500
         },
         {
             "id": "m_eq_121",
             "name": "94式高射装置",
             "categoryId": "m_cat_anti_air_director",
-            "order": 2101
+            "order": 2501
         },
         {
             "id": "m_eq_145",
             "name": "戦闘糧食",
             "categoryId": "m_cat_combat_ration",
-            "order": 2200
+            "order": 2600
         }
     ]
 }
