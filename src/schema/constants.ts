@@ -36,6 +36,7 @@ export const PERIOD_ORDER: readonly Period[] = [
 export const REQUIREMENT_KIND = {
     CATEGORY: 'category',
     EQUIPMENT: 'equipment',
+    CATEGORY_GROUP: 'categoryGroup',
 } as const;
 
 export type RequirementKind =
@@ -54,6 +55,7 @@ export type Source = (typeof SOURCE)[keyof typeof SOURCE];
 
 export const ID_PREFIX = {
     MASTER_CATEGORY: 'm_cat_',
+    MASTER_REQUIREMENT_CATEGORY_GROUP: 'm_rcg_',
     MASTER_EQUIPMENT: 'm_eq_',
     MASTER_MISSION: 'm_ms_',
     USER_CATEGORY: 'u_cat_',

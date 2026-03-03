@@ -88,6 +88,9 @@ scripts/output/missions.json を生成してください。
    - `grep "カテゴリ名" scripts/intermediate/all_categories.jsonl`
     - `reqs[].id` は grep でヒットしたIDをそのまま使う（推測で作らない）
     - `reqs` に記載した各IDは、対応する中間ファイルに実在することを再確認する
+  - 複合カテゴリ要求を使う場合:
+    - `reqs[].kind` を `"categoryGroup"` にする
+    - `reqs[].id` は `scripts/config/requirement_category_groups.json` の `id`（`m_rcg_`）を使う
 4. Wikiの略称に注意（艦戦→艦上戦闘機、艦爆→艦上爆撃機、艦攻→艦上攻撃機、水偵→水上偵察機、艦偵→艦上偵察機、対空機銃→対空機銃 等）
 5. 生成後に `uv run python -X utf8 scripts/build_masters.py` を実行し、参照IDエラーが出ないことを確認する
 
@@ -104,7 +107,8 @@ scripts/output/missions.json を生成してください。
       "order": 0,
       "reqs": [
         { "kind": "equipment", "id": "m_eq_123", "count": 3 },
-        { "kind": "category", "id": "m_cat_small_caliber_main_gun", "count": 5 }
+        { "kind": "category", "id": "m_cat_small_caliber_main_gun", "count": 5 },
+        { "kind": "categoryGroup", "id": "m_rcg_radar", "count": 2 }
       ]
     }
   ]
@@ -113,8 +117,10 @@ scripts/output/missions.json を生成してください。
 
 - `id`: `m_ms_<wiki_id小文字>` （例: wiki_id "F4" → "m_ms_f4"）
 - `order`: 同一 period 内で 0 から採番
-- `reqs[].kind`: `"equipment"`（個別装備）または `"category"`（カテゴリ指定）
-- `reqs[].id`: 中間ファイルから grep で取得したID
+- `reqs[].kind`: `"equipment"`（個別装備）, `"category"`（カテゴリ指定）, `"categoryGroup"`（複合カテゴリ指定）
+- `reqs[].id`:
+  - `kind=equipment` / `kind=category`: 中間ファイルから grep で取得したID
+  - `kind=categoryGroup`: `config/requirement_category_groups.json` から選択したID
 ````
 
 ### 手動確認のポイント
@@ -134,6 +140,7 @@ uv run python -X utf8 build_masters.py
 - `output/missions.json` — periodごとにWiki ID順で`order`を再採番した任務データ
 - `output/categories.json` — 任務が参照するカテゴリのみ
 - `output/equipments.json` — 任務が明示参照する装備のみ
+- `output/requirementCategoryGroups.json` — 任務が参照する要求カテゴリグループのみ
 
 ## 出力ファイルの適用
 
@@ -144,6 +151,7 @@ uv run python -X utf8 build_masters.py
 cp scripts/output/categories.json src/data/categories.json
 cp scripts/output/equipments.json src/data/equipments.json
 cp scripts/output/missions.json src/data/missions.json
+cp scripts/output/requirementCategoryGroups.json src/data/requirementCategoryGroups.json
 ```
 
 適用後の確認:
@@ -174,11 +182,12 @@ scripts/
 
 ## ID体系
 
-| データ種別 | IDフォーマット         | 例                    | ソース                    |
-| :--------- | :--------------------- | :-------------------- | :------------------------ |
-| カテゴリ   | `m_cat_<slug>`         | `m_cat_landing_craft` | category_registry の slug |
-| 装備       | `m_eq_<図鑑No.>`       | `m_eq_174`            | 図鑑No.（安定・一意）     |
-| 任務       | `m_ms_<wiki_id小文字>` | `m_ms_f4`             | Wiki任務ID                |
+| データ種別           | IDフォーマット         | 例                    | ソース                      |
+| :------------------- | :--------------------- | :-------------------- | :-------------------------- |
+| カテゴリ             | `m_cat_<slug>`         | `m_cat_landing_craft` | category_registry の slug   |
+| 要求カテゴリグループ | `m_rcg_<slug>`         | `m_rcg_radar`         | requirement_category_groups |
+| 装備                 | `m_eq_<図鑑No.>`       | `m_eq_174`            | 図鑑No.（安定・一意）       |
+| 任務                 | `m_ms_<wiki_id小文字>` | `m_ms_f4`             | Wiki任務ID                  |
 
 ## トラブルシューティング
 

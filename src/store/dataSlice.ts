@@ -221,7 +221,10 @@ export const createDataSlice: StateCreator<AppState, [], [], DataSlice> = (
                           name: formData.name,
                           period: formData.period,
                           reqs: formData.reqs.map((r) => ({
-                              kind: r.kind as 'category' | 'equipment',
+                              kind: r.kind as
+                                  | 'category'
+                                  | 'equipment'
+                                  | 'categoryGroup',
                               id: r.id,
                               count: r.count,
                           })),
@@ -238,7 +241,7 @@ export const createDataSlice: StateCreator<AppState, [], [], DataSlice> = (
                 period: formData.period,
                 order: getNextOrder(userMissions),
                 reqs: formData.reqs.map((r) => ({
-                    kind: r.kind as 'category' | 'equipment',
+                    kind: r.kind as 'category' | 'equipment' | 'categoryGroup',
                     id: r.id,
                     count: r.count,
                 })),

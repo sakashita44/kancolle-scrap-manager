@@ -10,6 +10,7 @@ import {
     type Mission,
     type Category,
     type Equipment,
+    type RequirementCategoryGroup,
     type SelectedMissionEntry,
 } from '../schema';
 
@@ -75,6 +76,7 @@ export function calculateScrapList(
     allMissions: Mission[],
     equipmentMap: Map<string, Equipment>,
     categoryMap: Map<string, Category>,
+    requirementCategoryGroupMap: Map<string, RequirementCategoryGroup>,
 ): { scrapList: ScrapListItem[]; warnings: CalcWarning[] } {
     const collector = new WarningCollector();
 
@@ -102,6 +104,7 @@ export function calculateScrapList(
         allRequirements,
         equipmentMap,
         categoryMap,
+        requirementCategoryGroupMap,
         collector,
     );
 
@@ -110,21 +113,31 @@ export function calculateScrapList(
     }
 
     // フェーズ3: 種別ごとにグループ化
-    const { equipmentReqs, categoryReqs } = groupByKind(validRequirements);
+    const { equipmentReqs, categoryReqs, categoryGroupReqs } =
+        groupByKind(validRequirements);
 
     // フェーズ4/5: MAX集計
     const equipmentCountMap = aggregateByMax(equipmentReqs);
     const categoryCountMap = aggregateByMax(categoryReqs);
+    const categoryGroupCountMap = aggregateByMax(categoryGroupReqs);
 
     // フェーズ6: 包含関係の解決
-    resolveInclusion(equipmentCountMap, categoryCountMap, equipmentMap);
+    resolveInclusion(
+        equipmentCountMap,
+        categoryCountMap,
+        categoryGroupCountMap,
+        equipmentMap,
+        requirementCategoryGroupMap,
+    );
 
     // フェーズ7: 廃棄リスト生成
     const scrapList = generateScrapList(
         equipmentCountMap,
         categoryCountMap,
+        categoryGroupCountMap,
         equipmentMap,
         categoryMap,
+        requirementCategoryGroupMap,
     );
 
     return { scrapList, warnings: collector.getAll() };
@@ -172,6 +185,7 @@ function validateRequirements(
     reqs: ExpandedRequirement[],
     equipmentMap: Map<string, Equipment>,
     categoryMap: Map<string, Category>,
+    requirementCategoryGroupMap: Map<string, RequirementCategoryGroup>,
     collector: WarningCollector,
 ): ExpandedRequirement[] {
     return reqs.filter((req) => {
@@ -186,7 +200,7 @@ function validateRequirements(
                 );
                 return false;
             }
-        } else {
+        } else if (req.kind === REQUIREMENT_KIND.EQUIPMENT) {
             if (!equipmentMap.has(req.targetId)) {
                 collector.addWarning(
                     `装備ID "${req.targetId}" が存在しません`,
@@ -196,6 +210,44 @@ function validateRequirements(
                     },
                 );
                 return false;
+            }
+        } else {
+            const requirementCategoryGroup = requirementCategoryGroupMap.get(
+                req.targetId,
+            );
+            if (!requirementCategoryGroup) {
+                collector.addWarning(
+                    `要求カテゴリグループID "${req.targetId}" が存在しません`,
+                    {
+                        missionId: req.missionId,
+                        missionName: req.missionName,
+                    },
+                );
+                return false;
+            }
+            if (requirementCategoryGroup.categoryIds.length === 0) {
+                collector.addWarning(
+                    `要求カテゴリグループID "${req.targetId}" にカテゴリが含まれていません`,
+                    {
+                        missionId: req.missionId,
+                        missionName: req.missionName,
+                    },
+                );
+                return false;
+            }
+
+            const missingCategoryIds =
+                requirementCategoryGroup.categoryIds.filter(
+                    (categoryId) => !categoryMap.has(categoryId),
+                );
+            if (missingCategoryIds.length > 0) {
+                collector.addWarning(
+                    `要求カテゴリグループID "${req.targetId}" に存在しないカテゴリIDが含まれています: ${missingCategoryIds.join(', ')}`,
+                    {
+                        missionId: req.missionId,
+                        missionName: req.missionName,
+                    },
+                );
             }
         }
         return true;
@@ -207,19 +259,23 @@ function validateRequirements(
 function groupByKind(reqs: ExpandedRequirement[]): {
     equipmentReqs: ExpandedRequirement[];
     categoryReqs: ExpandedRequirement[];
+    categoryGroupReqs: ExpandedRequirement[];
 } {
     const equipmentReqs: ExpandedRequirement[] = [];
     const categoryReqs: ExpandedRequirement[] = [];
+    const categoryGroupReqs: ExpandedRequirement[] = [];
 
     for (const req of reqs) {
         if (req.kind === REQUIREMENT_KIND.CATEGORY) {
             categoryReqs.push(req);
+        } else if (req.kind === REQUIREMENT_KIND.CATEGORY_GROUP) {
+            categoryGroupReqs.push(req);
         } else {
             equipmentReqs.push(req);
         }
     }
 
-    return { equipmentReqs, categoryReqs };
+    return { equipmentReqs, categoryReqs, categoryGroupReqs };
 }
 
 // --- フェーズ4/5: MAX集計 ---
@@ -240,7 +296,9 @@ function aggregateByMax(reqs: ExpandedRequirement[]): Map<string, number> {
 function resolveInclusion(
     equipmentCountMap: Map<string, number>,
     categoryCountMap: Map<string, number>,
+    categoryGroupCountMap: Map<string, number>,
     equipmentMap: Map<string, Equipment>,
+    requirementCategoryGroupMap: Map<string, RequirementCategoryGroup>,
 ): void {
     for (const [categoryId, categoryCount] of categoryCountMap) {
         let itemTotalInCategory = 0;
@@ -258,6 +316,37 @@ function resolveInclusion(
             categoryCountMap.set(categoryId, remaining);
         }
     }
+
+    for (const [categoryGroupId, categoryGroupCount] of categoryGroupCountMap) {
+        const requirementCategoryGroup =
+            requirementCategoryGroupMap.get(categoryGroupId);
+        if (!requirementCategoryGroup) {
+            continue;
+        }
+
+        const categoryIds = new Set(requirementCategoryGroup.categoryIds);
+        let coveredCount = 0;
+
+        for (const [eqId, eqCount] of equipmentCountMap) {
+            const equipment = equipmentMap.get(eqId);
+            if (equipment && categoryIds.has(equipment.categoryId)) {
+                coveredCount += eqCount;
+            }
+        }
+
+        for (const [categoryId, categoryCount] of categoryCountMap) {
+            if (categoryIds.has(categoryId)) {
+                coveredCount += categoryCount;
+            }
+        }
+
+        const remaining = categoryGroupCount - coveredCount;
+        if (remaining <= 0) {
+            categoryGroupCountMap.delete(categoryGroupId);
+        } else {
+            categoryGroupCountMap.set(categoryGroupId, remaining);
+        }
+    }
 }
 
 // --- フェーズ7: 廃棄リスト生成 ---
@@ -265,8 +354,10 @@ function resolveInclusion(
 function generateScrapList(
     equipmentCountMap: Map<string, number>,
     categoryCountMap: Map<string, number>,
+    categoryGroupCountMap: Map<string, number>,
     equipmentMap: Map<string, Equipment>,
     categoryMap: Map<string, Category>,
+    requirementCategoryGroupMap: Map<string, RequirementCategoryGroup>,
 ): ScrapListItem[] {
     const scrapList: ScrapListItem[] = [];
 
@@ -297,6 +388,20 @@ function generateScrapList(
         }
     }
 
+    for (const [categoryGroupId, count] of categoryGroupCountMap) {
+        const requirementCategoryGroup =
+            requirementCategoryGroupMap.get(categoryGroupId);
+        if (requirementCategoryGroup) {
+            scrapList.push({
+                targetKind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                targetId: categoryGroupId,
+                name: `${requirementCategoryGroup.name}（種別不問）`,
+                categoryName: requirementCategoryGroup.name,
+                count,
+            });
+        }
+    }
+
     scrapList.sort((a, b) =>
         a.categoryName.localeCompare(b.categoryName, 'ja'),
     );
@@ -314,6 +419,7 @@ export function calculateScrapComparison(
     allMissions: Mission[],
     equipmentMap: Map<string, Equipment>,
     categoryMap: Map<string, Category>,
+    requirementCategoryGroupMap: Map<string, RequirementCategoryGroup>,
 ): {
     baseRequirements: ScrapListItem[];
     auxiliaryScrapList: ScrapListItem[];
@@ -326,6 +432,7 @@ export function calculateScrapComparison(
             allMissions,
             equipmentMap,
             categoryMap,
+            requirementCategoryGroupMap,
         );
         return {
             baseRequirements: [],
@@ -340,6 +447,7 @@ export function calculateScrapComparison(
         allMissions,
         equipmentMap,
         categoryMap,
+        requirementCategoryGroupMap,
     );
 
     const auxResult = calculateScrapList(
@@ -347,12 +455,14 @@ export function calculateScrapComparison(
         allMissions,
         equipmentMap,
         categoryMap,
+        requirementCategoryGroupMap,
     );
 
     const comparison = calculateDifference(
         baseResult.scrapList,
         auxResult.scrapList,
         equipmentMap,
+        requirementCategoryGroupMap,
     );
 
     return {
@@ -369,6 +479,7 @@ function calculateDifference(
     baseReqs: ScrapListItem[],
     auxList: ScrapListItem[],
     equipmentMap: Map<string, Equipment>,
+    requirementCategoryGroupMap: Map<string, RequirementCategoryGroup>,
 ): ComparisonItem[] {
     const comparison: ComparisonItem[] = [];
 
@@ -380,7 +491,7 @@ function calculateDifference(
                 (a) => a.targetId === baseReq.targetId,
             );
             if (auxItem) auxiliaryCount = auxItem.count;
-        } else {
+        } else if (baseReq.targetKind === REQUIREMENT_KIND.CATEGORY) {
             const categoryId = baseReq.targetId;
 
             const auxCategory = auxList.find(
@@ -394,6 +505,36 @@ function calculateDifference(
                 if (auxItem.targetKind === REQUIREMENT_KIND.EQUIPMENT) {
                     const eq = equipmentMap.get(auxItem.targetId);
                     if (eq && eq.categoryId === categoryId) {
+                        auxiliaryCount += auxItem.count;
+                    }
+                }
+            }
+        } else {
+            const requirementCategoryGroup = requirementCategoryGroupMap.get(
+                baseReq.targetId,
+            );
+
+            if (!requirementCategoryGroup) {
+                continue;
+            }
+
+            const categoryIdSet = new Set(requirementCategoryGroup.categoryIds);
+
+            const auxCategoryGroup = auxList.find(
+                (a) =>
+                    a.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP &&
+                    a.targetId === baseReq.targetId,
+            );
+            if (auxCategoryGroup) auxiliaryCount += auxCategoryGroup.count;
+
+            for (const auxItem of auxList) {
+                if (auxItem.targetKind === REQUIREMENT_KIND.CATEGORY) {
+                    if (categoryIdSet.has(auxItem.targetId)) {
+                        auxiliaryCount += auxItem.count;
+                    }
+                } else if (auxItem.targetKind === REQUIREMENT_KIND.EQUIPMENT) {
+                    const eq = equipmentMap.get(auxItem.targetId);
+                    if (eq && categoryIdSet.has(eq.categoryId)) {
                         auxiliaryCount += auxItem.count;
                     }
                 }
@@ -430,6 +571,37 @@ function calculateDifference(
             ) {
                 const eq = equipmentMap.get(auxItem.targetId);
                 return eq !== undefined && eq.categoryId === b.targetId;
+            }
+            if (
+                b.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP &&
+                auxItem.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP
+            ) {
+                return b.targetId === auxItem.targetId;
+            }
+            if (
+                b.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP &&
+                auxItem.targetKind === REQUIREMENT_KIND.CATEGORY
+            ) {
+                const requirementCategoryGroup =
+                    requirementCategoryGroupMap.get(b.targetId);
+                return requirementCategoryGroup
+                    ? requirementCategoryGroup.categoryIds.includes(
+                          auxItem.targetId,
+                      )
+                    : false;
+            }
+            if (
+                b.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP &&
+                auxItem.targetKind === REQUIREMENT_KIND.EQUIPMENT
+            ) {
+                const requirementCategoryGroup =
+                    requirementCategoryGroupMap.get(b.targetId);
+                const eq = equipmentMap.get(auxItem.targetId);
+                return requirementCategoryGroup && eq
+                    ? requirementCategoryGroup.categoryIds.includes(
+                          eq.categoryId,
+                      )
+                    : false;
             }
             return false;
         });

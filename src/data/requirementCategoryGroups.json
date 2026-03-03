@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "requirementCategoryGroups": [
+        {
+            "id": "m_rcg_radar",
+            "name": "電探系装備",
+            "categoryIds": ["m_cat_small_radar", "m_cat_large_radar"],
+            "order": 1
+        },
+        {
+            "id": "m_rcg_bulge",
+            "name": "バルジ",
+            "categoryIds": ["m_cat_bulge_medium", "m_cat_bulge_large"],
+            "order": 2
+        },
+        {
+            "id": "m_rcg_depth_charge",
+            "name": "爆雷",
+            "categoryIds": [
+                "m_cat_depth_charge",
+                "m_cat_depth_charge_projector",
+                "m_cat_depth_charge_projector_b"
+            ],
+            "order": 3
+        }
+    ]
+}

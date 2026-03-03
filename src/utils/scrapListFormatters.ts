@@ -5,7 +5,7 @@
 import { REQUIREMENT_KIND } from '../schema';
 import type { ScrapListItem } from '../domain';
 
-export interface CategoryGroup {
+export interface ScrapCategorySection {
     categoryName: string;
     totalCount: number;
     items: { name: string; count: number }[];
@@ -17,8 +17,8 @@ export interface CategoryGroup {
  */
 export function groupScrapListByCategory(
     scrapList: ScrapListItem[],
-): CategoryGroup[] {
-    const map = new Map<string, CategoryGroup>();
+): ScrapCategorySection[] {
+    const map = new Map<string, ScrapCategorySection>();
 
     for (const item of scrapList) {
         if (!map.has(item.categoryName)) {

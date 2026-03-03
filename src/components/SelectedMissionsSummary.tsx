@@ -14,6 +14,7 @@ import {
     selectCategoryMap,
     selectEquipmentMap,
     selectMissionMap,
+    selectRequirementCategoryGroupMap,
     selectSelectedCount,
 } from '../store';
 import { getRequirementDisplayName, cn } from '../utils';
@@ -21,6 +22,9 @@ import { getRequirementDisplayName, cn } from '../utils';
 export default function SelectedMissionsSummary() {
     const categoryMap = useStore(selectCategoryMap);
     const equipmentMap = useStore(selectEquipmentMap);
+    const requirementCategoryGroupMap = useStore(
+        selectRequirementCategoryGroupMap,
+    );
     const missionMap = useStore(selectMissionMap);
     const baseMission = useStore((s) => s.baseMission);
     const auxiliaryMissions = useStore((s) => s.auxiliaryMissions);
@@ -47,9 +51,11 @@ export default function SelectedMissionsSummary() {
                     req,
                     categoryMap,
                     equipmentMap,
+                    requirementCategoryGroupMap,
                 );
                 const suffix =
-                    req.kind === REQUIREMENT_KIND.CATEGORY
+                    req.kind === REQUIREMENT_KIND.CATEGORY ||
+                    req.kind === REQUIREMENT_KIND.CATEGORY_GROUP
                         ? '（種別不問）'
                         : '';
                 return `${name}${suffix}×${req.count}`;

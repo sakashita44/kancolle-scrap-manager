@@ -19,23 +19,36 @@ const requirementKindValues = Object.values(REQUIREMENT_KIND) as [
     ...string[],
 ];
 
-export const requirementSchema = z.object({
-    kind: z.enum(requirementKindValues, {
+const requirementCountSchema = z
+    .number({ error: 'countは必須です' })
+    .int('countは整数である必要があります')
+    .min(
+        LIMITS.REQUIREMENT_COUNT_MIN,
+        `countは${LIMITS.REQUIREMENT_COUNT_MIN}以上である必要があります`,
+    )
+    .max(
+        LIMITS.REQUIREMENT_COUNT_MAX,
+        `countは${LIMITS.REQUIREMENT_COUNT_MAX}以下である必要があります`,
+    );
+
+const singleRequirementSchema = z.object({
+    kind: z.enum([REQUIREMENT_KIND.CATEGORY, REQUIREMENT_KIND.EQUIPMENT], {
         error: `kindは${requirementKindValues.join('または')}である必要があります`,
     }),
     id: z.string({ error: '対象IDは必須です' }).min(1, '対象IDは必須です'),
-    count: z
-        .number({ error: 'countは必須です' })
-        .int('countは整数である必要があります')
-        .min(
-            LIMITS.REQUIREMENT_COUNT_MIN,
-            `countは${LIMITS.REQUIREMENT_COUNT_MIN}以上である必要があります`,
-        )
-        .max(
-            LIMITS.REQUIREMENT_COUNT_MAX,
-            `countは${LIMITS.REQUIREMENT_COUNT_MAX}以下である必要があります`,
-        ),
+    count: requirementCountSchema,
 });
+
+const categoryGroupRequirementSchema = z.object({
+    kind: z.literal(REQUIREMENT_KIND.CATEGORY_GROUP),
+    id: z.string({ error: '対象IDは必須です' }).min(1, '対象IDは必須です'),
+    count: requirementCountSchema,
+});
+
+export const requirementSchema = z.discriminatedUnion('kind', [
+    singleRequirementSchema,
+    categoryGroupRequirementSchema,
+]);
 
 export type Requirement = z.infer<typeof requirementSchema>;
 
@@ -63,7 +76,7 @@ const baseMissionSchema = z
             )
             .refine(
                 (reqs) => {
-                    const ids = reqs.map((r) => r.id);
+                    const ids = reqs.map((r) => `${r.kind}:${r.id}`);
                     return ids.length === new Set(ids).size;
                 },
                 { message: 'reqs内でIDが重複しています' },

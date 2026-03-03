@@ -80,7 +80,9 @@ export const missionFormSchema = z.object({
         )
         .refine(
             (reqs) => {
-                const ids = reqs.map((r) => r.id).filter(Boolean);
+                const ids = reqs
+                    .filter((r) => r.id)
+                    .map((r) => `${r.kind}:${r.id}`);
                 return ids.length === new Set(ids).size;
             },
             { message: '同じ装備が複数回選択されています' },
