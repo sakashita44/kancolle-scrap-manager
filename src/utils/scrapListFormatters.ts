@@ -21,7 +21,10 @@ export function groupScrapListByCategory(
     const map = new Map<string, ScrapCategorySection>();
 
     for (const item of scrapList) {
-        const groupKey = `${item.targetKind}:${item.targetId}`;
+        const groupKey =
+            item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP
+                ? `${item.targetKind}:${item.targetId}`
+                : item.categoryName;
 
         if (!map.has(groupKey)) {
             map.set(groupKey, {
