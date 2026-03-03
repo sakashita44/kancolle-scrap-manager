@@ -84,19 +84,14 @@ def normalize_missions(missions: list[dict]) -> list[dict]:
         ),
     )
 
-    period_counters: dict[str, int] = {}
     normalized: list[dict] = []
-    for mission in sorted_missions:
-        period = mission.get("period", "")
-        current_order = period_counters.get(period, 0)
-        period_counters[period] = current_order + 1
-
+    for order, mission in enumerate(sorted_missions):
         normalized.append(
             {
                 "id": mission["id"],
                 "name": mission["name"],
-                "period": period,
-                "order": current_order,
+                "period": mission.get("period", ""),
+                "order": order,
                 "reqs": mission.get("reqs", []),
             }
         )

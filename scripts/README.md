@@ -65,6 +65,7 @@ uv run python -X utf8 parse_missions.py
 ## Step 3: AIによる廃棄条件解析
 
 Claude Code で `missions_raw.jsonl` を読み、各任務の廃棄条件を判断して `output/missions.json` を生成する。
+必要に応じて既存の`data/missions.json`を参照し、既存のIDや条件と矛盾しないように注意する。
 
 ### プロンプトテンプレート
 
@@ -73,6 +74,7 @@ Claude Code で `missions_raw.jsonl` を読み、各任務の廃棄条件を判�
 ````text
 scripts/intermediate/missions_raw.jsonl を読み、各任務の廃棄条件を解析して
 scripts/output/missions.json を生成してください。
+必要に応じてサブエージェントを利用しても構いません。
 
 ## ルール
 
