@@ -85,7 +85,7 @@ export const missionFormSchema = z.object({
                     .map((r) => `${r.kind}:${r.id}`);
                 return ids.length === new Set(ids).size;
             },
-            { message: '同じ装備が複数回選択されています' },
+            { message: '同じ要求(kind+ID)が複数回選択されています' },
         ),
 });
 

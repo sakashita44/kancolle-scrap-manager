@@ -14,11 +14,6 @@ import {
 
 // --- 要求装備スキーマ ---
 
-const requirementKindValues = Object.values(REQUIREMENT_KIND) as [
-    string,
-    ...string[],
-];
-
 const requirementCountSchema = z
     .number({ error: 'countは必須です' })
     .int('countは整数である必要があります')
@@ -33,7 +28,7 @@ const requirementCountSchema = z
 
 const singleRequirementSchema = z.object({
     kind: z.enum([REQUIREMENT_KIND.CATEGORY, REQUIREMENT_KIND.EQUIPMENT], {
-        error: `kindは${requirementKindValues.join('または')}である必要があります`,
+        error: 'kindはcategoryまたはequipmentである必要があります',
     }),
     id: z.string({ error: '対象IDは必須です' }).min(1, '対象IDは必須です'),
     count: requirementCountSchema,
