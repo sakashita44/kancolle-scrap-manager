@@ -4,7 +4,7 @@
 
 4ステップのパイプラインで処理する:
 
-1. **parse_equipments.py**（機械的）: 全カテゴリ・全装備をJSONLに抽出（種別列優先でカテゴリ補正）
+1. **parse_equipments.py**（機械的）: 全カテゴリ・全装備をJSONLに抽出（種別列 + レジストリ）
 1. **parse_missions.py**（機械的）: 廃棄任務の生テキストをJSONLに抽出
 1. **Claude Code**（AI, 手動実行）: 生テキストから廃棄条件を判断し missions.json を生成
 1. **build_masters.py**（機械的）: missions.json の順序を正規化し、参照IDで最終JSONを生成
@@ -46,8 +46,11 @@ uv run python -X utf8 parse_equipments.py
 
 出力:
 
-- `intermediate/all_categories.jsonl` — 全カテゴリ（Wikiアンカーベース ID）
-- `intermediate/all_equipments.jsonl` — 全装備（図鑑No.ベース ID）
+- `intermediate/all_categories.jsonl` — 実際に使用されたカテゴリのみ
+- `intermediate/all_equipments.jsonl` — 全装備（`id` + `encyclopedia_no`）
+
+`parse_equipments.py` は `config/category_registry.json` を参照してカテゴリを判定する.
+種別列に未登録ラベルが1件でもある場合は失敗し, `intermediate/` の出力を更新しない.
 
 ## Step 2: 工廠任務の抽出
 
@@ -81,7 +84,10 @@ scripts/output/missions.json を生成してください。
 3. 装備名・カテゴリ名が確定したら grep で中間ファイルからID取得:
    - `grep "装備名" scripts/intermediate/all_equipments.jsonl`
    - `grep "カテゴリ名" scripts/intermediate/all_categories.jsonl`
+    - `reqs[].id` は grep でヒットしたIDをそのまま使う（推測で作らない）
+    - `reqs` に記載した各IDは、対応する中間ファイルに実在することを再確認する
 4. Wikiの略称に注意（艦戦→艦上戦闘機、艦爆→艦上爆撃機、艦攻→艦上攻撃機、水偵→水上偵察機、艦偵→艦上偵察機、対空機銃→対空機銃 等）
+5. 生成後に `uv run python -X utf8 scripts/build_masters.py` を実行し、参照IDエラーが出ないことを確認する
 
 ## 出力フォーマット
 
@@ -96,7 +102,7 @@ scripts/output/missions.json を生成してください。
       "order": 0,
       "reqs": [
         { "kind": "equipment", "id": "m_eq_123", "count": 3 },
-        { "kind": "category", "id": "m_cat_smain", "count": 5 }
+        { "kind": "category", "id": "m_cat_small_caliber_main_gun", "count": 5 }
       ]
     }
   ]
@@ -166,11 +172,11 @@ scripts/
 
 ## ID体系
 
-| データ種別 | IDフォーマット         | 例            | ソース                |
-| :--------- | :--------------------- | :------------ | :-------------------- |
-| カテゴリ   | `m_cat_<anchor小文字>` | `m_cat_smain` | Wikiアンカー名        |
-| 装備       | `m_eq_<図鑑No.>`       | `m_eq_174`    | 図鑑No.（安定・一意） |
-| 任務       | `m_ms_<wiki_id小文字>` | `m_ms_f4`     | Wiki任務ID            |
+| データ種別 | IDフォーマット         | 例                    | ソース                    |
+| :--------- | :--------------------- | :-------------------- | :------------------------ |
+| カテゴリ   | `m_cat_<slug>`         | `m_cat_landing_craft` | category_registry の slug |
+| 装備       | `m_eq_<図鑑No.>`       | `m_eq_174`            | 図鑑No.（安定・一意）     |
+| 任務       | `m_ms_<wiki_id小文字>` | `m_ms_f4`             | Wiki任務ID                |
 
 ## トラブルシューティング
 
@@ -180,6 +186,7 @@ scripts/
 
 - **「テーブルが見つかりません」**: Wikiのページ構造が変わった可能性がある。HTMLの構造を確認し、スクリプトのパースロジックを調整する
 - **「図鑑No.なし」**: 装備行から図鑑番号を取得できなかった。HTML構造を確認する
+- **「未登録の種別ラベル」**: `config/category_registry.json` にラベルを追加して再実行する
 
 ### Wikiページの構造が変わった場合
 

@@ -6,7 +6,7 @@
   intermediate/all_equipments.jsonl — Step 1 で抽出した全装備
 出力:
   output/categories.json — 任務が参照するカテゴリのみ抽出
-  output/equipments.json — 任務が参照する装備（+ その装備が属するカテゴリ内の全装備）
+    output/equipments.json — 任務が参照する装備
 """
 
 from __future__ import annotations
@@ -151,7 +151,10 @@ def main() -> None:
 
     # カテゴリのフィルタ + order 割り振り（抽出元JSONLの出現順=Wiki順）
     cat_by_id = {c["id"]: c for c in all_categories}
-    cat_position = {cat["id"]: index for index, cat in enumerate(all_categories)}
+    cat_position = {
+        category["id"]: category.get("order", index)
+        for index, category in enumerate(all_categories)
+    }
     filtered_categories: list[dict] = []
     missing_cats: list[str] = []
 
@@ -178,7 +181,7 @@ def main() -> None:
     filtered_equipments.sort(
         key=lambda equipment: (
             cat_order_map.get(equipment["category_id"], 0),
-            equipment.get("wiki_no", 10**9),
+            equipment.get("encyclopedia_no", 10**9),
         )
     )
 
@@ -198,17 +201,20 @@ def main() -> None:
         if eq_id not in eq_by_id:
             missing_eqs.append(eq_id)
 
-    if missing_cats:
-        print("--- 警告: 中間ファイルに存在しないカテゴリID ---")
-        for cat_id in missing_cats:
-            print(f"  {cat_id}")
+    if missing_cats or missing_eqs:
+        print("--- エラー: missions.json が中間データに存在しないIDを参照 ---")
+        if missing_cats:
+            print("  カテゴリID:")
+            for cat_id in missing_cats:
+                print(f"    - {cat_id}")
+        if missing_eqs:
+            print("  装備ID:")
+            for eq_id in missing_eqs:
+                print(f"    - {eq_id}")
         print()
-
-    if missing_eqs:
-        print("--- 警告: 中間ファイルに存在しない装備ID ---")
-        for eq_id in missing_eqs:
-            print(f"  {eq_id}")
-        print()
+        print("Step 3 の missions.json を更新し, intermediate のIDを参照するよう修正してください")
+        print("出力ファイルは更新しません")
+        sys.exit(1)
 
     # サマリー
     print("--- フィルタ結果 ---")
