@@ -141,3 +141,7 @@ vite.config.ts.timestamp-*
 # User-specific files
 copilot-instructions.md
 .claude/
+
+# Scripts input/output (generated files)
+scripts/input/*.html
+scripts/output/*.json
