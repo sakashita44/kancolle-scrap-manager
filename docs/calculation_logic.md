@@ -14,6 +14,7 @@
 1. **並列達成**: 複数の任務を同時選択している場合,一度の廃棄操作で条件を共有できる
 1. **MAX集計**: 同じ装備を要求する複数の任務がある場合,最大値が必要数となる(合計ではない)
 1. **OR条件(包含関係)**: カテゴリ指定と個別装備指定が混在する場合,個別装備はカテゴリに包含される
+1. **複合カテゴリ包含**: `categoryGroup` 指定は `equipment` / `category` 指定を包含できる
 
 ## 入力データ
 
@@ -40,7 +41,7 @@ const selectedMissions: SelectedMissionEntry[] = [
 
 ```typescript
 interface ScrapListItem {
-    targetKind: RequirementKind; // 'equipment' | 'category'
+    targetKind: RequirementKind; // 'equipment' | 'category' | 'categoryGroup'
     targetId: string;
     name: string;
     categoryName: string;
@@ -82,7 +83,7 @@ const scrapList: ScrapListItem[] = [
 interface ExpandedRequirement {
     missionId: string;
     missionName: string;
-    kind: RequirementKind; // 'equipment' | 'category'
+    kind: RequirementKind; // 'equipment' | 'category' | 'categoryGroup'
     targetId: string;
     count: number;
 }
@@ -97,8 +98,8 @@ for (const selected of selectedMissions) {
         allRequirements.push({
             missionId: mission.id,
             missionName: mission.name,
-            kind: req.kind, // 'equipment' or 'category'
-            targetId: req.id, // 装備ID or カテゴリID
+            kind: req.kind, // 'equipment' or 'category' or 'categoryGroup'
+            targetId: req.id, // 装備ID or カテゴリID or 要求カテゴリグループID
             count: req.count * selected.count,
         });
     }
@@ -111,11 +112,12 @@ for (const selected of selectedMissions) {
 
 - `kind === 'equipment'`: 装備マスタ（`equipmentMap`）に存在するか
 - `kind === 'category'`: カテゴリマスタ（`categoryMap`）に存在するか
+- `kind === 'categoryGroup'`: 要求カテゴリグループマスタ（`requirementCategoryGroupMap`）に存在するか
 - 存在しない場合: その要求は計算から除外し,該当任務に警告マークを表示する
 
 ### フェーズ3: 要求種別ごとにグループ化
 
-要求装備を`kind`（`equipment`/`category`）別に分ける.
+要求装備を`kind`（`equipment`/`category`/`categoryGroup`）別に分ける.
 
 ```typescript
 const equipmentReqs = validRequirements.filter(
@@ -123,6 +125,9 @@ const equipmentReqs = validRequirements.filter(
 );
 const categoryReqs = validRequirements.filter(
     (req) => req.kind === REQUIREMENT_KIND.CATEGORY,
+);
+const categoryGroupReqs = validRequirements.filter(
+    (req) => req.kind === REQUIREMENT_KIND.CATEGORY_GROUP,
 );
 ```
 
@@ -159,6 +164,7 @@ for (const req of categoryReqs) {
 ### フェーズ6: 包含関係の解決(OR条件)
 
 個別装備要求とカテゴリ要求が同じカテゴリに属する場合,個別装備の廃棄数をカテゴリの要求数から差し引く.
+さらに,カテゴリグループ要求は同グループ配下カテゴリの個別装備要求とカテゴリ要求を合算して差し引く.
 
 #### OR条件の処理手順
 
