@@ -36,13 +36,10 @@ export default function AboutModal({ isOpen, onClose }: Props) {
 
                 <div className="bg-blue-50 border border-blue-200 rounded p-3">
                     <h5 className="font-semibold text-blue-800 mb-2">
-                        【Beta版について】
+                        マスタデータについて
                     </h5>
                     <p className="text-sm text-blue-700 leading-relaxed">
-                        本バージョンはベータ版です。仕様変更が発生する可能性があります。
-                    </p>
-                    <p className="text-sm text-blue-700 leading-relaxed mt-2">
-                        また、本アプリに含まれる任務・装備のマスタデータにはダミーデータが含まれています。必要に応じてご自身で装備・任務を追加してください。
+                        本アプリに同梱されている任務・装備データは不完全な可能性があります。必要に応じてご自身で装備・任務を追加してください。
                     </p>
                 </div>
 

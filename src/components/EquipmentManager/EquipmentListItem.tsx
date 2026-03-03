@@ -28,8 +28,10 @@ export default function EquipmentListItem({
                     {equipment.name}
                 </div>
                 <div className="text-xs text-slate-400 flex gap-2">
-                    {!isUserEquipment && (
-                        <span className="text-[10px] text-slate-300">公式</span>
+                    {isUserEquipment && (
+                        <span className="text-[10px] text-teal-400">
+                            ユーザー
+                        </span>
                     )}
                 </div>
             </div>

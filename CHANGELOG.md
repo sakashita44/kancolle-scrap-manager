@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [2.0.0-beta] - 2026-03-02
+## [2.0.0] - 2026-03-03
+
+### Added
+
+- 複合カテゴリ要求（categoryGroup）の導入 (#168)
+- 任務/装備マスタデータの拡充（Pythonスクリプトによる自動生成） (#142)
 
 ### Changed
 
@@ -19,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - ESLint (flat config) + Prettier + markdownlint-cli2 + Husky によるコード品質基盤 (#160)
 - Vitest による回帰テスト導入 (#163)
 - 全ドキュメントを現行実装に追従 (#130)
+- 装備一覧の「公式」タグをユーザー定義装備の「ユーザー」タグに変更
 
 ### Fixed
 
@@ -27,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - ベース任務切替時に一覧のハイライトが更新されない問題を修正
 - セッション復元時に存在しない任務IDを除外する整合性チェックを追加
 - エラー表示をGlobalWarningBannerに統一 (#148)
+
+## [2.0.0-beta] - 2026-03-02
 
 ## [2.0.0-alpha] - 2025-11-23
 
