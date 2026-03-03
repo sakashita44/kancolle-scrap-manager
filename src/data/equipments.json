@@ -4,61 +4,43 @@
         {
             "id": "m_eq_1",
             "name": "12cm単装砲",
-            "categoryId": "m_cat_smain",
+            "categoryId": "m_cat_small_caliber_main_gun",
             "order": 100
         },
         {
             "id": "m_eq_2",
             "name": "12.7cm連装砲",
-            "categoryId": "m_cat_smain",
+            "categoryId": "m_cat_small_caliber_main_gun",
             "order": 101
         },
         {
             "id": "m_eq_3",
             "name": "10cm連装高角砲",
-            "categoryId": "m_cat_smain",
+            "categoryId": "m_cat_small_caliber_main_gun",
             "order": 102
         },
         {
             "id": "m_eq_4",
             "name": "14cm単装砲",
-            "categoryId": "m_cat_mmain",
+            "categoryId": "m_cat_medium_caliber_main_gun",
             "order": 200
-        },
-        {
-            "id": "m_eq_6",
-            "name": "20.3cm連装砲",
-            "categoryId": "m_cat_mmain",
-            "order": 201
         },
         {
             "id": "m_eq_7",
             "name": "35.6cm連装砲",
-            "categoryId": "m_cat_lmain",
+            "categoryId": "m_cat_large_caliber_main_gun",
             "order": 300
         },
         {
             "id": "m_eq_8",
             "name": "41cm連装砲",
-            "categoryId": "m_cat_lmain",
+            "categoryId": "m_cat_large_caliber_main_gun",
             "order": 301
-        },
-        {
-            "id": "m_eq_9",
-            "name": "46cm三連装砲",
-            "categoryId": "m_cat_lmain",
-            "order": 302
-        },
-        {
-            "id": "m_eq_328",
-            "name": "35.6cm連装砲改",
-            "categoryId": "m_cat_lmain",
-            "order": 303
         },
         {
             "id": "m_eq_10",
             "name": "12.7cm連装高角砲",
-            "categoryId": "m_cat_secondary",
+            "categoryId": "m_cat_secondary_gun",
             "order": 400
         },
         {
@@ -68,196 +50,208 @@
             "order": 500
         },
         {
-            "id": "m_eq_68",
-            "name": "大発動艇",
-            "categoryId": "m_cat_landingcraft",
-            "order": 600
-        },
-        {
             "id": "m_eq_19",
             "name": "九六式艦戦",
-            "categoryId": "m_cat_fighter",
-            "order": 700
+            "categoryId": "m_cat_carrier_fighter",
+            "order": 600
         },
         {
             "id": "m_eq_20",
             "name": "零式艦戦21型",
-            "categoryId": "m_cat_fighter",
-            "order": 701
+            "categoryId": "m_cat_carrier_fighter",
+            "order": 601
         },
         {
             "id": "m_eq_21",
             "name": "零式艦戦52型",
-            "categoryId": "m_cat_fighter",
-            "order": 702
+            "categoryId": "m_cat_carrier_fighter",
+            "order": 602
         },
         {
             "id": "m_eq_22",
             "name": "試製烈風 後期型",
-            "categoryId": "m_cat_fighter",
-            "order": 703
+            "categoryId": "m_cat_carrier_fighter",
+            "order": 603
         },
         {
             "id": "m_eq_55",
             "name": "紫電改二",
-            "categoryId": "m_cat_fighter",
-            "order": 704
+            "categoryId": "m_cat_carrier_fighter",
+            "order": 604
         },
         {
             "id": "m_eq_109",
             "name": "零戦52型丙(六〇一空)",
-            "categoryId": "m_cat_fighter",
-            "order": 705
+            "categoryId": "m_cat_carrier_fighter",
+            "order": 605
         },
         {
             "id": "m_eq_23",
             "name": "九九式艦爆",
-            "categoryId": "m_cat_bomber",
-            "order": 800
+            "categoryId": "m_cat_carrier_bomber",
+            "order": 700
         },
         {
             "id": "m_eq_24",
             "name": "彗星",
-            "categoryId": "m_cat_bomber",
-            "order": 801
+            "categoryId": "m_cat_carrier_bomber",
+            "order": 701
         },
         {
             "id": "m_eq_60",
             "name": "零式艦戦62型(爆戦)",
-            "categoryId": "m_cat_bomber",
-            "order": 802
-        },
-        {
-            "id": "m_eq_26",
-            "name": "瑞雲",
-            "categoryId": "m_cat_seaplanebomber",
-            "order": 900
+            "categoryId": "m_cat_carrier_bomber",
+            "order": 702
         },
         {
             "id": "m_eq_16",
             "name": "九七式艦攻",
-            "categoryId": "m_cat_attacker",
-            "order": 1000
+            "categoryId": "m_cat_carrier_attacker",
+            "order": 800
         },
         {
             "id": "m_eq_17",
             "name": "天山",
-            "categoryId": "m_cat_attacker",
-            "order": 1001
+            "categoryId": "m_cat_carrier_attacker",
+            "order": 801
         },
         {
             "id": "m_eq_18",
             "name": "流星",
-            "categoryId": "m_cat_attacker",
-            "order": 1002
+            "categoryId": "m_cat_carrier_attacker",
+            "order": 802
         },
         {
             "id": "m_eq_52",
             "name": "流星改",
-            "categoryId": "m_cat_attacker",
-            "order": 1003
+            "categoryId": "m_cat_carrier_attacker",
+            "order": 803
         },
         {
             "id": "m_eq_256",
             "name": "TBF",
-            "categoryId": "m_cat_attacker",
-            "order": 1004
-        },
-        {
-            "id": "m_eq_373",
-            "name": "天山一二型甲改(空六号電探改装備機)",
-            "categoryId": "m_cat_attacker",
-            "order": 1005
+            "categoryId": "m_cat_carrier_attacker",
+            "order": 804
         },
         {
             "id": "m_eq_54",
             "name": "彩雲",
-            "categoryId": "m_cat_reconnaissance",
-            "order": 1100
+            "categoryId": "m_cat_carrier_recon",
+            "order": 900
         },
         {
             "id": "m_eq_25",
             "name": "零式水上偵察機",
-            "categoryId": "m_cat_seaplanerecon",
-            "order": 1200
+            "categoryId": "m_cat_seaplane_recon",
+            "order": 1000
         },
         {
-            "id": "m_eq_102",
-            "name": "九八式水上偵察機(夜偵)",
-            "categoryId": "m_cat_seaplanerecon",
-            "order": 1201
+            "id": "m_eq_26",
+            "name": "瑞雲",
+            "categoryId": "m_cat_multirole_seaplane_bomber",
+            "order": 1100
         },
         {
             "id": "m_eq_27",
             "name": "13号対空電探",
-            "categoryId": "m_cat_radar",
-            "order": 1300
+            "categoryId": "m_cat_small_radar",
+            "order": 1200
+        },
+        {
+            "id": "m_eq_28",
+            "name": "22号対水上電探",
+            "categoryId": "m_cat_small_radar",
+            "order": 1201
         },
         {
             "id": "m_eq_30",
             "name": "21号対空電探",
-            "categoryId": "m_cat_radar",
-            "order": 1301
-        },
-        {
-            "id": "m_eq_35",
-            "name": "三式弾",
-            "categoryId": "m_cat_shell",
-            "order": 1500
-        },
-        {
-            "id": "m_eq_37",
-            "name": "7.7mm機銃",
-            "categoryId": "m_cat_machinegun",
-            "order": 1600
-        },
-        {
-            "id": "m_eq_38",
-            "name": "12.7mm単装機銃",
-            "categoryId": "m_cat_machinegun",
-            "order": 1601
-        },
-        {
-            "id": "m_eq_49",
-            "name": "25mm単装機銃",
-            "categoryId": "m_cat_machinegun",
-            "order": 1602
-        },
-        {
-            "id": "m_eq_120",
-            "name": "91式高射装置",
-            "categoryId": "m_cat_antiaircraft",
-            "order": 1700
-        },
-        {
-            "id": "m_eq_44",
-            "name": "九四式爆雷投射機",
-            "categoryId": "m_cat_depthcharge",
-            "order": 1800
-        },
-        {
-            "id": "m_eq_226",
-            "name": "九五式爆雷",
-            "categoryId": "m_cat_depthcharge",
-            "order": 1801
+            "categoryId": "m_cat_large_radar",
+            "order": 1300
         },
         {
             "id": "m_eq_46",
             "name": "九三式水中聴音機",
             "categoryId": "m_cat_sonar",
-            "order": 1900
+            "order": 1400
         },
         {
             "id": "m_eq_47",
             "name": "三式水中探信儀",
             "categoryId": "m_cat_sonar",
-            "order": 1901
+            "order": 1401
+        },
+        {
+            "id": "m_eq_44",
+            "name": "九四式爆雷投射機",
+            "categoryId": "m_cat_depth_charge_projector",
+            "order": 1500
+        },
+        {
+            "id": "m_eq_226",
+            "name": "九五式爆雷",
+            "categoryId": "m_cat_depth_charge",
+            "order": 1600
+        },
+        {
+            "id": "m_eq_35",
+            "name": "三式弾",
+            "categoryId": "m_cat_anti_air_shell",
+            "order": 1700
+        },
+        {
+            "id": "m_eq_37",
+            "name": "7.7mm機銃",
+            "categoryId": "m_cat_anti_air_machine_gun",
+            "order": 1800
+        },
+        {
+            "id": "m_eq_38",
+            "name": "12.7mm単装機銃",
+            "categoryId": "m_cat_anti_air_machine_gun",
+            "order": 1801
+        },
+        {
+            "id": "m_eq_49",
+            "name": "25mm単装機銃",
+            "categoryId": "m_cat_anti_air_machine_gun",
+            "order": 1802
+        },
+        {
+            "id": "m_eq_51",
+            "name": "12cm30連装噴進砲",
+            "categoryId": "m_cat_anti_air_machine_gun",
+            "order": 1803
+        },
+        {
+            "id": "m_eq_68",
+            "name": "大発動艇",
+            "categoryId": "m_cat_landing_craft",
+            "order": 1900
         },
         {
             "id": "m_eq_75",
             "name": "ドラム缶(輸送用)",
-            "categoryId": "m_cat_uncertain",
+            "categoryId": "m_cat_simple_transport_material",
+            "order": 2000
+        },
+        {
+            "id": "m_eq_120",
+            "name": "91式高射装置",
+            "categoryId": "m_cat_anti_air_director",
             "order": 2100
+        },
+        {
+            "id": "m_eq_121",
+            "name": "94式高射装置",
+            "categoryId": "m_cat_anti_air_director",
+            "order": 2101
+        },
+        {
+            "id": "m_eq_145",
+            "name": "戦闘糧食",
+            "categoryId": "m_cat_combat_ration",
+            "order": 2200
         }
     ]
 }

@@ -1,0 +1,563 @@
+{"id": "m_eq_1", "name": "12cm単装砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 1}
+{"id": "m_eq_293", "name": "12cm単装砲改二", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 293}
+{"id": "m_eq_48", "name": "12cm単装高角砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 48}
+{"id": "m_eq_382", "name": "12cm単装高角砲E型", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 382}
+{"id": "m_eq_229", "name": "12.7cm単装高角砲(後期型)", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 229}
+{"id": "m_eq_379", "name": "12.7cm単装高角砲改二", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 379}
+{"id": "m_eq_509", "name": "12cm単装高角砲E型改", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 509}
+{"id": "m_eq_78", "name": "12.7cm単装砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 78}
+{"id": "m_eq_297", "name": "12.7cm連装砲A型", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 297}
+{"id": "m_eq_2", "name": "12.7cm連装砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 2}
+{"id": "m_eq_294", "name": "12.7cm連装砲A型改二", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 294}
+{"id": "m_eq_3", "name": "10cm連装高角砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 3}
+{"id": "m_eq_91", "name": "12.7cm連装高角砲(後期型)", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 91}
+{"id": "m_eq_380", "name": "12.7cm連装高角砲改二", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 380}
+{"id": "m_eq_295", "name": "12.7cm連装砲A型改三(戦時改修)＋高射装置", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 295}
+{"id": "m_eq_398", "name": "現地改装10cm連装高角砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 398}
+{"id": "m_eq_284", "name": "5inch単装砲 Mk.30", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 284}
+{"id": "m_eq_553", "name": "10cm連装高角砲改", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 553}
+{"id": "m_eq_63", "name": "12.7cm連装砲B型改二", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 63}
+{"id": "m_eq_266", "name": "12.7cm連装砲C型改二", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 266}
+{"id": "m_eq_470", "name": "12.7cm連装砲C型改三", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 470}
+{"id": "m_eq_267", "name": "12.7cm連装砲D型改二", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 267}
+{"id": "m_eq_366", "name": "12.7cm連装砲D型改三", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 366}
+{"id": "m_eq_147", "name": "120mm/50 連装砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 147}
+{"id": "m_eq_393", "name": "120mm/50 連装砲 mod.1936", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 393}
+{"id": "m_eq_394", "name": "120mm/50 連装砲改 A.mod.1937", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 394}
+{"id": "m_eq_280", "name": "QF 4.7inch砲 Mk.XII改", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 280}
+{"id": "m_eq_529", "name": "12.7cm連装砲C型改三H", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 529}
+{"id": "m_eq_122", "name": "10cm連装高角砲＋高射装置", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 122}
+{"id": "m_eq_296", "name": "12.7cm連装砲B型改四(戦時改修)＋高射装置", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 296}
+{"id": "m_eq_397", "name": "現地改装12.7cm連装高角砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 397}
+{"id": "m_eq_313", "name": "5inch単装砲 Mk.30 改", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 313}
+{"id": "m_eq_308", "name": "5inch単装砲 Mk.30改＋GFCS Mk.37", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 308}
+{"id": "m_eq_533", "name": "10cm連装高角砲改＋高射装置改", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 533}
+{"id": "m_eq_282", "name": "130mm B-13連装砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 282}
+{"id": "m_eq_455", "name": "試製 長12.7cm連装砲A型改四", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 455}
+{"id": "m_eq_534", "name": "13.8cm連装砲", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 534}
+{"id": "m_eq_535", "name": "13.8cm連装砲改", "category_id": "m_cat_small_caliber_main_gun", "encyclopedia_no": 535}
+{"id": "m_eq_4", "name": "14cm単装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 4}
+{"id": "m_eq_119", "name": "14cm連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 119}
+{"id": "m_eq_310", "name": "14cm連装砲改", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 310}
+{"id": "m_eq_518", "name": "14cm連装砲改二", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 518}
+{"id": "m_eq_65", "name": "15.2cm連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 65}
+{"id": "m_eq_303", "name": "Bofors15.2cm連装砲 Model1930", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 303}
+{"id": "m_eq_359", "name": "6inch 連装速射砲 Mk.XXI", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 359}
+{"id": "m_eq_362", "name": "5inch連装両用砲(集中配備)", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 362}
+{"id": "m_eq_564", "name": "21cm単装主砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 564}
+{"id": "m_eq_139", "name": "15.2cm連装砲改", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 139}
+{"id": "m_eq_407", "name": "15.2cm連装砲改二", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 407}
+{"id": "m_eq_360", "name": "Bofors 15cm連装速射砲 Mk.9 Model 1938", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 360}
+{"id": "m_eq_363", "name": "GFCS Mk.37＋5inch連装両用砲(集中配備)", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 363}
+{"id": "m_eq_5", "name": "15.5cm三連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 5}
+{"id": "m_eq_235", "name": "15.5cm三連装砲改", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 235}
+{"id": "m_eq_361", "name": "Bofors 15cm連装速射砲 Mk.9改＋単装速射砲 Mk.10改 Model 1938", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 361}
+{"id": "m_eq_386", "name": "6inch三連装速射砲 Mk.16", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 386}
+{"id": "m_eq_399", "name": "6inch Mk.XXIII三連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 399}
+{"id": "m_eq_536", "name": "15.2cm三連装主砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 536}
+{"id": "m_eq_6", "name": "20.3cm連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 6}
+{"id": "m_eq_340", "name": "152mm/55 三連装速射砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 340}
+{"id": "m_eq_387", "name": "6inch三連装速射砲 Mk.16 mod.2", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 387}
+{"id": "m_eq_537", "name": "15.2cm三連装主砲改", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 537}
+{"id": "m_eq_90", "name": "20.3cm(2号)連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 90}
+{"id": "m_eq_162", "name": "203mm/53 連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 162}
+{"id": "m_eq_341", "name": "152mm/55 三連装速射砲改", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 341}
+{"id": "m_eq_50", "name": "20.3cm(3号)連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 50}
+{"id": "m_eq_123", "name": "SKC34 20.3cm連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 123}
+{"id": "m_eq_356", "name": "8inch三連装砲 Mk.9", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 356}
+{"id": "m_eq_520", "name": "試製20.3cm(4号)連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 520}
+{"id": "m_eq_357", "name": "8inch三連装砲 Mk.9 mod.2", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 357}
+{"id": "m_eq_426", "name": "305mm／46 連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 426}
+{"id": "m_eq_427", "name": "305mm／46 三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 427}
+{"id": "m_eq_7", "name": "35.6cm連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 7}
+{"id": "m_eq_104", "name": "35.6cm連装砲(ダズル迷彩)", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 104}
+{"id": "m_eq_428", "name": "320mm／44 連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 428}
+{"id": "m_eq_76", "name": "38cm連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 76}
+{"id": "m_eq_231", "name": "30.5cm三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 231}
+{"id": "m_eq_328", "name": "35.6cm連装砲改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 328}
+{"id": "m_eq_429", "name": "320mm／44 三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 429}
+{"id": "m_eq_507", "name": "14inch／45 連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 507}
+{"id": "m_eq_114", "name": "38cm連装砲改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 114}
+{"id": "m_eq_232", "name": "30.5cm三連装砲改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 232}
+{"id": "m_eq_329", "name": "35.6cm連装砲改二", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 329}
+{"id": "m_eq_103", "name": "試製35.6cm三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 103}
+{"id": "m_eq_190", "name": "38.1cm Mk.I連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 190}
+{"id": "m_eq_192", "name": "38.1cm Mk.I/N連装砲改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 192}
+{"id": "m_eq_289", "name": "35.6cm三連装砲改(ダズル迷彩仕様)", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 289}
+{"id": "m_eq_508", "name": "14inch／45 三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 508}
+{"id": "m_eq_8", "name": "41cm連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 8}
+{"id": "m_eq_133", "name": "381mm/50 三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 133}
+{"id": "m_eq_330", "name": "16inch Mk.I連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 330}
+{"id": "m_eq_502", "name": "35.6cm連装砲改三(ダズル迷彩仕様)", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 502}
+{"id": "m_eq_137", "name": "381mm/50 三連装砲改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 137}
+{"id": "m_eq_245", "name": "38cm四連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 245}
+{"id": "m_eq_298", "name": "16inch Mk.I三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 298}
+{"id": "m_eq_318", "name": "41cm連装砲改二", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 318}
+{"id": "m_eq_331", "name": "16inch Mk.V連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 331}
+{"id": "m_eq_332", "name": "16inch Mk.VIII連装砲改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 332}
+{"id": "m_eq_530", "name": "35.6cm連装砲改三丙", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 530}
+{"id": "m_eq_105", "name": "試製41cm三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 105}
+{"id": "m_eq_236", "name": "41cm三連装砲改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 236}
+{"id": "m_eq_246", "name": "38cm四連装砲改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 246}
+{"id": "m_eq_299", "name": "16inch Mk.I三連装砲＋AFCT改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 299}
+{"id": "m_eq_381", "name": "16inch三連装砲 Mk.6", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 381}
+{"id": "m_eq_503", "name": "35.6cm連装砲改四", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 503}
+{"id": "m_eq_117", "name": "試製46cm連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 117}
+{"id": "m_eq_290", "name": "41cm三連装砲改二", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 290}
+{"id": "m_eq_300", "name": "16inch Mk.I三連装砲改＋FCR type284", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 300}
+{"id": "m_eq_385", "name": "16inch三連装砲 Mk.6 mod.2", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 385}
+{"id": "m_eq_390", "name": "16inch三連装砲 Mk.6＋GFCS", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 390}
+{"id": "m_eq_161", "name": "16inch三連装砲 Mk.7", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 161}
+{"id": "m_eq_183", "name": "16inch三連装砲 Mk.7＋GFCS", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 183}
+{"id": "m_eq_468", "name": "38cm四連装砲改 deux", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 468}
+{"id": "m_eq_9", "name": "46cm三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 9}
+{"id": "m_eq_276", "name": "46cm三連装砲改", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 276}
+{"id": "m_eq_128", "name": "試製51cm連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 128}
+{"id": "m_eq_281", "name": "51cm連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 281}
+{"id": "m_eq_465", "name": "試製51cm三連装砲", "category_id": "m_cat_large_caliber_main_gun", "encyclopedia_no": 465}
+{"id": "m_eq_524", "name": "12cm単装高角砲＋25mm機銃増備", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 524}
+{"id": "m_eq_66", "name": "8cm高角砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 66}
+{"id": "m_eq_71", "name": "10cm連装高角砲(砲架)", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 71}
+{"id": "m_eq_220", "name": "8cm高角砲改＋増設機銃", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 220}
+{"id": "m_eq_135", "name": "90mm単装高角砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 135}
+{"id": "m_eq_130", "name": "12.7cm高角砲＋高射装置", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 130}
+{"id": "m_eq_430", "name": "65mm／64 単装速射砲改", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 430}
+{"id": "m_eq_565", "name": "15cm単装副砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 565}
+{"id": "m_eq_11", "name": "15.2cm単装砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 11}
+{"id": "m_eq_10", "name": "12.7cm連装高角砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 10}
+{"id": "m_eq_358", "name": "5inch 単装高角砲群", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 358}
+{"id": "m_eq_275", "name": "10cm連装高角砲改＋増設機銃", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 275}
+{"id": "m_eq_160", "name": "10.5cm連装砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 160}
+{"id": "m_eq_556", "name": "10cm／56 単装高角砲(集中配備)", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 556}
+{"id": "m_eq_464", "name": "10cm連装高角砲群 集中配備", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 464}
+{"id": "m_eq_566", "name": "10.2cm三連装副砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 566}
+{"id": "m_eq_77", "name": "15cm連装副砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 77}
+{"id": "m_eq_172", "name": "5inch連装砲 Mk.28 mod.2", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 172}
+{"id": "m_eq_467", "name": "5inch連装砲(副砲配置)集中配備", "category_id": "m_cat_empty_type", "encyclopedia_no": 467}
+{"id": "m_eq_247", "name": "15.2cm三連装砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 247}
+{"id": "m_eq_12", "name": "15.5cm三連装副砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 12}
+{"id": "m_eq_234", "name": "15.5cm三連装副砲改", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 234}
+{"id": "m_eq_134", "name": "OTO 152mm三連装速射砲", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 134}
+{"id": "m_eq_463", "name": "15.5cm三連装副砲改二", "category_id": "m_cat_secondary_gun", "encyclopedia_no": 463}
+{"id": "m_eq_174", "name": "53cm連装魚雷", "category_id": "m_cat_torpedo", "encyclopedia_no": 174}
+{"id": "m_eq_13", "name": "61cm三連装魚雷", "category_id": "m_cat_torpedo", "encyclopedia_no": 13}
+{"id": "m_eq_283", "name": "533mm 三連装魚雷", "category_id": "m_cat_torpedo", "encyclopedia_no": 283}
+{"id": "m_eq_400", "name": "533mm 三連装魚雷(53-39型)", "category_id": "m_cat_torpedo", "encyclopedia_no": 400}
+{"id": "m_eq_14", "name": "61cm四連装魚雷", "category_id": "m_cat_torpedo", "encyclopedia_no": 14}
+{"id": "m_eq_571", "name": "53cm連装魚雷改(酸素魚雷)", "category_id": "m_cat_torpedo", "encyclopedia_no": 571}
+{"id": "m_eq_125", "name": "61cm三連装(酸素)魚雷", "category_id": "m_cat_torpedo", "encyclopedia_no": 125}
+{"id": "m_eq_314", "name": "533mm五連装魚雷(初期型)", "category_id": "m_cat_torpedo", "encyclopedia_no": 314}
+{"id": "m_eq_285", "name": "61cm三連装(酸素)魚雷後期型", "category_id": "m_cat_torpedo", "encyclopedia_no": 285}
+{"id": "m_eq_15", "name": "61cm四連装(酸素)魚雷", "category_id": "m_cat_torpedo", "encyclopedia_no": 15}
+{"id": "m_eq_286", "name": "61cm四連装(酸素)魚雷後期型", "category_id": "m_cat_torpedo", "encyclopedia_no": 286}
+{"id": "m_eq_376", "name": "533mm五連装魚雷(後期型)", "category_id": "m_cat_torpedo", "encyclopedia_no": 376}
+{"id": "m_eq_58", "name": "61cm五連装(酸素)魚雷", "category_id": "m_cat_torpedo", "encyclopedia_no": 58}
+{"id": "m_eq_179", "name": "試製61cm六連装(酸素)魚雷", "category_id": "m_cat_torpedo", "encyclopedia_no": 179}
+{"id": "m_eq_67", "name": "53cm艦首(酸素)魚雷", "category_id": "m_cat_torpedo", "encyclopedia_no": 67}
+{"id": "m_eq_442", "name": "潜水艦後部魚雷発射管4門(初期型)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 442}
+{"id": "m_eq_511", "name": "21inch艦首魚雷発射管4門(初期型)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 511}
+{"id": "m_eq_443", "name": "潜水艦後部魚雷発射管4門(後期型)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 443}
+{"id": "m_eq_440", "name": "21inch艦首魚雷発射管6門(初期型)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 440}
+{"id": "m_eq_457", "name": "後期型艦首魚雷(4門)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 457}
+{"id": "m_eq_512", "name": "21inch艦首魚雷発射管4門(後期型)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 512}
+{"id": "m_eq_461", "name": "熟練聴音員＋後期型艦首魚雷(4門)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 461}
+{"id": "m_eq_127", "name": "試製FaT仕様九五式酸素魚雷改", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 127}
+{"id": "m_eq_441", "name": "21inch艦首魚雷発射管6門(後期型)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 441}
+{"id": "m_eq_213", "name": "後期型艦首魚雷(6門)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 213}
+{"id": "m_eq_214", "name": "熟練聴音員＋後期型艦首魚雷(6門)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 214}
+{"id": "m_eq_95", "name": "潜水艦53cm艦首魚雷(8門)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 95}
+{"id": "m_eq_383", "name": "後期型53cm艦首魚雷(8門)", "category_id": "m_cat_submarine_torpedo", "encyclopedia_no": 383}
+{"id": "m_eq_41", "name": "甲標的 甲型", "category_id": "m_cat_special_submarine", "encyclopedia_no": 41}
+{"id": "m_eq_309", "name": "甲標的 丙型", "category_id": "m_cat_special_submarine", "encyclopedia_no": 309}
+{"id": "m_eq_364", "name": "甲標的 丁型改(蛟龍改)", "category_id": "m_cat_special_submarine", "encyclopedia_no": 364}
+{"id": "m_eq_68", "name": "大発動艇", "category_id": "m_cat_landing_craft", "encyclopedia_no": 68}
+{"id": "m_eq_193", "name": "特大発動艇", "category_id": "m_cat_landing_craft", "encyclopedia_no": 193}
+{"id": "m_eq_166", "name": "大発動艇(八九式中戦車＆陸戦隊)", "category_id": "m_cat_landing_craft", "encyclopedia_no": 166}
+{"id": "m_eq_436", "name": "大発動艇(II号戦車/北アフリカ仕様)", "category_id": "m_cat_landing_craft", "encyclopedia_no": 436}
+{"id": "m_eq_482", "name": "特大発動艇＋III号戦車(北アフリカ仕様)", "category_id": "m_cat_landing_craft", "encyclopedia_no": 482}
+{"id": "m_eq_514", "name": "特大発動艇＋III号戦車J型", "category_id": "m_cat_landing_craft", "encyclopedia_no": 514}
+{"id": "m_eq_230", "name": "特大発動艇＋戦車第11連隊", "category_id": "m_cat_landing_craft", "encyclopedia_no": 230}
+{"id": "m_eq_449", "name": "特大発動艇＋一式砲戦車", "category_id": "m_cat_landing_craft", "encyclopedia_no": 449}
+{"id": "m_eq_355", "name": "M4A1 DD", "category_id": "m_cat_landing_craft", "encyclopedia_no": 355}
+{"id": "m_eq_409", "name": "武装大発", "category_id": "m_cat_landing_craft", "encyclopedia_no": 409}
+{"id": "m_eq_408", "name": "装甲艇(AB艇)", "category_id": "m_cat_landing_craft", "encyclopedia_no": 408}
+{"id": "m_eq_494", "name": "特大発動艇＋チハ", "category_id": "m_cat_landing_craft", "encyclopedia_no": 494}
+{"id": "m_eq_495", "name": "特大発動艇＋チハ改", "category_id": "m_cat_landing_craft", "encyclopedia_no": 495}
+{"id": "m_eq_167", "name": "特二式内火艇", "category_id": "m_cat_special_amphibious_tank", "encyclopedia_no": 167}
+{"id": "m_eq_525", "name": "特四式内火艇", "category_id": "m_cat_special_amphibious_tank", "encyclopedia_no": 525}
+{"id": "m_eq_526", "name": "特四式内火艇改", "category_id": "m_cat_special_amphibious_tank", "encyclopedia_no": 526}
+{"id": "m_eq_567", "name": "Sea Gladiator", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 567}
+{"id": "m_eq_19", "name": "九六式艦戦", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 19}
+{"id": "m_eq_249", "name": "Fulmar", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 249}
+{"id": "m_eq_228", "name": "九六式艦戦改", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 228}
+{"id": "m_eq_197", "name": "F4F-3", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 197}
+{"id": "m_eq_198", "name": "F4F-4", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 198}
+{"id": "m_eq_20", "name": "零式艦戦21型", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 20}
+{"id": "m_eq_181", "name": "零式艦戦32型", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 181}
+{"id": "m_eq_21", "name": "零式艦戦52型", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 21}
+{"id": "m_eq_184", "name": "Re.2001 OR改", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 184}
+{"id": "m_eq_96", "name": "零式艦戦21型(熟練)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 96}
+{"id": "m_eq_182", "name": "零式艦戦32型(熟練)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 182}
+{"id": "m_eq_158", "name": "Bf109T改", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 158}
+{"id": "m_eq_205", "name": "F6F-3", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 205}
+{"id": "m_eq_254", "name": "F6F-3N", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 254}
+{"id": "m_eq_55", "name": "紫電改二", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 55}
+{"id": "m_eq_109", "name": "零戦52型丙(六〇一空)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 109}
+{"id": "m_eq_152", "name": "零式艦戦52型(熟練)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 152}
+{"id": "m_eq_155", "name": "零戦21型(付岩本小隊)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 155}
+{"id": "m_eq_252", "name": "Seafire Mk.III改", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 252}
+{"id": "m_eq_473", "name": "F4U-2 Night Corsair", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 473}
+{"id": "m_eq_486", "name": "零式艦戦64型(制空戦闘機仕様)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 486}
+{"id": "m_eq_560", "name": "Bf109 T-3(G)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 560}
+{"id": "m_eq_22", "name": "試製烈風 後期型", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 22}
+{"id": "m_eq_159", "name": "Fw190T改", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 159}
+{"id": "m_eq_271", "name": "紫電改四", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 271}
+{"id": "m_eq_153", "name": "零戦52型丙(付岩井小隊)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 153}
+{"id": "m_eq_206", "name": "F6F-5", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 206}
+{"id": "m_eq_335", "name": "烈風改(試製艦載型)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 335}
+{"id": "m_eq_434", "name": "Corsair Mk.II", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 434}
+{"id": "m_eq_492", "name": "零戦52型丙(八幡部隊)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 492}
+{"id": "m_eq_255", "name": "F6F-5N", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 255}
+{"id": "m_eq_110", "name": "烈風(六〇一空)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 110}
+{"id": "m_eq_189", "name": "Re.2005 改", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 189}
+{"id": "m_eq_156", "name": "零戦52型甲(付岩本小隊)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 156}
+{"id": "m_eq_338", "name": "烈風改二戊型", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 338}
+{"id": "m_eq_353", "name": "Fw190 A-5改(熟練)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 353}
+{"id": "m_eq_422", "name": "FR-1 Fireball", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 422}
+{"id": "m_eq_435", "name": "Corsair Mk.II(Ace)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 435}
+{"id": "m_eq_53", "name": "烈風 一一型", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 53}
+{"id": "m_eq_157", "name": "零式艦戦53型(岩本隊)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 157}
+{"id": "m_eq_339", "name": "烈風改二戊型(一航戦/熟練)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 339}
+{"id": "m_eq_375", "name": "XF5U", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 375}
+{"id": "m_eq_336", "name": "烈風改二", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 336}
+{"id": "m_eq_437", "name": "試製 陣風", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 437}
+{"id": "m_eq_56", "name": "震電改", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 56}
+{"id": "m_eq_547", "name": "震電改二(艦戦型改二)", "category_id": "m_cat_carrier_fighter", "encyclopedia_no": 547}
+{"id": "m_eq_548", "name": "震電改三(試製 噴式震電)", "category_id": "m_cat_jet_carrier_fighter", "encyclopedia_no": 548}
+{"id": "m_eq_164", "name": "Ro.44水上戦闘機", "category_id": "m_cat_seaplane_fighter", "encyclopedia_no": 164}
+{"id": "m_eq_165", "name": "二式水戦改", "category_id": "m_cat_seaplane_fighter", "encyclopedia_no": 165}
+{"id": "m_eq_215", "name": "Ro.44水上戦闘機bis", "category_id": "m_cat_seaplane_fighter", "encyclopedia_no": 215}
+{"id": "m_eq_216", "name": "二式水戦改(熟練)", "category_id": "m_cat_seaplane_fighter", "encyclopedia_no": 216}
+{"id": "m_eq_217", "name": "強風改", "category_id": "m_cat_seaplane_fighter", "encyclopedia_no": 217}
+{"id": "m_eq_485", "name": "強風改二", "category_id": "m_cat_seaplane_fighter", "encyclopedia_no": 485}
+{"id": "m_eq_568", "name": "強風改二(熟練)", "category_id": "m_cat_seaplane_fighter", "encyclopedia_no": 568}
+{"id": "m_eq_277", "name": "FM-2", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 277}
+{"id": "m_eq_447", "name": "零式艦戦64型(複座KMX搭載機)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 447}
+{"id": "m_eq_60", "name": "零式艦戦62型(爆戦)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 60}
+{"id": "m_eq_154", "name": "零戦62型(爆戦/岩井隊)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 154}
+{"id": "m_eq_248", "name": "Skua", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 248}
+{"id": "m_eq_550", "name": "試製 明星(増加試作機)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 550}
+{"id": "m_eq_219", "name": "零式艦戦63型(爆戦)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 219}
+{"id": "m_eq_23", "name": "九九式艦爆", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 23}
+{"id": "m_eq_551", "name": "明星改", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 551}
+{"id": "m_eq_557", "name": "零式艦戦62型改(夜間爆戦)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 557}
+{"id": "m_eq_391", "name": "九九式艦爆二二型", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 391}
+{"id": "m_eq_195", "name": "SBD", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 195}
+{"id": "m_eq_316", "name": "Re.2001 CB改", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 316}
+{"id": "m_eq_474", "name": "F4U-4", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 474}
+{"id": "m_eq_487", "name": "零式艦戦64型(熟練爆戦)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 487}
+{"id": "m_eq_552", "name": "九九式練爆二二型改(夜間装備実験機)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 552}
+{"id": "m_eq_558", "name": "零式艦戦62型改(熟練／夜間爆戦)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 558}
+{"id": "m_eq_97", "name": "九九式艦爆(熟練)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 97}
+{"id": "m_eq_233", "name": "F4U-1D", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 233}
+{"id": "m_eq_419", "name": "SBD-5", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 419}
+{"id": "m_eq_541", "name": "SBD(Yellow Wings)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 541}
+{"id": "m_eq_24", "name": "彗星", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 24}
+{"id": "m_eq_392", "name": "九九式艦爆二二型(熟練)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 392}
+{"id": "m_eq_544", "name": "SBD VB-2(爆撃飛行隊)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 544}
+{"id": "m_eq_64", "name": "Ju87C改", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 64}
+{"id": "m_eq_305", "name": "Ju87C改二(KMX搭載機)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 305}
+{"id": "m_eq_57", "name": "彗星一二型甲", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 57}
+{"id": "m_eq_99", "name": "九九式艦爆(江草隊)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 99}
+{"id": "m_eq_306", "name": "Ju87C改二(KMX搭載機/熟練)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 306}
+{"id": "m_eq_111", "name": "彗星(六〇一空)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 111}
+{"id": "m_eq_148", "name": "試製南山", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 148}
+{"id": "m_eq_291", "name": "彗星二二型(六三四空)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 291}
+{"id": "m_eq_320", "name": "彗星一二型(三一号光電管爆弾搭載機)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 320}
+{"id": "m_eq_420", "name": "SB2C-3", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 420}
+{"id": "m_eq_476", "name": "F4U-7", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 476}
+{"id": "m_eq_292", "name": "彗星二二型(六三四空/熟練)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 292}
+{"id": "m_eq_319", "name": "彗星一二型(六三四空/三号爆弾搭載機)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 319}
+{"id": "m_eq_421", "name": "SB2C-5", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 421}
+{"id": "m_eq_475", "name": "AU-1", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 475}
+{"id": "m_eq_100", "name": "彗星(江草隊)", "category_id": "m_cat_carrier_bomber", "encyclopedia_no": 100}
+{"id": "m_eq_200", "name": "橘花改", "category_id": "m_cat_jet_fighter_bomber", "encyclopedia_no": 200}
+{"id": "m_eq_199", "name": "噴式景雲改", "category_id": "m_cat_jet_fighter_bomber", "encyclopedia_no": 199}
+{"id": "m_eq_561", "name": "Ho229", "category_id": "m_cat_flying_wing_fighter_bomber", "encyclopedia_no": 561}
+{"id": "m_eq_26", "name": "瑞雲", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 26}
+{"id": "m_eq_194", "name": "Laté 298B", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 194}
+{"id": "m_eq_367", "name": "Swordfish(水上機型)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 367}
+{"id": "m_eq_79", "name": "瑞雲(六三四空)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 79}
+{"id": "m_eq_207", "name": "瑞雲(六三一空)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 207}
+{"id": "m_eq_80", "name": "瑞雲12型", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 80}
+{"id": "m_eq_368", "name": "Swordfish Mk.III改(水上機型)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 368}
+{"id": "m_eq_369", "name": "Swordfish Mk.III改(水上機型/熟練)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 369}
+{"id": "m_eq_81", "name": "瑞雲12型(六三四空)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 81}
+{"id": "m_eq_237", "name": "瑞雲(六三四空/熟練)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 237}
+{"id": "m_eq_322", "name": "瑞雲改二(六三四空)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 322}
+{"id": "m_eq_490", "name": "試製 夜間瑞雲(攻撃装備)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 490}
+{"id": "m_eq_323", "name": "瑞雲改二(六三四空/熟練)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 323}
+{"id": "m_eq_62", "name": "試製晴嵐", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 62}
+{"id": "m_eq_208", "name": "晴嵐(六三一空)", "category_id": "m_cat_multirole_seaplane_bomber", "encyclopedia_no": 208}
+{"id": "m_eq_242", "name": "Swordfish", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 242}
+{"id": "m_eq_188", "name": "Re.2001 G改", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 188}
+{"id": "m_eq_16", "name": "九七式艦攻", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 16}
+{"id": "m_eq_196", "name": "TBD", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 196}
+{"id": "m_eq_243", "name": "Swordfish Mk.II(熟練)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 243}
+{"id": "m_eq_82", "name": "九七式艦攻(九三一空)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 82}
+{"id": "m_eq_425", "name": "Barracuda Mk.III", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 425}
+{"id": "m_eq_542", "name": "TBD(Yellow Wings)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 542}
+{"id": "m_eq_554", "name": "九七式艦攻改(北東海軍航空隊)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 554}
+{"id": "m_eq_17", "name": "天山", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 17}
+{"id": "m_eq_424", "name": "Barracuda Mk.II", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 424}
+{"id": "m_eq_344", "name": "九七式艦攻改 試製三号戊型(空六号電探改装備機)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 344}
+{"id": "m_eq_559", "name": "Ju87 D-4(Fliegerass)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 559}
+{"id": "m_eq_98", "name": "九七式艦攻(熟練)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 98}
+{"id": "m_eq_302", "name": "九七式艦攻(九三一空/熟練)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 302}
+{"id": "m_eq_244", "name": "Swordfish Mk.III(熟練)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 244}
+{"id": "m_eq_481", "name": "Mosquito TR Mk.33", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 481}
+{"id": "m_eq_372", "name": "天山一二型甲", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 372}
+{"id": "m_eq_83", "name": "天山(九三一空)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 83}
+{"id": "m_eq_256", "name": "TBF", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 256}
+{"id": "m_eq_257", "name": "TBM-3D", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 257}
+{"id": "m_eq_345", "name": "九七式艦攻改(熟練) 試製三号戊型(空六号電探改装備機)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 345}
+{"id": "m_eq_18", "name": "流星", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 18}
+{"id": "m_eq_112", "name": "天山(六〇一空)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 112}
+{"id": "m_eq_389", "name": "TBM-3W ＋ 3S", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 389}
+{"id": "m_eq_373", "name": "天山一二型甲改(空六号電探改装備機)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 373}
+{"id": "m_eq_93", "name": "九七式艦攻(友永隊)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 93}
+{"id": "m_eq_143", "name": "九七式艦攻(村田隊)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 143}
+{"id": "m_eq_52", "name": "流星改", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 52}
+{"id": "m_eq_113", "name": "流星(六〇一空)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 113}
+{"id": "m_eq_466", "name": "流星改(熟練)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 466}
+{"id": "m_eq_374", "name": "天山一二型甲改(熟練/空六号電探改装備機)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 374}
+{"id": "m_eq_94", "name": "天山一二型(友永隊)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 94}
+{"id": "m_eq_342", "name": "流星改(一航戦)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 342}
+{"id": "m_eq_144", "name": "天山一二型(村田隊)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 144}
+{"id": "m_eq_343", "name": "流星改(一航戦/熟練)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 343}
+{"id": "m_eq_545", "name": "天山一二型甲改二(村田隊/電探装備)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 545}
+{"id": "m_eq_570", "name": "流星改(友永隊)", "category_id": "m_cat_carrier_attacker", "encyclopedia_no": 570}
+{"id": "m_eq_423", "name": "Fulmar(戦闘偵察／熟練)", "category_id": "m_cat_carrier_recon", "encyclopedia_no": 423}
+{"id": "m_eq_543", "name": "SBD VS-2(偵察飛行隊)", "category_id": "m_cat_carrier_recon", "encyclopedia_no": 543}
+{"id": "m_eq_61", "name": "二式艦上偵察機", "category_id": "m_cat_carrier_recon", "encyclopedia_no": 61}
+{"id": "m_eq_54", "name": "彩雲", "category_id": "m_cat_carrier_recon", "encyclopedia_no": 54}
+{"id": "m_eq_212", "name": "彩雲(東カロリン空)", "category_id": "m_cat_carrier_recon", "encyclopedia_no": 212}
+{"id": "m_eq_273", "name": "彩雲(偵四)", "category_id": "m_cat_carrier_recon", "encyclopedia_no": 273}
+{"id": "m_eq_151", "name": "試製景雲(艦偵型)", "category_id": "m_cat_carrier_recon", "encyclopedia_no": 151}
+{"id": "m_eq_522", "name": "零式小型水上機", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 522}
+{"id": "m_eq_102", "name": "九八式水上偵察機(夜偵)", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 102}
+{"id": "m_eq_471", "name": "Loire 130M", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 471}
+{"id": "m_eq_523", "name": "零式小型水上機(熟練)", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 523}
+{"id": "m_eq_163", "name": "Ro.43水偵", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 163}
+{"id": "m_eq_304", "name": "S9 Osprey", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 304}
+{"id": "m_eq_414", "name": "SOC Seagull", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 414}
+{"id": "m_eq_510", "name": "Walrus", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 510}
+{"id": "m_eq_25", "name": "零式水上偵察機", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 25}
+{"id": "m_eq_115", "name": "Ar196改", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 115}
+{"id": "m_eq_370", "name": "Swordfish Mk.II改(水偵型)", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 370}
+{"id": "m_eq_469", "name": "零式水上偵察機11型乙改(夜偵)", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 469}
+{"id": "m_eq_515", "name": "Sea Otter", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 515}
+{"id": "m_eq_538", "name": "Loire 130M改(熟練)", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 538}
+{"id": "m_eq_59", "name": "零式水上観測機", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 59}
+{"id": "m_eq_171", "name": "OS2U", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 171}
+{"id": "m_eq_238", "name": "零式水上偵察機11型乙", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 238}
+{"id": "m_eq_371", "name": "Fairey Seafox改", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 371}
+{"id": "m_eq_415", "name": "SO3C Seamew改", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 415}
+{"id": "m_eq_539", "name": "SOC Seagull 後期型(熟練)", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 539}
+{"id": "m_eq_540", "name": "零式水上偵察機11型甲改二", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 540}
+{"id": "m_eq_118", "name": "紫雲", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 118}
+{"id": "m_eq_239", "name": "零式水上偵察機11型乙(熟練)", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 239}
+{"id": "m_eq_521", "name": "紫雲(熟練)", "category_id": "m_cat_seaplane_recon", "encyclopedia_no": 521}
+{"id": "m_eq_178", "name": "PBY-5A Catalina", "category_id": "m_cat_large_flying_boat", "encyclopedia_no": 178}
+{"id": "m_eq_138", "name": "二式大艇", "category_id": "m_cat_large_flying_boat", "encyclopedia_no": 138}
+{"id": "m_eq_70", "name": "三式指揮連絡機(対潜)", "category_id": "m_cat_asw_patrol_aircraft", "encyclopedia_no": 70}
+{"id": "m_eq_489", "name": "一式戦 隼II型改(20戦隊)", "category_id": "m_cat_asw_patrol_aircraft", "encyclopedia_no": 489}
+{"id": "m_eq_491", "name": "一式戦 隼III型改(熟練／20戦隊)", "category_id": "m_cat_asw_patrol_aircraft", "encyclopedia_no": 491}
+{"id": "m_eq_69", "name": "カ号観測機", "category_id": "m_cat_rotary_wing_aircraft", "encyclopedia_no": 69}
+{"id": "m_eq_451", "name": "三式指揮連絡機改", "category_id": "m_cat_asw_patrol_aircraft", "encyclopedia_no": 451}
+{"id": "m_eq_324", "name": "オ号観測機改", "category_id": "m_cat_rotary_wing_aircraft", "encyclopedia_no": 324}
+{"id": "m_eq_549", "name": "三式指揮連絡機改二", "category_id": "m_cat_asw_patrol_aircraft", "encyclopedia_no": 549}
+{"id": "m_eq_325", "name": "オ号観測機改二", "category_id": "m_cat_rotary_wing_aircraft", "encyclopedia_no": 325}
+{"id": "m_eq_326", "name": "S-51J", "category_id": "m_cat_rotary_wing_aircraft", "encyclopedia_no": 326}
+{"id": "m_eq_327", "name": "S-51J改", "category_id": "m_cat_rotary_wing_aircraft", "encyclopedia_no": 327}
+{"id": "m_eq_27", "name": "13号対空電探", "category_id": "m_cat_small_radar", "encyclopedia_no": 27}
+{"id": "m_eq_106", "name": "13号対空電探改", "category_id": "m_cat_small_radar", "encyclopedia_no": 106}
+{"id": "m_eq_28", "name": "22号対水上電探", "category_id": "m_cat_small_radar", "encyclopedia_no": 28}
+{"id": "m_eq_88", "name": "22号対水上電探改四", "category_id": "m_cat_small_radar", "encyclopedia_no": 88}
+{"id": "m_eq_450", "name": "13号対空電探改(後期型)", "category_id": "m_cat_small_radar", "encyclopedia_no": 450}
+{"id": "m_eq_307", "name": "GFCS Mk.37", "category_id": "m_cat_small_radar", "encyclopedia_no": 307}
+{"id": "m_eq_506", "name": "電探装備マスト(13号改＋22号電探改四)", "category_id": "m_cat_small_radar", "encyclopedia_no": 506}
+{"id": "m_eq_29", "name": "33号対水上電探", "category_id": "m_cat_small_radar", "encyclopedia_no": 29}
+{"id": "m_eq_240", "name": "22号対水上電探改四(後期調整型)", "category_id": "m_cat_small_radar", "encyclopedia_no": 240}
+{"id": "m_eq_315", "name": "SG レーダー(初期型)", "category_id": "m_cat_small_radar", "encyclopedia_no": 315}
+{"id": "m_eq_517", "name": "逆探(E27)＋22号対水上電探改四(後期調整型)", "category_id": "m_cat_small_radar", "encyclopedia_no": 517}
+{"id": "m_eq_456", "name": "SG レーダー(後期型)", "category_id": "m_cat_small_radar", "encyclopedia_no": 456}
+{"id": "m_eq_30", "name": "21号対空電探", "category_id": "m_cat_large_radar", "encyclopedia_no": 30}
+{"id": "m_eq_528", "name": "Type274 射撃管制レーダー", "category_id": "m_cat_large_radar", "encyclopedia_no": 528}
+{"id": "m_eq_32", "name": "42号対空電探", "category_id": "m_cat_large_radar", "encyclopedia_no": 32}
+{"id": "m_eq_89", "name": "21号対空電探改", "category_id": "m_cat_large_radar", "encyclopedia_no": 89}
+{"id": "m_eq_411", "name": "42号対空電探改二", "category_id": "m_cat_large_radar", "encyclopedia_no": 411}
+{"id": "m_eq_527", "name": "Type281 レーダー", "category_id": "m_cat_large_radar", "encyclopedia_no": 527}
+{"id": "m_eq_410", "name": "21号対空電探改二", "category_id": "m_cat_large_radar", "encyclopedia_no": 410}
+{"id": "m_eq_124", "name": "FuMO25 レーダー", "category_id": "m_cat_large_radar", "encyclopedia_no": 124}
+{"id": "m_eq_31", "name": "32号対水上電探", "category_id": "m_cat_large_radar", "encyclopedia_no": 31}
+{"id": "m_eq_278", "name": "SKレーダー", "category_id": "m_cat_large_radar", "encyclopedia_no": 278}
+{"id": "m_eq_141", "name": "32号対水上電探改", "category_id": "m_cat_large_radar", "encyclopedia_no": 141}
+{"id": "m_eq_279", "name": "SK＋SGレーダー", "category_id": "m_cat_large_radar", "encyclopedia_no": 279}
+{"id": "m_eq_142", "name": "15m二重測距儀＋21号電探改二", "category_id": "m_cat_large_radar", "encyclopedia_no": 142}
+{"id": "m_eq_460", "name": "15m二重測距儀改＋21号電探改二＋熟練射撃指揮所", "category_id": "m_cat_large_radar", "encyclopedia_no": 460}
+{"id": "m_eq_210", "name": "潜水艦搭載電探＆水防式望遠鏡", "category_id": "m_cat_submarine_equipment", "encyclopedia_no": 210}
+{"id": "m_eq_211", "name": "潜水艦搭載電探＆逆探(E27)", "category_id": "m_cat_submarine_equipment", "encyclopedia_no": 211}
+{"id": "m_eq_458", "name": "後期型電探＆逆探＋シュノーケル装備", "category_id": "m_cat_submarine_equipment", "encyclopedia_no": 458}
+{"id": "m_eq_384", "name": "後期型潜水艦搭載電探＆逆探", "category_id": "m_cat_submarine_equipment", "encyclopedia_no": 384}
+{"id": "m_eq_519", "name": "SJレーダー＋潜水艦司令塔装備", "category_id": "m_cat_submarine_equipment", "encyclopedia_no": 519}
+{"id": "m_eq_33", "name": "改良型艦本式タービン", "category_id": "m_cat_engine_boost", "encyclopedia_no": 33}
+{"id": "m_eq_34", "name": "強化型艦本式缶", "category_id": "m_cat_engine_boost", "encyclopedia_no": 34}
+{"id": "m_eq_87", "name": "新型高温高圧缶", "category_id": "m_cat_engine_boost", "encyclopedia_no": 87}
+{"id": "m_eq_35", "name": "三式弾", "category_id": "m_cat_anti_air_shell", "encyclopedia_no": 35}
+{"id": "m_eq_317", "name": "三式弾改", "category_id": "m_cat_anti_air_shell", "encyclopedia_no": 317}
+{"id": "m_eq_483", "name": "三式弾改二", "category_id": "m_cat_anti_air_shell", "encyclopedia_no": 483}
+{"id": "m_eq_36", "name": "九一式徹甲弾", "category_id": "m_cat_anti_ship_shell", "encyclopedia_no": 36}
+{"id": "m_eq_116", "name": "一式徹甲弾", "category_id": "m_cat_anti_ship_shell", "encyclopedia_no": 116}
+{"id": "m_eq_365", "name": "一式徹甲弾改", "category_id": "m_cat_anti_ship_shell", "encyclopedia_no": 365}
+{"id": "m_eq_37", "name": "7.7mm機銃", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 37}
+{"id": "m_eq_38", "name": "12.7mm単装機銃", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 38}
+{"id": "m_eq_49", "name": "25mm単装機銃", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 49}
+{"id": "m_eq_39", "name": "25mm連装機銃", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 39}
+{"id": "m_eq_40", "name": "25mm三連装機銃", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 40}
+{"id": "m_eq_92", "name": "毘式40mm連装機銃", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 92}
+{"id": "m_eq_84", "name": "2cm 四連装FlaK 38", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 84}
+{"id": "m_eq_301", "name": "20連装7inch UP Rocket Launchers", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 301}
+{"id": "m_eq_505", "name": "25mm対空機銃増備", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 505}
+{"id": "m_eq_51", "name": "12cm30連装噴進砲", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 51}
+{"id": "m_eq_274", "name": "12cm30連装噴進砲改二", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 274}
+{"id": "m_eq_85", "name": "3.7cm FlaK M42", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 85}
+{"id": "m_eq_131", "name": "25mm三連装機銃 集中配備", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 131}
+{"id": "m_eq_191", "name": "QF 2ポンド8連装ポンポン砲", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 191}
+{"id": "m_eq_173", "name": "Bofors 40mm四連装機関砲", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 173}
+{"id": "m_eq_120", "name": "91式高射装置", "category_id": "m_cat_anti_air_director", "encyclopedia_no": 120}
+{"id": "m_eq_121", "name": "94式高射装置", "category_id": "m_cat_anti_air_director", "encyclopedia_no": 121}
+{"id": "m_eq_226", "name": "九五式爆雷", "category_id": "m_cat_depth_charge", "encyclopedia_no": 226}
+{"id": "m_eq_227", "name": "二式爆雷", "category_id": "m_cat_depth_charge", "encyclopedia_no": 227}
+{"id": "m_eq_488", "name": "二式爆雷改二", "category_id": "m_cat_depth_charge", "encyclopedia_no": 488}
+{"id": "m_eq_439", "name": "Hedgehog(初期型)", "category_id": "m_cat_depth_charge", "encyclopedia_no": 439}
+{"id": "m_eq_378", "name": "対潜短魚雷(試作初期型)", "category_id": "m_cat_depth_charge", "encyclopedia_no": 378}
+{"id": "m_eq_44", "name": "九四式爆雷投射機", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 44}
+{"id": "m_eq_45", "name": "三式爆雷投射機", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 45}
+{"id": "m_eq_287", "name": "三式爆雷投射機 集中配備", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 287}
+{"id": "m_eq_288", "name": "試製15cm9連装対潜噴進砲", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 288}
+{"id": "m_eq_377", "name": "RUR-4A Weapon Alpha改", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 377}
+{"id": "m_eq_472", "name": "Mk.32 対潜魚雷(Mk.2落射機)", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 472}
+{"id": "m_eq_346", "name": "二式12cm迫撃砲改", "category_id": "m_cat_depth_charge_projector_b", "encyclopedia_no": 346}
+{"id": "m_eq_347", "name": "二式12cm迫撃砲改 集中配備", "category_id": "m_cat_depth_charge_projector_b", "encyclopedia_no": 347}
+{"id": "m_eq_46", "name": "九三式水中聴音機", "category_id": "m_cat_sonar", "encyclopedia_no": 46}
+{"id": "m_eq_47", "name": "三式水中探信儀", "category_id": "m_cat_sonar", "encyclopedia_no": 47}
+{"id": "m_eq_260", "name": "Type124 ASDIC", "category_id": "m_cat_sonar", "encyclopedia_no": 260}
+{"id": "m_eq_438", "name": "三式水中探信儀改", "category_id": "m_cat_sonar", "encyclopedia_no": 438}
+{"id": "m_eq_149", "name": "四式水中聴音機", "category_id": "m_cat_sonar", "encyclopedia_no": 149}
+{"id": "m_eq_261", "name": "Type144/147 ASDIC", "category_id": "m_cat_sonar", "encyclopedia_no": 261}
+{"id": "m_eq_262", "name": "HF/DF + Type144/147 ASDIC", "category_id": "m_cat_sonar", "encyclopedia_no": 262}
+{"id": "m_eq_132", "name": "零式水中聴音機", "category_id": "m_cat_large_sonar", "encyclopedia_no": 132}
+{"id": "m_eq_42", "name": "応急修理要員", "category_id": "m_cat_damage_control", "encyclopedia_no": 42}
+{"id": "m_eq_43", "name": "応急修理女神", "category_id": "m_cat_damage_control", "encyclopedia_no": 43}
+{"id": "m_eq_268", "name": "北方迷彩(＋北方装備)", "category_id": "m_cat_bulge_medium", "encyclopedia_no": 268}
+{"id": "m_eq_72", "name": "増設バルジ(中型艦)", "category_id": "m_cat_bulge_medium", "encyclopedia_no": 72}
+{"id": "m_eq_203", "name": "艦本新設計 増設バルジ(中型艦)", "category_id": "m_cat_bulge_medium", "encyclopedia_no": 203}
+{"id": "m_eq_136", "name": "プリエーゼ式水中防御隔壁", "category_id": "m_cat_bulge_large", "encyclopedia_no": 136}
+{"id": "m_eq_73", "name": "増設バルジ(大型艦)", "category_id": "m_cat_bulge_large", "encyclopedia_no": 73}
+{"id": "m_eq_204", "name": "艦本新設計 増設バルジ(大型艦)", "category_id": "m_cat_bulge_large", "encyclopedia_no": 204}
+{"id": "m_eq_74", "name": "探照灯", "category_id": "m_cat_searchlight", "encyclopedia_no": 74}
+{"id": "m_eq_140", "name": "96式150cm探照灯", "category_id": "m_cat_large_searchlight", "encyclopedia_no": 140}
+{"id": "m_eq_101", "name": "照明弾", "category_id": "m_cat_star_shell", "encyclopedia_no": 101}
+{"id": "m_eq_129", "name": "熟練見張員", "category_id": "m_cat_surface_ship_crew", "encyclopedia_no": 129}
+{"id": "m_eq_412", "name": "水雷戦隊 熟練見張員", "category_id": "m_cat_surface_ship_crew", "encyclopedia_no": 412}
+{"id": "m_eq_108", "name": "熟練艦載機整備員", "category_id": "m_cat_aviation_personnel", "encyclopedia_no": 108}
+{"id": "m_eq_258", "name": "夜間作戦航空要員", "category_id": "m_cat_aviation_personnel", "encyclopedia_no": 258}
+{"id": "m_eq_259", "name": "夜間作戦航空要員＋熟練甲板員", "category_id": "m_cat_aviation_personnel", "encyclopedia_no": 259}
+{"id": "m_eq_402", "name": "寒冷地装備＆甲板要員", "category_id": "m_cat_aviation_personnel", "encyclopedia_no": 402}
+{"id": "m_eq_477", "name": "熟練甲板要員", "category_id": "m_cat_aviation_personnel", "encyclopedia_no": 477}
+{"id": "m_eq_478", "name": "熟練甲板要員＋航空整備員", "category_id": "m_cat_aviation_personnel", "encyclopedia_no": 478}
+{"id": "m_eq_86", "name": "艦艇修理施設", "category_id": "m_cat_ship_repair_facility", "encyclopedia_no": 86}
+{"id": "m_eq_107", "name": "艦隊司令部施設", "category_id": "m_cat_command_facility", "encyclopedia_no": 107}
+{"id": "m_eq_272", "name": "遊撃部隊 艦隊司令部", "category_id": "m_cat_command_facility", "encyclopedia_no": 272}
+{"id": "m_eq_413", "name": "精鋭水雷戦隊 司令部", "category_id": "m_cat_command_facility", "encyclopedia_no": 413}
+{"id": "m_eq_531", "name": "艦隊通信アンテナ", "category_id": "m_cat_command_facility", "encyclopedia_no": 531}
+{"id": "m_eq_532", "name": "通信装置＆要員", "category_id": "m_cat_command_facility", "encyclopedia_no": 532}
+{"id": "m_eq_126", "name": "WG42(Wurfgerät 42)", "category_id": "m_cat_ground_attack_equipment", "encyclopedia_no": 126}
+{"id": "m_eq_348", "name": "艦載型 四式20cm対地噴進砲", "category_id": "m_cat_ground_attack_equipment", "encyclopedia_no": 348}
+{"id": "m_eq_349", "name": "四式20cm対地噴進砲 集中配備", "category_id": "m_cat_ground_attack_equipment", "encyclopedia_no": 349}
+{"id": "m_eq_75", "name": "ドラム缶(輸送用)", "category_id": "m_cat_simple_transport_material", "encyclopedia_no": 75}
+{"id": "m_eq_496", "name": "陸軍歩兵部隊", "category_id": "m_cat_ground_force_unit", "encyclopedia_no": 496}
+{"id": "m_eq_497", "name": "九七式中戦車(チハ)", "category_id": "m_cat_ground_force_unit", "encyclopedia_no": 497}
+{"id": "m_eq_498", "name": "九七式中戦車 新砲塔(チハ改)", "category_id": "m_cat_ground_force_unit", "encyclopedia_no": 498}
+{"id": "m_eq_499", "name": "陸軍歩兵部隊＋チハ改", "category_id": "m_cat_ground_force_unit", "encyclopedia_no": 499}
+{"id": "m_eq_500", "name": "発煙装置(煙幕)", "category_id": "m_cat_ship_smoke_generator", "encyclopedia_no": 500}
+{"id": "m_eq_501", "name": "発煙装置改(煙幕)", "category_id": "m_cat_ship_smoke_generator", "encyclopedia_no": 501}
+{"id": "m_eq_145", "name": "戦闘糧食", "category_id": "m_cat_combat_ration", "encyclopedia_no": 145}
+{"id": "m_eq_150", "name": "秋刀魚の缶詰", "category_id": "m_cat_combat_ration", "encyclopedia_no": 150}
+{"id": "m_eq_241", "name": "戦闘糧食(特別なおにぎり)", "category_id": "m_cat_combat_ration", "encyclopedia_no": 241}
+{"id": "m_eq_513", "name": "阻塞気球", "category_id": "m_cat_barrage_balloon", "encyclopedia_no": 513}
+{"id": "m_eq_146", "name": "洋上補給", "category_id": "m_cat_supply_material", "encyclopedia_no": 146}
+{"id": "m_eq_209", "name": "彩雲(輸送用分解済)", "category_id": "m_cat_transport_equipment", "encyclopedia_no": 209}
+{"id": "m_eq_224", "name": "爆装一式戦 隼III型改(65戦隊)", "category_id": "m_cat_land_attacker", "encyclopedia_no": 224}
+{"id": "m_eq_401", "name": "Do 17 Z-2", "category_id": "m_cat_land_attacker", "encyclopedia_no": 401}
+{"id": "m_eq_168", "name": "九六式陸攻", "category_id": "m_cat_land_attacker", "encyclopedia_no": 168}
+{"id": "m_eq_169", "name": "一式陸攻", "category_id": "m_cat_land_attacker", "encyclopedia_no": 169}
+{"id": "m_eq_180", "name": "一式陸攻 二二型甲", "category_id": "m_cat_land_attacker", "encyclopedia_no": 180}
+{"id": "m_eq_186", "name": "一式陸攻 三四型", "category_id": "m_cat_land_attacker", "encyclopedia_no": 186}
+{"id": "m_eq_493", "name": "一式陸攻(八幡部隊)", "category_id": "m_cat_land_attacker", "encyclopedia_no": 493}
+{"id": "m_eq_170", "name": "一式陸攻(野中隊)", "category_id": "m_cat_land_attacker", "encyclopedia_no": 170}
+{"id": "m_eq_431", "name": "SM.79", "category_id": "m_cat_land_attacker", "encyclopedia_no": 431}
+{"id": "m_eq_432", "name": "SM.79 bis", "category_id": "m_cat_land_attacker", "encyclopedia_no": 432}
+{"id": "m_eq_433", "name": "SM.79 bis(熟練)", "category_id": "m_cat_land_attacker", "encyclopedia_no": 433}
+{"id": "m_eq_187", "name": "銀河", "category_id": "m_cat_land_attacker", "encyclopedia_no": 187}
+{"id": "m_eq_504", "name": "銀河(熟練)", "category_id": "m_cat_land_attacker", "encyclopedia_no": 504}
+{"id": "m_eq_388", "name": "銀河(江草隊)", "category_id": "m_cat_land_attacker", "encyclopedia_no": 388}
+{"id": "m_eq_403", "name": "四式重爆 飛龍", "category_id": "m_cat_land_attacker", "encyclopedia_no": 403}
+{"id": "m_eq_404", "name": "四式重爆 飛龍(熟練)", "category_id": "m_cat_land_attacker", "encyclopedia_no": 404}
+{"id": "m_eq_459", "name": "B-25", "category_id": "m_cat_land_attacker", "encyclopedia_no": 459}
+{"id": "m_eq_479", "name": "Mosquito FB Mk.VI", "category_id": "m_cat_land_attacker", "encyclopedia_no": 479}
+{"id": "m_eq_453", "name": "キ102乙", "category_id": "m_cat_land_attacker", "encyclopedia_no": 453}
+{"id": "m_eq_454", "name": "キ102乙改＋イ号一型乙 誘導弾", "category_id": "m_cat_land_attacker", "encyclopedia_no": 454}
+{"id": "m_eq_444", "name": "四式重爆 飛龍＋イ号一型甲 誘導弾", "category_id": "m_cat_land_attacker", "encyclopedia_no": 444}
+{"id": "m_eq_484", "name": "四式重爆 飛龍(熟練)＋イ号一型甲 誘導弾", "category_id": "m_cat_land_attacker", "encyclopedia_no": 484}
+{"id": "m_eq_405", "name": "Do 217 E-5＋Hs293初期型", "category_id": "m_cat_land_attacker", "encyclopedia_no": 405}
+{"id": "m_eq_406", "name": "Do 217 K-2＋Fritz-X", "category_id": "m_cat_land_attacker", "encyclopedia_no": 406}
+{"id": "m_eq_269", "name": "試製東海", "category_id": "m_cat_land_attacker", "encyclopedia_no": 269}
+{"id": "m_eq_270", "name": "東海(九〇一空)", "category_id": "m_cat_land_attacker", "encyclopedia_no": 270}
+{"id": "m_eq_395", "name": "深山", "category_id": "m_cat_heavy_land_aircraft", "encyclopedia_no": 395}
+{"id": "m_eq_396", "name": "深山改", "category_id": "m_cat_heavy_land_aircraft", "encyclopedia_no": 396}
+{"id": "m_eq_311", "name": "二式陸上偵察機", "category_id": "m_cat_land_recon", "encyclopedia_no": 311}
+{"id": "m_eq_480", "name": "Mosquito PR Mk.IV", "category_id": "m_cat_land_recon", "encyclopedia_no": 480}
+{"id": "m_eq_312", "name": "二式陸上偵察機(熟練)", "category_id": "m_cat_land_recon", "encyclopedia_no": 312}
+{"id": "m_eq_351", "name": "試製 秋水", "category_id": "m_cat_interceptor", "encyclopedia_no": 351}
+{"id": "m_eq_350", "name": "Me163B", "category_id": "m_cat_interceptor", "encyclopedia_no": 350}
+{"id": "m_eq_352", "name": "秋水", "category_id": "m_cat_interceptor", "encyclopedia_no": 352}
+{"id": "m_eq_175", "name": "雷電", "category_id": "m_cat_interceptor", "encyclopedia_no": 175}
+{"id": "m_eq_201", "name": "紫電一一型", "category_id": "m_cat_interceptor", "encyclopedia_no": 201}
+{"id": "m_eq_202", "name": "紫電二一型 紫電改", "category_id": "m_cat_interceptor", "encyclopedia_no": 202}
+{"id": "m_eq_333", "name": "烈風改", "category_id": "m_cat_interceptor", "encyclopedia_no": 333}
+{"id": "m_eq_263", "name": "紫電改(三四三空) 戦闘301", "category_id": "m_cat_interceptor", "encyclopedia_no": 263}
+{"id": "m_eq_265", "name": "紫電改(三四三空) 戦闘407", "category_id": "m_cat_interceptor", "encyclopedia_no": 265}
+{"id": "m_eq_264", "name": "紫電改(三四三空) 戦闘701", "category_id": "m_cat_interceptor", "encyclopedia_no": 264}
+{"id": "m_eq_334", "name": "烈風改(三五二空/熟練)", "category_id": "m_cat_interceptor", "encyclopedia_no": 334}
+{"id": "m_eq_416", "name": "零式艦戦21型(台南空)", "category_id": "m_cat_interceptor", "encyclopedia_no": 416}
+{"id": "m_eq_354", "name": "Fw190 D-9", "category_id": "m_cat_interceptor", "encyclopedia_no": 354}
+{"id": "m_eq_417", "name": "零式艦戦32型(台南空)", "category_id": "m_cat_interceptor", "encyclopedia_no": 417}
+{"id": "m_eq_418", "name": "零式艦戦22型(251空)", "category_id": "m_cat_interceptor", "encyclopedia_no": 418}
+{"id": "m_eq_546", "name": "試製 震電(局地戦闘機)", "category_id": "m_cat_interceptor", "encyclopedia_no": 546}
+{"id": "m_eq_516", "name": "Me 262 A-1a／R1", "category_id": "m_cat_interceptor", "encyclopedia_no": 516}
+{"id": "m_eq_445", "name": "二式複戦 屠龍", "category_id": "m_cat_army_fighter", "encyclopedia_no": 445}
+{"id": "m_eq_446", "name": "二式複戦 屠龍 丙型", "category_id": "m_cat_army_fighter", "encyclopedia_no": 446}
+{"id": "m_eq_452", "name": "キ96", "category_id": "m_cat_army_fighter", "encyclopedia_no": 452}
+{"id": "m_eq_221", "name": "一式戦 隼II型", "category_id": "m_cat_army_fighter", "encyclopedia_no": 221}
+{"id": "m_eq_222", "name": "一式戦 隼III型甲", "category_id": "m_cat_army_fighter", "encyclopedia_no": 222}
+{"id": "m_eq_250", "name": "Spitfire Mk.I", "category_id": "m_cat_army_fighter", "encyclopedia_no": 250}
+{"id": "m_eq_176", "name": "三式戦 飛燕", "category_id": "m_cat_army_fighter", "encyclopedia_no": 176}
+{"id": "m_eq_223", "name": "一式戦 隼III型甲(54戦隊)", "category_id": "m_cat_army_fighter", "encyclopedia_no": 223}
+{"id": "m_eq_185", "name": "三式戦 飛燕一型丁", "category_id": "m_cat_army_fighter", "encyclopedia_no": 185}
+{"id": "m_eq_251", "name": "Spitfire Mk.V", "category_id": "m_cat_army_fighter", "encyclopedia_no": 251}
+{"id": "m_eq_177", "name": "三式戦 飛燕(飛行第244戦隊)", "category_id": "m_cat_army_fighter", "encyclopedia_no": 177}
+{"id": "m_eq_218", "name": "四式戦 疾風", "category_id": "m_cat_army_fighter", "encyclopedia_no": 218}
+{"id": "m_eq_253", "name": "Spitfire Mk.IX(熟練)", "category_id": "m_cat_army_fighter", "encyclopedia_no": 253}
+{"id": "m_eq_225", "name": "一式戦 隼II型(64戦隊)", "category_id": "m_cat_army_fighter", "encyclopedia_no": 225}
