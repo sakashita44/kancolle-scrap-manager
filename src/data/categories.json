@@ -1,60 +1,110 @@
 {
-  "version": "1.0.0",
-  "categories": [
-    {
-      "id": "m_cat_gun_s",
-      "name": "小口径主砲",
-      "order": 1
-    },
-    {
-      "id": "m_cat_gun_m",
-      "name": "中口径主砲",
-      "order": 2
-    },
-    {
-      "id": "m_cat_gun_l",
-      "name": "大口径主砲",
-      "order": 3
-    },
-    {
-      "id": "m_cat_mg",
-      "name": "機銃",
-      "order": 4
-    },
-    {
-      "id": "m_cat_torpedo",
-      "name": "魚雷",
-      "order": 5
-    },
-    {
-      "id": "m_cat_dc",
-      "name": "爆雷",
-      "order": 6
-    },
-    {
-      "id": "m_cat_sonar",
-      "name": "ソナー",
-      "order": 7
-    },
-    {
-      "id": "m_cat_fighter",
-      "name": "艦上戦闘機",
-      "order": 8
-    },
-    {
-      "id": "m_cat_bomber",
-      "name": "艦上爆撃機",
-      "order": 9
-    },
-    {
-      "id": "m_cat_tb",
-      "name": "艦上攻撃機",
-      "order": 10
-    },
-    {
-      "id": "m_cat_recon",
-      "name": "艦上偵察機",
-      "order": 11
-    }
-  ]
+    "version": "2.0.0",
+    "categories": [
+        {
+            "id": "m_cat_smain",
+            "name": "小口径主砲",
+            "order": 1
+        },
+        {
+            "id": "m_cat_mmain",
+            "name": "中口径主砲",
+            "order": 2
+        },
+        {
+            "id": "m_cat_lmain",
+            "name": "大口径主砲",
+            "order": 3
+        },
+        {
+            "id": "m_cat_secondary",
+            "name": "副砲",
+            "order": 4
+        },
+        {
+            "id": "m_cat_torpedo",
+            "name": "魚雷",
+            "order": 5
+        },
+        {
+            "id": "m_cat_landingcraft",
+            "name": "上陸用舟艇",
+            "order": 6
+        },
+        {
+            "id": "m_cat_fighter",
+            "name": "艦上戦闘機",
+            "order": 7
+        },
+        {
+            "id": "m_cat_bomber",
+            "name": "艦上爆撃機",
+            "order": 8
+        },
+        {
+            "id": "m_cat_seaplanebomber",
+            "name": "水上爆撃機",
+            "order": 9
+        },
+        {
+            "id": "m_cat_attacker",
+            "name": "艦上攻撃機",
+            "order": 10
+        },
+        {
+            "id": "m_cat_reconnaissance",
+            "name": "艦上偵察機",
+            "order": 11
+        },
+        {
+            "id": "m_cat_seaplanerecon",
+            "name": "水上偵察機",
+            "order": 12
+        },
+        {
+            "id": "m_cat_radar",
+            "name": "電探",
+            "order": 13
+        },
+        {
+            "id": "m_cat_engine",
+            "name": "機関部強化",
+            "order": 14
+        },
+        {
+            "id": "m_cat_shell",
+            "name": "対艦強化弾",
+            "order": 15
+        },
+        {
+            "id": "m_cat_machinegun",
+            "name": "対空機銃",
+            "order": 16
+        },
+        {
+            "id": "m_cat_antiaircraft",
+            "name": "高角砲",
+            "order": 17
+        },
+        {
+            "id": "m_cat_depthcharge",
+            "name": "爆雷",
+            "order": 18
+        },
+        {
+            "id": "m_cat_sonar",
+            "name": "ソナー",
+            "order": 19
+        },
+        {
+            "id": "m_cat_bulge",
+            "name": "増設バルジ",
+            "order": 20
+        },
+        {
+            "id": "m_cat_uncertain",
+            "name": "その他",
+            "order": 21
+        }
+    ]
 }

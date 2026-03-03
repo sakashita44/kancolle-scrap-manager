@@ -4,10 +4,10 @@
 
 4ステップのパイプラインで処理する:
 
-1. **parse_equipments.py**（機械的）: 全カテゴリ・全装備をJSONLに抽出
+1. **parse_equipments.py**（機械的）: 全カテゴリ・全装備をJSONLに抽出（種別列優先でカテゴリ補正）
 1. **parse_missions.py**（機械的）: 廃棄任務の生テキストをJSONLに抽出
 1. **Claude Code**（AI, 手動実行）: 生テキストから廃棄条件を判断し missions.json を生成
-1. **build_masters.py**（機械的）: missions.json の参照IDで中間ファイルをフィルタし最終JSONを生成
+1. **build_masters.py**（機械的）: missions.json の順序を正規化し、参照IDで最終JSONを生成
 
 ## 前提条件
 
@@ -123,8 +123,9 @@ uv run python -X utf8 build_masters.py
 
 出力:
 
+- `output/missions.json` — periodごとにWiki ID順で`order`を再採番した任務データ
 - `output/categories.json` — 任務が参照するカテゴリのみ
-- `output/equipments.json` — 参照カテゴリに属する装備
+- `output/equipments.json` — 任務が明示参照する装備のみ
 
 ## 出力ファイルの適用
 

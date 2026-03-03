@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -27,6 +28,15 @@ SCHEMA_VERSION = "2.0.0"
 # カテゴリ order の100番台区切り開始値
 CATEGORY_ORDER_BASE = 1
 EQUIPMENT_ORDER_STEP = 100
+
+PERIOD_ORDER: dict[str, int] = {
+    "Daily": 0,
+    "Weekly": 1,
+    "Monthly": 2,
+    "Quarterly": 3,
+    "Yearly": 4,
+    "OneTime": 5,
+}
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -52,6 +62,48 @@ def write_json(data: dict, path: Path) -> None:
     print(f"  出力: {path} ({path.stat().st_size} bytes)")
 
 
+def mission_wiki_key(mission: dict) -> tuple[str, int, str]:
+    """mission.id から Wiki ID相当を抽出し自然順比較キーを返す."""
+    mission_id = mission.get("id", "")
+    token = mission_id.removeprefix("m_ms_").lower()
+    matched = re.match(r"([a-z]+)(\d+)$", token)
+    if not matched:
+        return (token, 10**9, token)
+    prefix, number = matched.groups()
+    return (prefix, int(number), token)
+
+
+def normalize_missions(missions: list[dict]) -> list[dict]:
+    """ミッションをperiod別Wiki順でソートし、orderを再採番する."""
+    sorted_missions = sorted(
+        missions,
+        key=lambda mission: (
+            PERIOD_ORDER.get(mission.get("period", ""), 99),
+            mission_wiki_key(mission),
+            mission.get("name", ""),
+        ),
+    )
+
+    period_counters: dict[str, int] = {}
+    normalized: list[dict] = []
+    for mission in sorted_missions:
+        period = mission.get("period", "")
+        current_order = period_counters.get(period, 0)
+        period_counters[period] = current_order + 1
+
+        normalized.append(
+            {
+                "id": mission["id"],
+                "name": mission["name"],
+                "period": period,
+                "order": current_order,
+                "reqs": mission.get("reqs", []),
+            }
+        )
+
+    return normalized
+
+
 def main() -> None:
     """メインエントリポイント."""
     print("=== マスタデータビルダー ===")
@@ -65,7 +117,7 @@ def main() -> None:
 
     with MISSIONS_FILE.open(encoding="utf-8") as f:
         missions_data = json.load(f)
-    missions = missions_data["missions"]
+    missions = normalize_missions(missions_data["missions"])
     print(f"入力: {MISSIONS_FILE} ({len(missions)}件)")
 
     # 中間ファイル読み込み
@@ -97,12 +149,13 @@ def main() -> None:
         if eq_id in eq_by_id:
             referenced_cat_ids.add(eq_by_id[eq_id]["category_id"])
 
-    # カテゴリのフィルタ + order 割り振り
+    # カテゴリのフィルタ + order 割り振り（抽出元JSONLの出現順=Wiki順）
     cat_by_id = {c["id"]: c for c in all_categories}
+    cat_position = {cat["id"]: index for index, cat in enumerate(all_categories)}
     filtered_categories: list[dict] = []
     missing_cats: list[str] = []
 
-    for cat_id in sorted(referenced_cat_ids):
+    for cat_id in sorted(referenced_cat_ids, key=lambda value: cat_position.get(value, 10**9)):
         if cat_id not in cat_by_id:
             missing_cats.append(cat_id)
             continue
@@ -112,20 +165,22 @@ def main() -> None:
     for i, cat in enumerate(filtered_categories):
         cat["order"] = i + CATEGORY_ORDER_BASE
 
-    # 装備のフィルタ: 参照カテゴリに属する全装備を抽出
+    # 装備のフィルタ: 任務が明示参照する装備のみ抽出
+    all_equipments_by_id = {equipment["id"]: equipment for equipment in all_equipments}
     filtered_equipments: list[dict] = []
-    for eq in all_equipments:
-        if eq["category_id"] in referenced_cat_ids:
-            filtered_equipments.append(eq)
+    for equipment_id in referenced_eq_ids:
+        equipment = all_equipments_by_id.get(equipment_id)
+        if equipment:
+            filtered_equipments.append(equipment)
 
     # 装備の order: カテゴリごとに100番台区切り
     cat_order_map = {cat["id"]: cat["order"] for cat in filtered_categories}
-    for eq in filtered_equipments:
-        cat_order = cat_order_map.get(eq["category_id"], 0)
-        # 同一カテゴリ内での連番はリスト出現順で決定
-        eq["_sort_key"] = (cat_order, eq.get("wiki_no", 0))
-
-    filtered_equipments.sort(key=lambda e: e["_sort_key"])
+    filtered_equipments.sort(
+        key=lambda equipment: (
+            cat_order_map.get(equipment["category_id"], 0),
+            equipment.get("wiki_no", 10**9),
+        )
+    )
 
     # order 割り振り: カテゴリ order * 100 + カテゴリ内連番
     cat_counters: dict[str, int] = {}
@@ -192,6 +247,11 @@ def main() -> None:
     }
 
     print("--- 出力 ---")
+    missions_json = {
+        "version": SCHEMA_VERSION,
+        "missions": missions,
+    }
+    write_json(missions_json, OUTPUT_DIR / "missions.json")
     write_json(categories_json, OUTPUT_DIR / "categories.json")
     write_json(equipments_json, OUTPUT_DIR / "equipments.json")
     print()

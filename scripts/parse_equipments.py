@@ -15,6 +15,7 @@ HTML構造:
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -65,10 +66,21 @@ CATEGORY_ANCHORS: dict[str, str] = {
     "LandingCraft": "上陸用舟艇",
 }
 
+# 種別列テキスト → アンカー名の上書きマップ
+# HTML上のセクションアンカーより種別列を優先して分類したい項目を定義する.
+TYPE_TO_ANCHOR: dict[str, str] = {
+    "上陸用舟艇": "LandingCraft",
+}
+
 
 def _anchor_to_id(anchor: str) -> str:
     """Wikiアンカー名からカテゴリIDを生成する."""
     return f"m_cat_{anchor.lower()}"
+
+
+def _normalize_whitespace(text: str) -> str:
+    """空白を正規化する."""
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def _is_header_row(row: Tag) -> bool:
@@ -134,6 +146,19 @@ def _get_equipment_name(row: Tag) -> str | None:
     if text and len(text) >= 2 and not text.isdigit():
         return text
     return None
+
+
+def _get_type_label(row: Tag) -> str | None:
+    """データ行の種別列テキストを取得する."""
+    cells = row.find_all("td")
+    type_col = EQUIP_NAME_COL + 1
+    if len(cells) <= type_col:
+        return None
+
+    text = _normalize_whitespace(cells[type_col].get_text(" ", strip=True))
+    if not text:
+        return None
+    return text
 
 
 def write_jsonl(records: list[dict], path: Path) -> None:
@@ -214,6 +239,22 @@ def main() -> None:
             warnings.append(f"警告: 図鑑No.なし: 「{name}」（{current_cat_id}）→ スキップ")
             continue
 
+        type_label = _get_type_label(row)
+        effective_cat_id = current_cat_id
+        if type_label:
+            override_anchor = TYPE_TO_ANCHOR.get(type_label)
+            if override_anchor:
+                effective_cat_id = _anchor_to_id(override_anchor)
+                if effective_cat_id not in seen_cat_ids:
+                    seen_cat_ids.add(effective_cat_id)
+                    categories.append(
+                        {
+                            "id": effective_cat_id,
+                            "name": CATEGORY_ANCHORS[override_anchor],
+                            "anchor": override_anchor,
+                        }
+                    )
+
         if wiki_no in seen_wiki_nos:
             # 同じ図鑑No.の重複（別カテゴリに同じ装備が載っている場合等）
             continue
@@ -224,7 +265,7 @@ def main() -> None:
             {
                 "id": eq_id,
                 "name": name,
-                "category_id": current_cat_id,
+                "category_id": effective_cat_id,
                 "wiki_no": wiki_no,
             }
         )
