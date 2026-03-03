@@ -1,15 +1,14 @@
 """装備一覧(種類別) HTMLから全カテゴリ・全装備をJSONLに抽出する.
 
-入力: input/equipment_list.html（https://wikiwiki.jp/kancolle/装備一覧(種類別) のHTML）
+入力: input/equipment_list.html
 出力:
-  intermediate/all_categories.jsonl — 全カテゴリ（Wikiアンカーベース ID）
-  intermediate/all_equipments.jsonl — 全装備（図鑑No.ベース ID）
+    intermediate/all_categories.jsonl — 使用カテゴリのみ
+    intermediate/all_equipments.jsonl — 全装備（図鑑No.ベース ID）
 
-HTML構造:
-  - 1つの巨大テーブルに全カテゴリ・全装備が格納されている
-  - カテゴリはヘッダー行（全セルが<th>）で区切られる
-  - ヘッダー行の3列目(index 2)にカテゴリ名、<a name="XXX">アンカーあり
-  - データ行（全セルが<td>）: 1列目=図鑑No., 3列目(index 2)=装備名
+分類ルール:
+    - 種別列を主キーにする（アンカーは使わない）
+    - カテゴリ定義は config/category_registry.json のみを参照する
+    - 未登録ラベルが1件でもあれば失敗し、中間出力は更新しない
 """
 
 from __future__ import annotations
@@ -24,88 +23,76 @@ from bs4 import BeautifulSoup, Tag
 
 INPUT_FILE = Path(__file__).parent / "input" / "equipment_list.html"
 INTERMEDIATE_DIR = Path(__file__).parent / "intermediate"
+REGISTRY_FILE = Path(__file__).parent / "config" / "category_registry.json"
 
 # 装備名カラムのインデックス（0始まり）
 EQUIP_NAME_COL = 2
 # 図鑑No.カラムのインデックス（0始まり）
 WIKI_NO_COL = 0
 
-# Wikiアンカー名 → カテゴリ表示名・ID slug のマッピング
-# id は m_cat_<anchor小文字> で生成する
-CATEGORY_ANCHORS: dict[str, str] = {
-    "SMain": "小口径主砲",
-    "MMain": "中口径主砲",
-    "LMain": "大口径主砲",
-    "Secondary": "副砲",
-    "Torpedo": "魚雷",
-    "Craft": "特殊潜航艇",
-    "Fighter": "艦上戦闘機",
-    "SeaplaneFighter": "水上戦闘機",
-    "Bomber": "艦上爆撃機",
-    "SeaplaneBomber": "水上爆撃機",
-    "Attacker": "艦上攻撃機",
-    "Reconnaissance": "艦上偵察機",
-    "SeaplaneRecon": "水上偵察機",
-    "Patrol": "哨戒機",
-    "Radar": "電探",
-    "Engine": "機関部強化",
-    "Shell": "対艦強化弾",
-    "Machinegun": "対空機銃",
-    "AntiAircraft": "高角砲",
-    "DepthCharge": "爆雷",
-    "Sonar": "ソナー",
-    "DamageControl": "応急修理要員",
-    "Bulge": "増設バルジ",
-    "uncertain": "その他",
-    "LandAttacker": "陸上攻撃機",
-    "Heavybomber": "大型陸上機",
-    "LandRecon": "陸上偵察機",
-    "Interceptor": "局地戦闘機",
-    "ArmyFighter": "陸軍戦闘機",
-    "LandingCraft": "上陸用舟艇",
-}
+def make_category_id(slug: str) -> str:
+    """slugからカテゴリIDを生成する."""
+    return f"m_cat_{slug}"
 
 
-def _anchor_to_id(anchor: str) -> str:
-    """Wikiアンカー名からカテゴリIDを生成する."""
-    return f"m_cat_{anchor.lower()}"
+def load_registry(path: Path) -> tuple[dict[str, dict], list[dict]]:
+    """カテゴリレジストリを読み込み、検証済みマップを返す."""
+    if not path.exists():
+        print(f"エラー: レジストリが見つかりません: {path}")
+        sys.exit(1)
+
+    with path.open(encoding="utf-8") as file:
+        data = json.load(file)
+
+    categories = data.get("categories")
+    if not isinstance(categories, list):
+        print("エラー: category_registry.json の categories は配列である必要があります")
+        sys.exit(1)
+
+    label_map: dict[str, dict] = {}
+    seen_slugs: set[str] = set()
+    seen_orders: set[int] = set()
+
+    for item in categories:
+        label = item.get("label")
+        slug = item.get("slug")
+        order = item.get("order")
+        name = item.get("name", label)
+
+        if not isinstance(label, str):
+            print(f"エラー: label が文字列ではありません: {item}")
+            sys.exit(1)
+        if not isinstance(slug, str):
+            print(f"エラー: slug が文字列ではありません: {item}")
+            sys.exit(1)
+        if not isinstance(order, int):
+            print(f"エラー: order が整数ではありません: {item}")
+            sys.exit(1)
+        if slug in seen_slugs:
+            print(f"エラー: slug 重複: {slug}")
+            sys.exit(1)
+        if order in seen_orders:
+            print(f"エラー: order 重複: {order}")
+            sys.exit(1)
+        if label in label_map:
+            print(f"エラー: label 重複: {label!r}")
+            sys.exit(1)
+
+        seen_slugs.add(slug)
+        seen_orders.add(order)
+        label_map[label] = {
+            "label": label,
+            "slug": slug,
+            "name": name,
+            "order": order,
+            "id": make_category_id(slug),
+        }
+
+    sorted_categories = sorted(label_map.values(), key=lambda category: category["order"])
+    return label_map, sorted_categories
 
 
-def _is_header_row(row: Tag) -> bool:
-    """行がヘッダー行かどうか.
-
-    Wikiのテーブルでは、カテゴリヘッダー行はほぼ全セルがthだが
-    最後のセル（「追加」ボタン）がtdの場合がある.
-    thセルの割合が過半数であればヘッダー行と判定する.
-    """
-    cells = row.find_all(["th", "td"])
-    if not cells:
-        return False
-    th_count = sum(1 for c in cells if c.name == "th")
-    return th_count > len(cells) // 2
-
-
-def _get_anchor_name(row: Tag) -> str | None:
-    """行内のアンカー名を取得する（カテゴリヘッダー判定用）."""
-    anchor = row.find("a", attrs={"name": True})
-    if anchor:
-        name = anchor.get("name", "")
-        if name in CATEGORY_ANCHORS:
-            return name
-    return None
-
-
-def _get_category_display_name(row: Tag) -> str | None:
-    """ヘッダー行からカテゴリ表示名を取得する（3列目）."""
-    cells = row.find_all(["th", "td"])
-    if len(cells) <= EQUIP_NAME_COL:
-        return None
-    cell = cells[EQUIP_NAME_COL]
-    text = cell.get_text(strip=True)
-    return text if text else None
-
-
-def _get_wiki_no(row: Tag) -> int | None:
+def _get_encyclopedia_no(row: Tag) -> int | None:
     """データ行から図鑑No.を取得する."""
     cells = row.find_all("td")
     if len(cells) <= WIKI_NO_COL:
@@ -134,6 +121,16 @@ def _get_equipment_name(row: Tag) -> str | None:
     if text and len(text) >= 2 and not text.isdigit():
         return text
     return None
+
+
+def _get_type_label(row: Tag) -> str | None:
+    """データ行の種別列テキストを取得する."""
+    cells = row.find_all("td")
+    type_col = EQUIP_NAME_COL + 1
+    if len(cells) <= type_col:
+        return None
+
+    return " ".join(cells[type_col].get_text(" ", strip=True).split())
 
 
 def write_jsonl(records: list[dict], path: Path) -> None:
@@ -170,64 +167,68 @@ def main() -> None:
     rows = table.find_all("tr")
     print(f"  テーブル行数: {len(rows)}")
 
-    categories: list[dict] = []
+    category_by_id: dict[str, dict] = {}
     equipments: list[dict] = []
     warnings: list[str] = []
-    seen_cat_ids: set[str] = set()
-    seen_wiki_nos: set[int] = set()
+    seen_encyclopedia_nos: set[int] = set()
+    unknown_labels: set[str] = set()
 
-    current_anchor: str | None = None
-    current_cat_id: str | None = None
+    category_registry, sorted_registry_categories = load_registry(REGISTRY_FILE)
 
     for row in rows:
-        anchor_name = _get_anchor_name(row)
-        if anchor_name and _is_header_row(row):
-            current_anchor = anchor_name
-            current_cat_id = _anchor_to_id(anchor_name)
-
-            if current_cat_id not in seen_cat_ids:
-                seen_cat_ids.add(current_cat_id)
-                display_name = CATEGORY_ANCHORS[anchor_name]
-                categories.append(
-                    {
-                        "id": current_cat_id,
-                        "name": display_name,
-                        "anchor": anchor_name,
-                    }
-                )
-            continue
-
-        # カテゴリ未確定ならスキップ
-        if current_cat_id is None:
-            continue
-
-        # ヘッダー行はスキップ
-        if _is_header_row(row):
+        cells = row.find_all("td")
+        if len(cells) <= EQUIP_NAME_COL + 1:
             continue
 
         name = _get_equipment_name(row)
         if not name:
             continue
 
-        wiki_no = _get_wiki_no(row)
-        if wiki_no is None:
-            warnings.append(f"警告: 図鑑No.なし: 「{name}」（{current_cat_id}）→ スキップ")
+        encyclopedia_no = _get_encyclopedia_no(row)
+        if encyclopedia_no is None:
+            warnings.append(f"警告: 図鑑No.なし: 「{name}」→ スキップ")
             continue
 
-        if wiki_no in seen_wiki_nos:
+        type_label = _get_type_label(row)
+        category = category_registry.get(type_label)
+        if category is None:
+            unknown_labels.add(type_label)
+            continue
+
+        if encyclopedia_no in seen_encyclopedia_nos:
             # 同じ図鑑No.の重複（別カテゴリに同じ装備が載っている場合等）
             continue
-        seen_wiki_nos.add(wiki_no)
+        seen_encyclopedia_nos.add(encyclopedia_no)
 
-        eq_id = f"m_eq_{wiki_no}"
+        category_by_id[category["id"]] = category
+
+        eq_id = f"m_eq_{encyclopedia_no}"
         equipments.append(
             {
                 "id": eq_id,
                 "name": name,
-                "category_id": current_cat_id,
-                "wiki_no": wiki_no,
+                "category_id": category["id"],
+                "encyclopedia_no": encyclopedia_no,
             }
         )
+
+    if unknown_labels:
+        print("エラー: category_registry.json に未登録の種別ラベルを検出")
+        for label in sorted(unknown_labels):
+            print(f"  - {label!r}")
+        print("中間出力を更新せず終了します")
+        sys.exit(1)
+
+    categories = [
+        {
+            "id": category["id"],
+            "name": category["name"],
+            "label": category["label"],
+            "order": category["order"],
+        }
+        for category in sorted_registry_categories
+        if category["id"] in category_by_id
+    ]
 
     # 警告の表示
     if warnings:

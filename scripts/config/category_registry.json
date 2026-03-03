@@ -1,0 +1,300 @@
+{
+    "categories": [
+        {
+            "label": "小口径主砲",
+            "slug": "small_caliber_main_gun",
+            "order": 1
+        },
+        {
+            "label": "中口径主砲",
+            "slug": "medium_caliber_main_gun",
+            "order": 2
+        },
+        {
+            "label": "大口径主砲",
+            "slug": "large_caliber_main_gun",
+            "order": 3
+        },
+        {
+            "label": "副砲",
+            "slug": "secondary_gun",
+            "order": 4
+        },
+        {
+            "label": "魚雷",
+            "slug": "torpedo",
+            "order": 5
+        },
+        {
+            "label": "艦上戦闘機",
+            "slug": "carrier_fighter",
+            "order": 6
+        },
+        {
+            "label": "全翼型戦闘爆撃機",
+            "slug": "flying_wing_fighter_bomber",
+            "order": 7
+        },
+        {
+            "label": "艦上爆撃機",
+            "slug": "carrier_bomber",
+            "order": 8
+        },
+        {
+            "label": "艦上攻撃機",
+            "slug": "carrier_attacker",
+            "order": 9
+        },
+        {
+            "label": "艦上偵察機",
+            "slug": "carrier_recon",
+            "order": 10
+        },
+        {
+            "label": "水上偵察機",
+            "slug": "seaplane_recon",
+            "order": 11
+        },
+        {
+            "label": "多用途水上機/水上爆撃機",
+            "slug": "multirole_seaplane_bomber",
+            "order": 12
+        },
+        {
+            "label": "小型電探",
+            "slug": "small_radar",
+            "order": 13
+        },
+        {
+            "label": "大型電探",
+            "slug": "large_radar",
+            "order": 14
+        },
+        {
+            "label": "ソナー",
+            "slug": "sonar",
+            "order": 15
+        },
+        {
+            "label": "爆雷投射機",
+            "slug": "depth_charge_projector",
+            "order": 16
+        },
+        {
+            "label": "爆雷",
+            "slug": "depth_charge",
+            "order": 17
+        },
+        {
+            "label": "爆雷投射機(B)",
+            "slug": "depth_charge_projector_b",
+            "order": 18
+        },
+        {
+            "label": "機関部強化",
+            "slug": "engine_boost",
+            "order": 19
+        },
+        {
+            "label": "対空強化弾",
+            "slug": "anti_air_shell",
+            "order": 20
+        },
+        {
+            "label": "対艦強化弾",
+            "slug": "anti_ship_shell",
+            "order": 21
+        },
+        {
+            "label": "対空機銃",
+            "slug": "anti_air_machine_gun",
+            "order": 22
+        },
+        {
+            "label": "特殊潜航艇",
+            "slug": "special_submarine",
+            "order": 23
+        },
+        {
+            "label": "応急修理要員",
+            "slug": "damage_control",
+            "order": 24
+        },
+        {
+            "label": "上陸用舟艇",
+            "slug": "landing_craft",
+            "order": 25
+        },
+        {
+            "label": "回転翼機",
+            "slug": "rotary_wing_aircraft",
+            "order": 26
+        },
+        {
+            "label": "対潜哨戒機",
+            "slug": "asw_patrol_aircraft",
+            "order": 27
+        },
+        {
+            "label": "増設バルジ(中型艦)",
+            "slug": "bulge_medium",
+            "order": 28
+        },
+        {
+            "label": "増設バルジ(大型艦)",
+            "slug": "bulge_large",
+            "order": 29
+        },
+        {
+            "label": "探照灯",
+            "slug": "searchlight",
+            "order": 30
+        },
+        {
+            "label": "簡易輸送部材",
+            "slug": "simple_transport_material",
+            "order": 31
+        },
+        {
+            "label": "艦艇修理施設",
+            "slug": "ship_repair_facility",
+            "order": 32
+        },
+        {
+            "label": "潜水艦魚雷",
+            "slug": "submarine_torpedo",
+            "order": 33
+        },
+        {
+            "label": "照明弾",
+            "slug": "star_shell",
+            "order": 34
+        },
+        {
+            "label": "司令部施設",
+            "slug": "command_facility",
+            "order": 35
+        },
+        {
+            "label": "航空要員",
+            "slug": "aviation_personnel",
+            "order": 36
+        },
+        {
+            "label": "高射装置",
+            "slug": "anti_air_director",
+            "order": 37
+        },
+        {
+            "label": "対地装備",
+            "slug": "ground_attack_equipment",
+            "order": 38
+        },
+        {
+            "label": "水上艦要員",
+            "slug": "surface_ship_crew",
+            "order": 39
+        },
+        {
+            "label": "大型ソナー",
+            "slug": "large_sonar",
+            "order": 40
+        },
+        {
+            "label": "大型飛行艇",
+            "slug": "large_flying_boat",
+            "order": 41
+        },
+        {
+            "label": "大型探照灯",
+            "slug": "large_searchlight",
+            "order": 42
+        },
+        {
+            "label": "戦闘糧食",
+            "slug": "combat_ration",
+            "order": 43
+        },
+        {
+            "label": "補給物資",
+            "slug": "supply_material",
+            "order": 44
+        },
+        {
+            "label": "水上戦闘機",
+            "slug": "seaplane_fighter",
+            "order": 45
+        },
+        {
+            "label": "特型内火艇",
+            "slug": "special_amphibious_tank",
+            "order": 46
+        },
+        {
+            "label": "陸上攻撃機",
+            "slug": "land_attacker",
+            "order": 47
+        },
+        {
+            "label": "陸軍戦闘機",
+            "slug": "army_fighter",
+            "order": 48
+        },
+        {
+            "label": "局地戦闘機",
+            "slug": "interceptor",
+            "order": 49
+        },
+        {
+            "label": "陸上偵察機",
+            "slug": "land_recon",
+            "order": 50
+        },
+        {
+            "label": "潜水艦装備",
+            "slug": "submarine_equipment",
+            "order": 51
+        },
+        {
+            "label": "陸戦部隊",
+            "slug": "ground_force_unit",
+            "order": 52
+        },
+        {
+            "label": "大型陸上機",
+            "slug": "heavy_land_aircraft",
+            "order": 53
+        },
+        {
+            "label": "艦載発煙装置",
+            "slug": "ship_smoke_generator",
+            "order": 54
+        },
+        {
+            "label": "防空気球",
+            "slug": "barrage_balloon",
+            "order": 55
+        },
+        {
+            "label": "噴式戦闘爆撃機",
+            "slug": "jet_fighter_bomber",
+            "order": 56
+        },
+        {
+            "label": "噴式艦上戦闘機",
+            "slug": "jet_carrier_fighter",
+            "order": 57
+        },
+        {
+            "label": "輸送機材",
+            "slug": "transport_equipment",
+            "order": 58
+        },
+        {
+            "label": "",
+            "slug": "empty_type",
+            "order": 59,
+            "name": "未分類(空種別)"
+        }
+    ]
+}

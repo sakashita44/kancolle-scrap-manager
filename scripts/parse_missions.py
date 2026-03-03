@@ -17,6 +17,7 @@ HTML構造:
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -42,6 +43,15 @@ PERIOD_MAP: dict[str, str] = {
     "マンスリー": "Monthly",
     "クォータリー": "Quarterly",
     "イヤーリー": "Yearly",
+}
+
+PERIOD_ORDER: dict[str, int] = {
+    "Daily": 0,
+    "Weekly": 1,
+    "Monthly": 2,
+    "Quarterly": 3,
+    "Yearly": 4,
+    "OneTime": 5,
 }
 
 
@@ -70,6 +80,16 @@ def _find_next_table(heading: Tag) -> Tag | None:
         sibling = sibling.find_next_sibling()
         depth += 1
     return None
+
+
+def _wiki_id_sort_key(wiki_id: str) -> tuple[str, int, str]:
+    """Wiki IDを自然順で比較できるキーに変換する."""
+    normalized = wiki_id.strip().lower()
+    matched = re.match(r"([a-z]+)(\d+)$", normalized)
+    if not matched:
+        return (normalized, 10**9, normalized)
+    prefix, number = matched.groups()
+    return (prefix, int(number), normalized)
 
 
 def write_jsonl(records: list[dict], path: Path) -> None:
@@ -172,6 +192,13 @@ def main() -> None:
         print()
 
     # サマリー表示
+    missions.sort(
+        key=lambda mission: (
+            PERIOD_ORDER.get(mission["period"], 99),
+            _wiki_id_sort_key(mission["wiki_id"]),
+        )
+    )
+
     print("--- パース結果 ---")
     print(f"  廃棄任務数: {len(missions)}")
     print()
