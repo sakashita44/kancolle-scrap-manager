@@ -240,9 +240,24 @@ function validateRequirements(
                 requirementCategoryGroup.categoryIds.filter(
                     (categoryId) => !categoryMap.has(categoryId),
                 );
+            const hasValidCategoryId =
+                requirementCategoryGroup.categoryIds.some((categoryId) =>
+                    categoryMap.has(categoryId),
+                );
+            if (!hasValidCategoryId) {
+                collector.addWarning(
+                    `要求カテゴリグループID "${req.targetId}" のカテゴリIDがすべて無効です`,
+                    {
+                        missionId: req.missionId,
+                        missionName: req.missionName,
+                    },
+                );
+                return false;
+            }
+
             if (missingCategoryIds.length > 0) {
                 collector.addWarning(
-                    `要求カテゴリグループID "${req.targetId}" に存在しないカテゴリIDが含まれています: ${missingCategoryIds.join(', ')}`,
+                    `要求カテゴリグループID "${req.targetId}" に存在しないカテゴリIDが含まれています（無効IDは計算から除外）: ${missingCategoryIds.join(', ')}`,
                     {
                         missionId: req.missionId,
                         missionName: req.missionName,

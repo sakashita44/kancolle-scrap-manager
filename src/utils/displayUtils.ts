@@ -36,9 +36,7 @@ export function getRequirementDisplayName(
         return requirementCategoryGroup
             ? requirementCategoryGroup.name
             : DELETED_LABELS.CATEGORY_GROUP;
-    }
-
-    {
+    } else {
         const equipment = equipmentMap.get(req.id);
         return equipment ? equipment.name : DELETED_LABELS.EQUIPMENT;
     }

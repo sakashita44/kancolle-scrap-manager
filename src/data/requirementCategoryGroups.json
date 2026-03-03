@@ -15,7 +15,7 @@
         },
         {
             "id": "m_rcg_depth_charge",
-            "name": "爆雷",
+            "name": "爆雷系装備",
             "categoryIds": [
                 "m_cat_depth_charge",
                 "m_cat_depth_charge_projector",

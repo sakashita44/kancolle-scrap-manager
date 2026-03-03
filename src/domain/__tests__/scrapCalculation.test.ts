@@ -22,6 +22,20 @@ const cat1: Category = {
     source: SOURCE.MASTER,
 };
 
+const catRadarSmall: Category = {
+    id: 'cat_small_radar',
+    name: '小型電探',
+    order: 1,
+    source: SOURCE.MASTER,
+};
+
+const catRadarLarge: Category = {
+    id: 'cat_large_radar',
+    name: '大型電探',
+    order: 2,
+    source: SOURCE.MASTER,
+};
+
 const eq1: Equipment = {
     id: 'eq_25mm_single',
     name: '25mm単装機銃',
@@ -38,7 +52,11 @@ const eq2: Equipment = {
     source: SOURCE.MASTER,
 };
 
-const categoryMap = new Map<string, Category>([[cat1.id, cat1]]);
+const categoryMap = new Map<string, Category>([
+    [cat1.id, cat1],
+    [catRadarSmall.id, catRadarSmall],
+    [catRadarLarge.id, catRadarLarge],
+]);
 const equipmentMap = new Map<string, Equipment>([
     [eq1.id, eq1],
     [eq2.id, eq2],
@@ -52,6 +70,16 @@ const requirementCategoryGroup: RequirementCategoryGroup = {
 };
 const requirementCategoryGroupMap = new Map<string, RequirementCategoryGroup>([
     [requirementCategoryGroup.id, requirementCategoryGroup],
+    [
+        'm_rcg_radar',
+        {
+            id: 'm_rcg_radar',
+            name: '電探系装備',
+            categoryIds: [catRadarSmall.id, catRadarLarge.id],
+            order: 2,
+            source: SOURCE.MASTER,
+        },
+    ],
 ]);
 
 function makeMission(
@@ -161,6 +189,43 @@ describe('calculateScrapList', () => {
         );
 
         expect(scrapList.find((s) => s.targetId === eq1.id)?.count).toBe(6);
+    });
+
+    it('categoryGroup要求のカテゴリIDがすべて無効な場合, 要求は計算から除外される', () => {
+        const invalidGroupMap = new Map<string, RequirementCategoryGroup>([
+            [
+                'm_rcg_invalid',
+                {
+                    id: 'm_rcg_invalid',
+                    name: '無効グループ',
+                    categoryIds: ['cat_missing_1', 'cat_missing_2'],
+                    order: 99,
+                    source: SOURCE.MASTER,
+                },
+            ],
+        ]);
+        const mission = makeMission('A', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_invalid',
+                count: 2,
+            },
+        ]);
+
+        const { scrapList, warnings } = calculateScrapList(
+            [{ missionId: 'A', count: 1 }],
+            [mission],
+            equipmentMap,
+            categoryMap,
+            invalidGroupMap,
+        );
+
+        expect(scrapList).toHaveLength(0);
+        expect(
+            warnings.some((warning) =>
+                warning.message.includes('カテゴリIDがすべて無効です'),
+            ),
+        ).toBe(true);
     });
 });
 
@@ -309,5 +374,48 @@ describe('calculateScrapComparison', () => {
             (item) => item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP,
         );
         expect(groupItem?.count).toBe(6);
+    });
+
+    it('逆方向包含なし: ベースcategoryは補助categoryGroupだけでは充足しない', () => {
+        const baseMission = makeMission('base', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY,
+                id: catRadarSmall.id,
+                count: 3,
+            },
+        ]);
+        const auxMission = makeMission('aux', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_radar',
+                count: 5,
+            },
+        ]);
+
+        const { comparison } = calculateScrapComparison(
+            {
+                baseMission: { missionId: 'base', count: 1 },
+                auxiliaryMissions: [{ missionId: 'aux', count: 1 }],
+            },
+            [baseMission, auxMission],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const radarCategory = comparison.find(
+            (item) =>
+                item.targetKind === REQUIREMENT_KIND.CATEGORY &&
+                item.targetId === catRadarSmall.id,
+        );
+        const radarGroup = comparison.find(
+            (item) =>
+                item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP &&
+                item.targetId === 'm_rcg_radar',
+        );
+
+        expect(radarCategory?.auxiliaryCount).toBe(0);
+        expect(radarCategory?.status).toBe('insufficient');
+        expect(radarGroup?.status).toBe('excess');
     });
 });

@@ -58,6 +58,11 @@ const masterRequirementCategoryGroups: RequirementCategoryGroup[] = (
     source: SOURCE.MASTER,
 }));
 
+const enabledMasterRequirementCategoryGroups: RequirementCategoryGroup[] =
+    masterRequirementCategoryGroups
+        .filter((group) => group.categoryIds.length > 0)
+        .sort(sortBySourceAndOrder);
+
 // --- ストア型 ---
 
 export type AppState = DataSlice & SelectionSlice & UISlice;
@@ -140,13 +145,11 @@ export const selectGetCategoryName = createSelector(
 );
 
 /** 全要求カテゴリグループ（マスタのみ、ソート済み） */
-export const selectAllRequirementCategoryGroups = createSelector(
-    [],
-    (): RequirementCategoryGroup[] =>
-        masterRequirementCategoryGroups
-            .filter((group) => group.categoryIds.length > 0)
-            .sort(sortBySourceAndOrder),
-);
+export function selectAllRequirementCategoryGroups(
+    _state: AppState,
+): RequirementCategoryGroup[] {
+    return enabledMasterRequirementCategoryGroups;
+}
 
 /** 要求カテゴリグループIDからグループを取得するMap */
 export const selectRequirementCategoryGroupMap = createSelector(

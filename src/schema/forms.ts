@@ -5,7 +5,7 @@
 
 import { z } from 'zod/v4';
 import { safeString } from './base';
-import { LIMITS, PERIOD_VALUES, REQUIREMENT_KIND } from './constants';
+import { LIMITS, PERIOD, REQUIREMENT_KIND } from './constants';
 
 // --- 装備追加フォーム ---
 
@@ -34,10 +34,11 @@ export type CategoryFormValues = z.infer<typeof categoryFormSchema>;
 
 // --- 要求装備フォーム ---
 
-const requirementKindValues = Object.values(REQUIREMENT_KIND) as [
-    string,
-    ...string[],
-];
+const requirementKindValues = [
+    REQUIREMENT_KIND.CATEGORY,
+    REQUIREMENT_KIND.EQUIPMENT,
+    REQUIREMENT_KIND.CATEGORY_GROUP,
+] as const;
 
 export const requirementFormSchema = z.object({
     kind: z.enum(requirementKindValues),
@@ -61,7 +62,14 @@ export type RequirementFormValues = z.infer<typeof requirementFormSchema>;
 
 // --- 任務フォーム ---
 
-const periodValues = PERIOD_VALUES as [string, ...string[]];
+const periodValues = [
+    PERIOD.DAILY,
+    PERIOD.WEEKLY,
+    PERIOD.MONTHLY,
+    PERIOD.QUARTERLY,
+    PERIOD.YEARLY,
+    PERIOD.ONE_TIME,
+] as const;
 
 export const missionFormSchema = z.object({
     name: safeString.max(

@@ -114,6 +114,7 @@ for (const selected of selectedMissions) {
 - `kind === 'category'`: カテゴリマスタ（`categoryMap`）に存在するか
 - `kind === 'categoryGroup'`: 要求カテゴリグループマスタ（`requirementCategoryGroupMap`）に存在するか
 - 存在しない場合: その要求は計算から除外し,該当任務に警告マークを表示する
+- `categoryGroup` が保持する `categoryIds` に無効IDが含まれる場合: 無効IDは計算対象外として警告し,有効IDが1件もないグループ要求は除外する
 
 ### フェーズ3: 要求種別ごとにグループ化
 
@@ -165,6 +166,8 @@ for (const req of categoryReqs) {
 
 個別装備要求とカテゴリ要求が同じカテゴリに属する場合,個別装備の廃棄数をカテゴリの要求数から差し引く.
 さらに,カテゴリグループ要求は同グループ配下カテゴリの個別装備要求とカテゴリ要求を合算して差し引く.
+
+**重要**: 包含は一方向で扱う. つまり,`categoryGroup` 要求は `category`/`equipment` で充足できるが,`category` 要求を `categoryGroup` 要求だけで充足したとはみなさない.
 
 #### OR条件の処理手順
 
@@ -318,6 +321,19 @@ return {
 - **処理方針**:
     - フェーズ6の差し引き処理で個別装備合計が0となる
     - カテゴリ要求はそのまま廃棄リストに追加される
+
+### ケース6: `categoryGroup` に無効カテゴリIDが含まれる
+
+- **処理方針**:
+    - 無効カテゴリIDは警告して計算対象から除外する
+    - 有効カテゴリIDが1件以上ある場合は,有効分のみで計算継続する
+    - 有効カテゴリIDが0件の場合は,その `categoryGroup` 要求自体を除外する
+
+### ケース7: 逆方向包含（base=`category`, auxiliary=`categoryGroup`）
+
+- **処理方針**:
+    - `auxiliary` の `categoryGroup` は `base` の `category` を充足しない
+    - 比較結果では `base` 側 `category` は不足のまま, `auxiliary` 側 `categoryGroup` は過剰として表示する
 
 ## 計算例
 
