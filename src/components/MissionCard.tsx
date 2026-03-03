@@ -85,13 +85,12 @@ export default function MissionCard({
                                 equipmentMap,
                                 requirementCategoryGroupMap,
                             );
-                            const name =
-                                (req.kind === REQUIREMENT_KIND.CATEGORY ||
-                                    req.kind ===
-                                        REQUIREMENT_KIND.CATEGORY_GROUP) &&
-                                baseName
-                                    ? baseName + '（種別不問）'
-                                    : baseName;
+                            const isGenericRequirement =
+                                req.kind === REQUIREMENT_KIND.CATEGORY ||
+                                req.kind === REQUIREMENT_KIND.CATEGORY_GROUP;
+                            const name = isGenericRequirement
+                                ? `${baseName}（種別不問）`
+                                : baseName;
                             return (
                                 <span
                                     key={i}

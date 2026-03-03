@@ -227,6 +227,102 @@ describe('calculateScrapList', () => {
             ),
         ).toBe(true);
     });
+
+    it('3レイヤー包含: equipment→category→categoryGroup の順に差し引かれる', () => {
+        const missionGroup = makeMission('group', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: requirementCategoryGroup.id,
+                count: 10,
+            },
+        ]);
+        const missionCategory = makeMission('category', [
+            { kind: REQUIREMENT_KIND.CATEGORY, id: cat1.id, count: 5 },
+        ]);
+        const missionEquipment = makeMission('equipment', [
+            { kind: REQUIREMENT_KIND.EQUIPMENT, id: eq1.id, count: 3 },
+        ]);
+
+        const { scrapList } = calculateScrapList(
+            [
+                { missionId: 'group', count: 1 },
+                { missionId: 'category', count: 1 },
+                { missionId: 'equipment', count: 1 },
+            ],
+            [missionGroup, missionCategory, missionEquipment],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const equipmentItem = scrapList.find(
+            (item) => item.targetId === eq1.id,
+        );
+        const categoryItem = scrapList.find(
+            (item) => item.targetId === cat1.id,
+        );
+        const groupItem = scrapList.find(
+            (item) =>
+                item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP &&
+                item.targetId === requirementCategoryGroup.id,
+        );
+
+        expect(equipmentItem?.count).toBe(3);
+        expect(categoryItem?.count).toBe(2);
+        expect(groupItem?.count).toBe(5);
+    });
+
+    it('categoryGroup内に無効カテゴリIDが一部含まれても有効カテゴリ分で包含解決される', () => {
+        const partialInvalidGroupMap = new Map<
+            string,
+            RequirementCategoryGroup
+        >([
+            [
+                'm_rcg_partial_invalid',
+                {
+                    id: 'm_rcg_partial_invalid',
+                    name: '部分無効グループ',
+                    categoryIds: [cat1.id, 'cat_missing_1'],
+                    order: 100,
+                    source: SOURCE.MASTER,
+                },
+            ],
+        ]);
+        const missionGroup = makeMission('group', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_partial_invalid',
+                count: 4,
+            },
+        ]);
+        const missionEquipment = makeMission('equipment', [
+            { kind: REQUIREMENT_KIND.EQUIPMENT, id: eq1.id, count: 1 },
+        ]);
+
+        const { scrapList, warnings } = calculateScrapList(
+            [
+                { missionId: 'group', count: 1 },
+                { missionId: 'equipment', count: 1 },
+            ],
+            [missionGroup, missionEquipment],
+            equipmentMap,
+            categoryMap,
+            partialInvalidGroupMap,
+        );
+
+        const groupItem = scrapList.find(
+            (item) => item.targetId === 'm_rcg_partial_invalid',
+        );
+
+        expect(groupItem?.count).toBe(3);
+        expect(
+            warnings.some((warning) =>
+                warning.message.includes(
+                    '存在しないカテゴリIDが含まれています',
+                ),
+            ),
+        ).toBe(true);
+    });
 });
 
 describe('calculateScrapComparison', () => {

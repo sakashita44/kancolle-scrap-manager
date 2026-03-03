@@ -6,7 +6,6 @@
 import {
     LIMITS,
     REQUIREMENT_KIND,
-    type RequirementKind,
     type Mission,
     type Category,
     type Equipment,
@@ -127,6 +126,7 @@ export function calculateScrapList(
         categoryCountMap,
         categoryGroupCountMap,
         equipmentMap,
+        categoryMap,
         requirementCategoryGroupMap,
     );
 
@@ -169,7 +169,7 @@ function expandRequirements(
             result.push({
                 missionId: mission.id,
                 missionName: mission.name,
-                kind: req.kind as RequirementKind,
+                kind: req.kind,
                 targetId: req.id,
                 count: req.count * selected.count,
             });
@@ -313,6 +313,7 @@ function resolveInclusion(
     categoryCountMap: Map<string, number>,
     categoryGroupCountMap: Map<string, number>,
     equipmentMap: Map<string, Equipment>,
+    categoryMap: Map<string, Category>,
     requirementCategoryGroupMap: Map<string, RequirementCategoryGroup>,
 ): void {
     for (const [categoryId, categoryCount] of categoryCountMap) {
@@ -339,7 +340,15 @@ function resolveInclusion(
             continue;
         }
 
-        const categoryIds = new Set(requirementCategoryGroup.categoryIds);
+        const categoryIds = new Set(
+            requirementCategoryGroup.categoryIds.filter((categoryId) =>
+                categoryMap.has(categoryId),
+            ),
+        );
+        if (categoryIds.size === 0) {
+            categoryGroupCountMap.delete(categoryGroupId);
+            continue;
+        }
         let coveredCount = 0;
 
         for (const [eqId, eqCount] of equipmentCountMap) {

@@ -6,6 +6,7 @@ import {
     REQUIREMENT_KIND,
     type Category,
     type Equipment,
+    type Requirement,
     type RequirementCategoryGroup,
 } from '../schema';
 
@@ -19,7 +20,7 @@ const DELETED_LABELS = {
  * 任務要件の表示名を取得
  */
 export function getRequirementDisplayName(
-    req: { kind: string; id: string },
+    req: Pick<Requirement, 'kind' | 'id'>,
     categoryMap: Map<string, Category>,
     equipmentMap: Map<string, Equipment>,
     requirementCategoryGroupMap: Map<string, RequirementCategoryGroup>,
@@ -36,8 +37,12 @@ export function getRequirementDisplayName(
         return requirementCategoryGroup
             ? requirementCategoryGroup.name
             : DELETED_LABELS.CATEGORY_GROUP;
-    } else {
+    }
+
+    if (req.kind === REQUIREMENT_KIND.EQUIPMENT) {
         const equipment = equipmentMap.get(req.id);
         return equipment ? equipment.name : DELETED_LABELS.EQUIPMENT;
     }
+
+    return DELETED_LABELS.EQUIPMENT;
 }

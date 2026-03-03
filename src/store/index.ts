@@ -144,12 +144,14 @@ export const selectGetCategoryName = createSelector(
             map.get(id)?.name ?? '不明なカテゴリ',
 );
 
-/** 全要求カテゴリグループ（マスタのみ、ソート済み） */
-export function selectAllRequirementCategoryGroups(
-    _state: AppState,
-): RequirementCategoryGroup[] {
-    return enabledMasterRequirementCategoryGroups;
-}
+/** 全要求カテゴリグループ（有効カテゴリを1件以上持つもののみ） */
+export const selectAllRequirementCategoryGroups = createSelector(
+    [selectCategoryMap],
+    (categoryMap: Map<string, Category>): RequirementCategoryGroup[] =>
+        enabledMasterRequirementCategoryGroups.filter((group) =>
+            group.categoryIds.some((categoryId) => categoryMap.has(categoryId)),
+        ),
+);
 
 /** 要求カテゴリグループIDからグループを取得するMap */
 export const selectRequirementCategoryGroupMap = createSelector(
