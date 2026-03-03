@@ -5,6 +5,7 @@ import {
     selectAllEquipments,
     selectCategoryMap,
     selectEquipmentMap,
+    selectRequirementCategoryGroupMap,
 } from './store';
 import { calculateScrapComparison, calculateScrapList } from './domain';
 import {
@@ -52,6 +53,9 @@ export default function App() {
     const allEquipments = useStore(selectAllEquipments);
     const categoryMap = useStore(selectCategoryMap);
     const equipmentMap = useStore(selectEquipmentMap);
+    const requirementCategoryGroupMap = useStore(
+        selectRequirementCategoryGroupMap,
+    );
 
     const baseMission = useStore((s) => s.baseMission);
     const auxiliaryMissions = useStore((s) => s.auxiliaryMissions);
@@ -113,8 +117,15 @@ export default function App() {
                 allMissions,
                 equipmentMap,
                 categoryMap,
+                requirementCategoryGroupMap,
             ),
-        [selectedMissions, allMissions, equipmentMap, categoryMap],
+        [
+            selectedMissions,
+            allMissions,
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        ],
     );
 
     // 全選択任務の統合廃棄リスト
@@ -127,6 +138,7 @@ export default function App() {
             allMissions,
             equipmentMap,
             categoryMap,
+            requirementCategoryGroupMap,
         ).scrapList;
     }, [
         baseMission,
@@ -134,6 +146,7 @@ export default function App() {
         allMissions,
         equipmentMap,
         categoryMap,
+        requirementCategoryGroupMap,
     ]);
 
     // --- フィルタリング ---
@@ -149,6 +162,7 @@ export default function App() {
                         m.reqs,
                         filterCategories,
                         equipmentMap,
+                        requirementCategoryGroupMap,
                     )
                 )
                     return false;
@@ -161,6 +175,7 @@ export default function App() {
         filterPeriods,
         filterCategories,
         equipmentMap,
+        requirementCategoryGroupMap,
     ]);
 
     // --- フィルタハンドラ（単一選択） ---

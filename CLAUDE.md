@@ -46,13 +46,13 @@ npm run deploy     # dist/ を Lolipop にアップロード
 
 ```text
 src/
-├── schema/          # Zodスキーマ + 型定義（constants, base, category, equipment, mission, forms）
+├── schema/          # Zodスキーマ + 型定義（constants, base, category, requirementCategoryGroup, equipment, mission, forms）
 ├── store/           # Zustand store（dataSlice, selectionSlice, uiSlice, storage）
 ├── domain/       # 純粋関数のビジネスロジック（scrapCalculation, categoryOperations, missionFilter）
 ├── components/  # UIコンポーネント（TSX）
 ├── hooks/        # カスタムhooks（useToggle, useMissionForm）
 ├── utils/        # ユーティリティ（cn, displayUtils, scrapListFormatters）
-├── data/            # 公式マスタデータJSON（categories, equipments, missions）
+├── data/            # 公式マスタデータJSON（categories, requirementCategoryGroups, equipments, missions）
 ├── App.tsx          # ルートコンポーネント
 └── index.tsx        # エントリポイント
 ```
@@ -77,8 +77,10 @@ src/
 
 - `kind: "equipment"` + `id`: 特定装備の廃棄要求
 - `kind: "category"` + `id`: カテゴリ内の任意装備の廃棄要求
+- `kind: "categoryGroup"` + `id`: 複合カテゴリ（要求カテゴリグループ）内の任意装備の廃棄要求
 
 カテゴリは直接要求対象として使用可能（カテゴリ代表装備の概念は廃止）.
+要求カテゴリグループは `src/data/requirementCategoryGroups.json` のマスタ定義を参照する.
 
 ## Application Features
 
@@ -127,14 +129,15 @@ src/
 
 ### ID 体系
 
-| データ種別       | プレフィックス | 例                   | 生成                  | 削除 |
-| :--------------- | :------------- | :------------------- | :-------------------- | :--- |
-| 公式カテゴリ     | `m_cat_`       | `m_cat_gun_s`        | 手動定義              | 不可 |
-| 公式装備         | `m_eq_`        | `m_eq_gun_12cm`      | 手動定義              | 不可 |
-| 公式任務         | `m_ms_`        | `m_ms_daily_scrap_1` | 手動定義              | 不可 |
-| ユーザーカテゴリ | `u_cat_`       | `u_cat_<UUID>`       | `crypto.randomUUID()` | 可   |
-| ユーザー装備     | `u_eq_`        | `u_eq_<UUID>`        | `crypto.randomUUID()` | 可   |
-| ユーザー任務     | `u_ms_`        | `u_ms_<UUID>`        | `crypto.randomUUID()` | 可   |
+| データ種別               | プレフィックス | 例                   | 生成                  | 削除 |
+| :----------------------- | :------------- | :------------------- | :-------------------- | :--- |
+| 公式カテゴリ             | `m_cat_`       | `m_cat_gun_s`        | 手動定義              | 不可 |
+| 公式要求カテゴリグループ | `m_rcg_`       | `m_rcg_radar`        | 手動定義              | 不可 |
+| 公式装備                 | `m_eq_`        | `m_eq_gun_12cm`      | 手動定義              | 不可 |
+| 公式任務                 | `m_ms_`        | `m_ms_daily_scrap_1` | 手動定義              | 不可 |
+| ユーザーカテゴリ         | `u_cat_`       | `u_cat_<UUID>`       | `crypto.randomUUID()` | 可   |
+| ユーザー装備             | `u_eq_`        | `u_eq_<UUID>`        | `crypto.randomUUID()` | 可   |
+| ユーザー任務             | `u_ms_`        | `u_ms_<UUID>`        | `crypto.randomUUID()` | 可   |
 
 - IDは一度発行したら**変更不可**(ユーザーデータが参照するため)
 - 廃止はマスタデータを`【廃止】...`にリネームして論理削除

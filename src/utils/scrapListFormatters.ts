@@ -5,7 +5,7 @@
 import { REQUIREMENT_KIND } from '../schema';
 import type { ScrapListItem } from '../domain';
 
-export interface CategoryGroup {
+export interface ScrapCategorySection {
     categoryName: string;
     totalCount: number;
     items: { name: string; count: number }[];
@@ -17,12 +17,17 @@ export interface CategoryGroup {
  */
 export function groupScrapListByCategory(
     scrapList: ScrapListItem[],
-): CategoryGroup[] {
-    const map = new Map<string, CategoryGroup>();
+): ScrapCategorySection[] {
+    const map = new Map<string, ScrapCategorySection>();
 
     for (const item of scrapList) {
-        if (!map.has(item.categoryName)) {
-            map.set(item.categoryName, {
+        const groupKey =
+            item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP
+                ? `${item.targetKind}:${item.targetId}`
+                : item.categoryName;
+
+        if (!map.has(groupKey)) {
+            map.set(groupKey, {
                 categoryName: item.categoryName,
                 totalCount: 0,
                 items: [],
@@ -30,11 +35,11 @@ export function groupScrapListByCategory(
             });
         }
 
-        const group = map.get(item.categoryName)!;
+        const group = map.get(groupKey)!;
         if (item.targetKind === REQUIREMENT_KIND.EQUIPMENT) {
             group.items.push({ name: item.name, count: item.count });
         } else {
-            group.remainder = item.count;
+            group.remainder += item.count;
         }
         group.totalCount += item.count;
     }

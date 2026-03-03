@@ -40,6 +40,15 @@ export {
 } from './equipment';
 
 export {
+    persistedRequirementCategoryGroupSchema,
+    type PersistedRequirementCategoryGroup,
+    type RequirementCategoryGroup,
+    requirementCategoryGroupsArraySchema,
+    requirementCategoryGroupsDataSchema,
+    type RequirementCategoryGroupsData,
+} from './requirementCategoryGroup';
+
+export {
     requirementSchema,
     type Requirement,
     persistedMissionSchema,

@@ -5,6 +5,7 @@ import {
     SOURCE,
     type Requirement,
     type Equipment,
+    type RequirementCategoryGroup,
 } from '../../schema';
 
 const eq1: Equipment = {
@@ -16,6 +17,16 @@ const eq1: Equipment = {
 };
 
 const equipmentMap = new Map<string, Equipment>([[eq1.id, eq1]]);
+const requirementCategoryGroup: RequirementCategoryGroup = {
+    id: 'm_rcg_gun',
+    name: '機銃系',
+    categoryIds: ['cat_gun'],
+    order: 1,
+    source: SOURCE.MASTER,
+};
+const requirementCategoryGroupMap = new Map<string, RequirementCategoryGroup>([
+    [requirementCategoryGroup.id, requirementCategoryGroup],
+]);
 
 describe('matchesCategoryFilter', () => {
     it('kind=equipment の要求が装備→カテゴリ解決でフィルタに一致', () => {
@@ -24,7 +35,14 @@ describe('matchesCategoryFilter', () => {
         ];
         const filter = new Set(['cat_gun']);
 
-        expect(matchesCategoryFilter(reqs, filter, equipmentMap)).toBe(true);
+        expect(
+            matchesCategoryFilter(
+                reqs,
+                filter,
+                equipmentMap,
+                requirementCategoryGroupMap,
+            ),
+        ).toBe(true);
     });
 
     it('kind=category の要求が直接カテゴリフィルタに一致', () => {
@@ -33,6 +51,33 @@ describe('matchesCategoryFilter', () => {
         ];
         const filter = new Set(['cat_gun']);
 
-        expect(matchesCategoryFilter(reqs, filter, equipmentMap)).toBe(true);
+        expect(
+            matchesCategoryFilter(
+                reqs,
+                filter,
+                equipmentMap,
+                requirementCategoryGroupMap,
+            ),
+        ).toBe(true);
+    });
+
+    it('kind=categoryGroup の要求がグループ内カテゴリでフィルタに一致', () => {
+        const reqs: Requirement[] = [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: requirementCategoryGroup.id,
+                count: 2,
+            },
+        ];
+        const filter = new Set(['cat_gun']);
+
+        expect(
+            matchesCategoryFilter(
+                reqs,
+                filter,
+                equipmentMap,
+                requirementCategoryGroupMap,
+            ),
+        ).toBe(true);
     });
 });

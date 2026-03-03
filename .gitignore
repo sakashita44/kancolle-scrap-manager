@@ -145,3 +145,7 @@ copilot-instructions.md
 # Scripts input/output (generated files)
 scripts/input/*.html
 scripts/output/*.json
+
+# Python cache files
+__pycache__/
+*.py[cod]

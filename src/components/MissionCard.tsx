@@ -1,6 +1,11 @@
 import { Trash2, Target, Edit2 } from 'lucide-react';
 import { REQUIREMENT_KIND, SOURCE, type Mission } from '../schema';
-import { useStore, selectCategoryMap, selectEquipmentMap } from '../store';
+import {
+    useStore,
+    selectCategoryMap,
+    selectEquipmentMap,
+    selectRequirementCategoryGroupMap,
+} from '../store';
 import { getRequirementDisplayName, cn } from '../utils';
 
 interface MissionCardProps {
@@ -24,6 +29,9 @@ export default function MissionCard({
 }: MissionCardProps) {
     const categoryMap = useStore(selectCategoryMap);
     const equipmentMap = useStore(selectEquipmentMap);
+    const requirementCategoryGroupMap = useStore(
+        selectRequirementCategoryGroupMap,
+    );
     const isUserDefined = mission.source === SOURCE.USER;
 
     return (
@@ -75,12 +83,14 @@ export default function MissionCard({
                                 req,
                                 categoryMap,
                                 equipmentMap,
+                                requirementCategoryGroupMap,
                             );
-                            const name =
-                                req.kind === REQUIREMENT_KIND.CATEGORY &&
-                                categoryMap.get(req.id)
-                                    ? baseName + '（種別不問）'
-                                    : baseName;
+                            const isGenericRequirement =
+                                req.kind === REQUIREMENT_KIND.CATEGORY ||
+                                req.kind === REQUIREMENT_KIND.CATEGORY_GROUP;
+                            const name = isGenericRequirement
+                                ? `${baseName}（種別不問）`
+                                : baseName;
                             return (
                                 <span
                                     key={i}

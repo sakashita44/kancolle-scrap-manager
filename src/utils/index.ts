@@ -2,5 +2,5 @@ export { cn } from './cn';
 export { getRequirementDisplayName } from './displayUtils';
 export {
     groupScrapListByCategory,
-    type CategoryGroup,
+    type ScrapCategorySection,
 } from './scrapListFormatters';

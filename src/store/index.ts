@@ -11,9 +11,12 @@ import {
     SOURCE,
     REQUIREMENT_KIND,
     LIMITS,
+    type RequirementKind,
     type Category,
     type Equipment,
     type Mission,
+    type RequirementCategoryGroup,
+    type PersistedRequirementCategoryGroup,
     type PersistedMission,
 } from '../schema';
 
@@ -21,6 +24,7 @@ import {
 import masterCategoriesJson from '../data/categories.json';
 import masterEquipmentsJson from '../data/equipments.json';
 import masterMissionsJson from '../data/missions.json';
+import masterRequirementCategoryGroupsJson from '../data/requirementCategoryGroups.json';
 
 // --- マスタデータのランタイム変換（モジュールスコープで1回だけ実行） ---
 
@@ -44,6 +48,21 @@ const masterMissions: Mission[] = (
     ...m,
     source: SOURCE.MASTER,
 }));
+
+const masterRequirementCategoryGroups: RequirementCategoryGroup[] = (
+    masterRequirementCategoryGroupsJson as {
+        version: string;
+        requirementCategoryGroups: PersistedRequirementCategoryGroup[];
+    }
+).requirementCategoryGroups.map((group) => ({
+    ...group,
+    source: SOURCE.MASTER,
+}));
+
+const enabledMasterRequirementCategoryGroups: RequirementCategoryGroup[] =
+    masterRequirementCategoryGroups
+        .filter((group) => group.categoryIds.length > 0)
+        .sort(sortBySourceAndOrder);
 
 // --- ストア型 ---
 
@@ -124,6 +143,22 @@ export const selectGetCategoryName = createSelector(
     (map: Map<string, Category>): ((id: string) => string) =>
         (id: string) =>
             map.get(id)?.name ?? '不明なカテゴリ',
+);
+
+/** 全要求カテゴリグループ（有効カテゴリを1件以上持つもののみ） */
+export const selectAllRequirementCategoryGroups = createSelector(
+    [selectCategoryMap],
+    (categoryMap: Map<string, Category>): RequirementCategoryGroup[] =>
+        enabledMasterRequirementCategoryGroups.filter((group) =>
+            group.categoryIds.some((categoryId) => categoryMap.has(categoryId)),
+        ),
+);
+
+/** 要求カテゴリグループIDからグループを取得するMap */
+export const selectRequirementCategoryGroupMap = createSelector(
+    [selectAllRequirementCategoryGroups],
+    (all: RequirementCategoryGroup[]): Map<string, RequirementCategoryGroup> =>
+        new Map(all.map((group) => [group.id, group])),
 );
 
 /** 全装備（マスタ + ユーザー、ソート済み） */
@@ -228,14 +263,34 @@ export const selectEquipmentsByCategory = createSelector(
         })),
 );
 
-/** 要求装備の選択肢（カテゴリ + 個別装備） */
+/** 要求装備の選択肢（カテゴリグループ + カテゴリ + 個別装備） */
 export const selectRequirementOptions = createSelector(
-    [selectAllCategories, selectAllEquipments, selectGetCategoryName],
+    [
+        selectAllRequirementCategoryGroups,
+        selectAllCategories,
+        selectAllEquipments,
+        selectGetCategoryName,
+    ],
     (
+        allRequirementCategoryGroups: RequirementCategoryGroup[],
         allCategories: Category[],
         allEquipments: Equipment[],
         getCategoryName: (id: string) => string,
-    ): { kind: string; id: string; label: string; group: string }[] => {
+    ): {
+        kind: RequirementKind;
+        id: string;
+        label: string;
+        group: string;
+    }[] => {
+        const categoryGroupOptions = allRequirementCategoryGroups.map(
+            (group) => ({
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: group.id,
+                label: `【${group.name}】（種別不問）`,
+                group: 'カテゴリグループ',
+            }),
+        );
+
         const categoryOptions = allCategories.map((cat) => ({
             kind: REQUIREMENT_KIND.CATEGORY,
             id: cat.id,
@@ -250,13 +305,22 @@ export const selectRequirementOptions = createSelector(
             group: getCategoryName(eq.categoryId),
         }));
 
-        return [...categoryOptions, ...equipmentOptions];
+        return [
+            ...categoryGroupOptions,
+            ...categoryOptions,
+            ...equipmentOptions,
+        ];
     },
 );
 
 // --- マスタデータ参照用エクスポート ---
 
-export { masterCategories, masterEquipments, masterMissions };
+export {
+    masterCategories,
+    masterEquipments,
+    masterMissions,
+    masterRequirementCategoryGroups,
+};
 
 // --- 型エクスポート ---
 

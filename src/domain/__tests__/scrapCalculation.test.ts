@@ -9,6 +9,7 @@ import {
     type Mission,
     type Equipment,
     type Category,
+    type RequirementCategoryGroup,
     type SelectedMissionEntry,
 } from '../../schema';
 
@@ -18,6 +19,20 @@ const cat1: Category = {
     id: 'cat_gun',
     name: '機銃',
     order: 0,
+    source: SOURCE.MASTER,
+};
+
+const catRadarSmall: Category = {
+    id: 'cat_small_radar',
+    name: '小型電探',
+    order: 1,
+    source: SOURCE.MASTER,
+};
+
+const catRadarLarge: Category = {
+    id: 'cat_large_radar',
+    name: '大型電探',
+    order: 2,
     source: SOURCE.MASTER,
 };
 
@@ -37,10 +52,34 @@ const eq2: Equipment = {
     source: SOURCE.MASTER,
 };
 
-const categoryMap = new Map<string, Category>([[cat1.id, cat1]]);
+const categoryMap = new Map<string, Category>([
+    [cat1.id, cat1],
+    [catRadarSmall.id, catRadarSmall],
+    [catRadarLarge.id, catRadarLarge],
+]);
 const equipmentMap = new Map<string, Equipment>([
     [eq1.id, eq1],
     [eq2.id, eq2],
+]);
+const requirementCategoryGroup: RequirementCategoryGroup = {
+    id: 'm_rcg_gun',
+    name: '機銃系',
+    categoryIds: [cat1.id],
+    order: 1,
+    source: SOURCE.MASTER,
+};
+const requirementCategoryGroupMap = new Map<string, RequirementCategoryGroup>([
+    [requirementCategoryGroup.id, requirementCategoryGroup],
+    [
+        'm_rcg_radar',
+        {
+            id: 'm_rcg_radar',
+            name: '電探系装備',
+            categoryIds: [catRadarSmall.id, catRadarLarge.id],
+            order: 2,
+            source: SOURCE.MASTER,
+        },
+    ],
 ]);
 
 function makeMission(
@@ -77,6 +116,7 @@ describe('calculateScrapList', () => {
             [missionA, missionB],
             equipmentMap,
             categoryMap,
+            requirementCategoryGroupMap,
         );
 
         const item = scrapList.find((s) => s.targetId === eq1.id);
@@ -100,6 +140,7 @@ describe('calculateScrapList', () => {
             [missionA, missionB],
             equipmentMap,
             categoryMap,
+            requirementCategoryGroupMap,
         );
 
         const eqItem = scrapList.find((s) => s.targetId === eq1.id);
@@ -125,6 +166,7 @@ describe('calculateScrapList', () => {
             [missionA, missionB],
             equipmentMap,
             categoryMap,
+            requirementCategoryGroupMap,
         );
 
         const catItem = scrapList.find((s) => s.targetId === cat1.id);
@@ -143,9 +185,143 @@ describe('calculateScrapList', () => {
             [mission],
             equipmentMap,
             categoryMap,
+            requirementCategoryGroupMap,
         );
 
         expect(scrapList.find((s) => s.targetId === eq1.id)?.count).toBe(6);
+    });
+
+    it('categoryGroup要求のカテゴリIDがすべて無効な場合, 要求は計算から除外される', () => {
+        const invalidGroupMap = new Map<string, RequirementCategoryGroup>([
+            [
+                'm_rcg_invalid',
+                {
+                    id: 'm_rcg_invalid',
+                    name: '無効グループ',
+                    categoryIds: ['cat_missing_1', 'cat_missing_2'],
+                    order: 99,
+                    source: SOURCE.MASTER,
+                },
+            ],
+        ]);
+        const mission = makeMission('A', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_invalid',
+                count: 2,
+            },
+        ]);
+
+        const { scrapList, warnings } = calculateScrapList(
+            [{ missionId: 'A', count: 1 }],
+            [mission],
+            equipmentMap,
+            categoryMap,
+            invalidGroupMap,
+        );
+
+        expect(scrapList).toHaveLength(0);
+        expect(
+            warnings.some((warning) =>
+                warning.message.includes('カテゴリIDがすべて無効です'),
+            ),
+        ).toBe(true);
+    });
+
+    it('3レイヤー包含: equipment→category→categoryGroup の順に差し引かれる', () => {
+        const missionGroup = makeMission('group', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: requirementCategoryGroup.id,
+                count: 10,
+            },
+        ]);
+        const missionCategory = makeMission('category', [
+            { kind: REQUIREMENT_KIND.CATEGORY, id: cat1.id, count: 5 },
+        ]);
+        const missionEquipment = makeMission('equipment', [
+            { kind: REQUIREMENT_KIND.EQUIPMENT, id: eq1.id, count: 3 },
+        ]);
+
+        const { scrapList } = calculateScrapList(
+            [
+                { missionId: 'group', count: 1 },
+                { missionId: 'category', count: 1 },
+                { missionId: 'equipment', count: 1 },
+            ],
+            [missionGroup, missionCategory, missionEquipment],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const equipmentItem = scrapList.find(
+            (item) => item.targetId === eq1.id,
+        );
+        const categoryItem = scrapList.find(
+            (item) => item.targetId === cat1.id,
+        );
+        const groupItem = scrapList.find(
+            (item) =>
+                item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP &&
+                item.targetId === requirementCategoryGroup.id,
+        );
+
+        expect(equipmentItem?.count).toBe(3);
+        expect(categoryItem?.count).toBe(2);
+        expect(groupItem?.count).toBe(5);
+    });
+
+    it('categoryGroup内に無効カテゴリIDが一部含まれても有効カテゴリ分で包含解決される', () => {
+        const partialInvalidGroupMap = new Map<
+            string,
+            RequirementCategoryGroup
+        >([
+            [
+                'm_rcg_partial_invalid',
+                {
+                    id: 'm_rcg_partial_invalid',
+                    name: '部分無効グループ',
+                    categoryIds: [cat1.id, 'cat_missing_1'],
+                    order: 100,
+                    source: SOURCE.MASTER,
+                },
+            ],
+        ]);
+        const missionGroup = makeMission('group', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_partial_invalid',
+                count: 4,
+            },
+        ]);
+        const missionEquipment = makeMission('equipment', [
+            { kind: REQUIREMENT_KIND.EQUIPMENT, id: eq1.id, count: 1 },
+        ]);
+
+        const { scrapList, warnings } = calculateScrapList(
+            [
+                { missionId: 'group', count: 1 },
+                { missionId: 'equipment', count: 1 },
+            ],
+            [missionGroup, missionEquipment],
+            equipmentMap,
+            categoryMap,
+            partialInvalidGroupMap,
+        );
+
+        const groupItem = scrapList.find(
+            (item) => item.targetId === 'm_rcg_partial_invalid',
+        );
+
+        expect(groupItem?.count).toBe(3);
+        expect(
+            warnings.some((warning) =>
+                warning.message.includes(
+                    '存在しないカテゴリIDが含まれています',
+                ),
+            ),
+        ).toBe(true);
     });
 });
 
@@ -167,11 +343,175 @@ describe('calculateScrapComparison', () => {
             [baseMission, auxMission],
             equipmentMap,
             categoryMap,
+            requirementCategoryGroupMap,
         );
 
         // ベースはカテゴリ要求3。補助は個別装備2+2=4で充足
         const catComparison = comparison.find((c) => c.targetId === cat1.id);
         expect(catComparison?.status).toBe('sufficient');
         expect(catComparison?.auxiliaryCount).toBe(4);
+    });
+
+    it('categoryGroup要求のMAX集計: 同一groupは合計ではなく最大値を採用', () => {
+        const missionA = makeMission('A', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: requirementCategoryGroup.id,
+                count: 3,
+            },
+        ]);
+        const missionB = makeMission('B', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: requirementCategoryGroup.id,
+                count: 5,
+            },
+        ]);
+
+        const { scrapList } = calculateScrapList(
+            [
+                { missionId: 'A', count: 1 },
+                { missionId: 'B', count: 1 },
+            ],
+            [missionA, missionB],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const groupItem = scrapList.find(
+            (item) => item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP,
+        );
+        expect(groupItem?.count).toBe(5);
+    });
+
+    it('categoryGroup要求は同group配下の個別装備で包含解決される', () => {
+        const missionA = makeMission('A', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: requirementCategoryGroup.id,
+                count: 5,
+            },
+        ]);
+        const missionB = makeMission('B', [
+            { kind: REQUIREMENT_KIND.EQUIPMENT, id: eq1.id, count: 2 },
+        ]);
+
+        const { scrapList } = calculateScrapList(
+            [
+                { missionId: 'A', count: 1 },
+                { missionId: 'B', count: 1 },
+            ],
+            [missionA, missionB],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const groupItem = scrapList.find(
+            (item) => item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP,
+        );
+        const eqItem = scrapList.find((item) => item.targetId === eq1.id);
+        expect(eqItem?.count).toBe(2);
+        expect(groupItem?.count).toBe(3);
+    });
+
+    it('categoryGroup要求は同group配下のカテゴリ要求でも包含解決される', () => {
+        const missionA = makeMission('A', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: requirementCategoryGroup.id,
+                count: 5,
+            },
+        ]);
+        const missionB = makeMission('B', [
+            { kind: REQUIREMENT_KIND.CATEGORY, id: cat1.id, count: 2 },
+        ]);
+
+        const { scrapList } = calculateScrapList(
+            [
+                { missionId: 'A', count: 1 },
+                { missionId: 'B', count: 1 },
+            ],
+            [missionA, missionB],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const groupItem = scrapList.find(
+            (item) => item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP,
+        );
+        const categoryItem = scrapList.find(
+            (item) => item.targetId === cat1.id,
+        );
+        expect(categoryItem?.count).toBe(2);
+        expect(groupItem?.count).toBe(3);
+    });
+
+    it('categoryGroup要求のcount乗算: 任務countが要求数に反映される', () => {
+        const missionA = makeMission('A', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: requirementCategoryGroup.id,
+                count: 2,
+            },
+        ]);
+
+        const { scrapList } = calculateScrapList(
+            [{ missionId: 'A', count: 3 }],
+            [missionA],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const groupItem = scrapList.find(
+            (item) => item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP,
+        );
+        expect(groupItem?.count).toBe(6);
+    });
+
+    it('逆方向包含なし: ベースcategoryは補助categoryGroupだけでは充足しない', () => {
+        const baseMission = makeMission('base', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY,
+                id: catRadarSmall.id,
+                count: 3,
+            },
+        ]);
+        const auxMission = makeMission('aux', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_radar',
+                count: 5,
+            },
+        ]);
+
+        const { comparison } = calculateScrapComparison(
+            {
+                baseMission: { missionId: 'base', count: 1 },
+                auxiliaryMissions: [{ missionId: 'aux', count: 1 }],
+            },
+            [baseMission, auxMission],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const radarCategory = comparison.find(
+            (item) =>
+                item.targetKind === REQUIREMENT_KIND.CATEGORY &&
+                item.targetId === catRadarSmall.id,
+        );
+        const radarGroup = comparison.find(
+            (item) =>
+                item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP &&
+                item.targetId === 'm_rcg_radar',
+        );
+
+        expect(radarCategory?.auxiliaryCount).toBe(0);
+        expect(radarCategory?.status).toBe('insufficient');
+        expect(radarGroup?.status).toBe('excess');
     });
 });

@@ -22,6 +22,9 @@ SCRIPT_DIR = Path(__file__).parent
 MISSIONS_FILE = SCRIPT_DIR / "output" / "missions.json"
 CATEGORIES_JSONL = SCRIPT_DIR / "intermediate" / "all_categories.jsonl"
 EQUIPMENTS_JSONL = SCRIPT_DIR / "intermediate" / "all_equipments.jsonl"
+REQUIREMENT_CATEGORY_GROUPS_FILE = (
+    SCRIPT_DIR.parent / "src" / "data" / "requirementCategoryGroups.json"
+)
 OUTPUT_DIR = SCRIPT_DIR / "output"
 SCHEMA_VERSION = "2.0.0"
 
@@ -60,6 +63,25 @@ def write_json(data: dict, path: Path) -> None:
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
     print(f"  出力: {path} ({path.stat().st_size} bytes)")
+
+
+def load_requirement_category_groups(path: Path) -> list[dict]:
+    """要求カテゴリグループ定義JSONを読み込む."""
+    if not path.exists():
+        print(f"エラー: {path} が見つかりません")
+        sys.exit(1)
+
+    with path.open(encoding="utf-8") as f:
+        data = json.load(f)
+
+    groups = data.get("requirementCategoryGroups")
+    if not isinstance(groups, list):
+        print(
+            "エラー: requirementCategoryGroups.json の requirementCategoryGroups が不正です"
+        )
+        sys.exit(1)
+
+    return groups
 
 
 def mission_wiki_key(mission: dict) -> tuple[str, int, str]:
@@ -118,13 +140,22 @@ def main() -> None:
     # 中間ファイル読み込み
     all_categories = load_jsonl(CATEGORIES_JSONL)
     all_equipments = load_jsonl(EQUIPMENTS_JSONL)
+    all_requirement_category_groups = load_requirement_category_groups(
+        REQUIREMENT_CATEGORY_GROUPS_FILE
+    )
     print(f"中間: {CATEGORIES_JSONL} ({len(all_categories)}件)")
     print(f"中間: {EQUIPMENTS_JSONL} ({len(all_equipments)}件)")
+    print(
+        "設定:"
+        f" {REQUIREMENT_CATEGORY_GROUPS_FILE}"
+        f" ({len(all_requirement_category_groups)}件)"
+    )
     print()
 
     # missions.json から参照IDを収集
     referenced_cat_ids: set[str] = set()
     referenced_eq_ids: set[str] = set()
+    referenced_requirement_category_group_ids: set[str] = set()
 
     for mission in missions:
         for req in mission.get("reqs", []):
@@ -132,11 +163,27 @@ def main() -> None:
                 referenced_cat_ids.add(req["id"])
             elif req["kind"] == "equipment":
                 referenced_eq_ids.add(req["id"])
+            elif req["kind"] == "categoryGroup":
+                referenced_requirement_category_group_ids.add(req["id"])
 
     print("--- 参照ID ---")
     print(f"  カテゴリ: {len(referenced_cat_ids)}件")
     print(f"  装備: {len(referenced_eq_ids)}件")
+    print(f"  要求カテゴリグループ: {len(referenced_requirement_category_group_ids)}件")
     print()
+
+    requirement_category_group_by_id = {
+        group["id"]: group for group in all_requirement_category_groups
+    }
+
+    missing_requirement_category_groups: list[str] = []
+    for group_id in referenced_requirement_category_group_ids:
+        group = requirement_category_group_by_id.get(group_id)
+        if group is None:
+            missing_requirement_category_groups.append(group_id)
+            continue
+        for category_id in group.get("categoryIds", []):
+            referenced_cat_ids.add(category_id)
 
     # 参照される装備が属するカテゴリも必要
     eq_by_id = {e["id"]: e for e in all_equipments}
@@ -196,7 +243,7 @@ def main() -> None:
         if eq_id not in eq_by_id:
             missing_eqs.append(eq_id)
 
-    if missing_cats or missing_eqs:
+    if missing_cats or missing_eqs or missing_requirement_category_groups:
         print("--- エラー: missions.json が中間データに存在しないIDを参照 ---")
         if missing_cats:
             print("  カテゴリID:")
@@ -206,6 +253,10 @@ def main() -> None:
             print("  装備ID:")
             for eq_id in missing_eqs:
                 print(f"    - {eq_id}")
+        if missing_requirement_category_groups:
+            print("  要求カテゴリグループID:")
+            for group_id in missing_requirement_category_groups:
+                print(f"    - {group_id}")
         print()
         print("Step 3 の missions.json を更新し, intermediate のIDを参照するよう修正してください")
         print("出力ファイルは更新しません")
