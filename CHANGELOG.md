@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.1] - 2026-03-04
+
+### Fixed
+
+- スマホでフィルタUIが崩れる不具合を修正 (#172)
+    - 種別フィルタのドロップダウンが枠からはみ出す問題を修正
+    - 文字列検索窓が小さすぎて入力内容が見えない問題を修正
+
 ## [2.0.0] - 2026-03-03
 
 ### Added
