@@ -56,6 +56,7 @@ export default function MissionCard({
             <div className="p-4 flex items-start gap-3">
                 <div className="flex items-center gap-2">
                     <input
+                        id={`mission-select-${mission.id}`}
                         type="checkbox"
                         className="mt-1 w-5 h-5 text-blue-600 rounded border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         checked={isSelected}

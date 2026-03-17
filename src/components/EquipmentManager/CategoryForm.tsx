@@ -18,7 +18,10 @@ export default function CategoryForm({
 
     return (
         <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">
+            <label
+                htmlFor="category-name"
+                className="block text-xs font-medium text-slate-500 mb-1"
+            >
                 カテゴリ名 *
                 {watchedName && (
                     <span className="ml-1 text-[10px] text-slate-400">
@@ -27,6 +30,7 @@ export default function CategoryForm({
                 )}
             </label>
             <input
+                id="category-name"
                 {...register('name')}
                 autoComplete="off"
                 className={cn(

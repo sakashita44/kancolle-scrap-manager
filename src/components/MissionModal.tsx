@@ -40,7 +40,10 @@ export default function MissionModal({
     return (
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
             <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label
+                    htmlFor="mission-name"
+                    className="block text-sm font-medium text-slate-700 mb-1"
+                >
                     任務名
                     {watchedValues.name && (
                         <span className="ml-1 text-[10px] text-slate-400">
@@ -50,6 +53,7 @@ export default function MissionModal({
                     )}
                 </label>
                 <input
+                    id="mission-name"
                     {...register('name')}
                     autoComplete="off"
                     className={cn(
@@ -63,10 +67,14 @@ export default function MissionModal({
                 <ValidationErrorDisplay error={nameError} />
             </div>
             <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label
+                    htmlFor="mission-period"
+                    className="block text-sm font-medium text-slate-700 mb-1"
+                >
                     周期
                 </label>
                 <select
+                    id="mission-period"
                     {...register('period')}
                     className="w-full px-3 py-2 border rounded-lg"
                 >
@@ -94,7 +102,10 @@ export default function MissionModal({
                                 : '';
 
                         return (
-                            <div key={field.fieldId} className="flex gap-2">
+                            <div
+                                key={field.fieldId}
+                                className="flex gap-2 min-w-0"
+                            >
                                 {/* hidden fields for react-hook-form */}
                                 <input
                                     type="hidden"
@@ -105,6 +116,7 @@ export default function MissionModal({
                                     {...register(`reqs.${index}.id` as const)}
                                 />
                                 <select
+                                    id={`req-item-${index}`}
                                     value={compositeValue}
                                     onChange={(e) =>
                                         handleRequirementChange(
@@ -113,7 +125,7 @@ export default function MissionModal({
                                         )
                                     }
                                     className={cn(
-                                        'flex-1 px-2 py-2 border rounded-lg text-sm',
+                                        'flex-1 min-w-0 px-2 py-2 border rounded-lg text-sm',
                                         errors.reqs?.[index]?.id &&
                                             'border-red-500',
                                     )}
@@ -141,7 +153,7 @@ export default function MissionModal({
                                         `reqs.${index}.count` as const,
                                     )}
                                     className={cn(
-                                        'w-20 px-2 py-2 border rounded-lg text-center text-sm',
+                                        'w-16 shrink-0 px-1 py-2 border rounded-lg text-center text-sm',
                                         errors.reqs?.[index]?.count &&
                                             'border-red-500',
                                     )}

@@ -124,10 +124,10 @@ export default function EquipmentManager({
                         onSubmit={handleSubmit(onSubmit)}
                         className="space-y-4"
                     >
-                        <div>
-                            <label className="block text-xs font-medium text-slate-500 mb-2">
+                        <fieldset>
+                            <legend className="block text-xs font-medium text-slate-500 mb-2">
                                 追加モード
-                            </label>
+                            </legend>
                             <div className="flex gap-4">
                                 <label className="flex items-center cursor-pointer">
                                     <input
@@ -154,7 +154,7 @@ export default function EquipmentManager({
                                     </span>
                                 </label>
                             </div>
-                        </div>
+                        </fieldset>
 
                         {isEquipmentMode ? (
                             <EquipmentForm

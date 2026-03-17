@@ -226,6 +226,7 @@ export default function SelectedMissionsSummary() {
                                                     />
                                                 </button>
                                                 <input
+                                                    id={`mission-count-${mission.id}`}
                                                     type="number"
                                                     min="1"
                                                     max={
