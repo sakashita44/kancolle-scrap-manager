@@ -14,6 +14,7 @@ import {
 } from './domain';
 import { matchesCategoryFilter } from './domain/missionFilter';
 import { type Mission, type MissionFormValues } from './schema';
+import { useStorageWatcher } from './hooks';
 import {
     Header,
     StickyDashboard,
@@ -102,6 +103,10 @@ export default function App() {
         initFilters();
         initExpanded();
     }, [initData, initSelection, initAbout, initFilters, initExpanded]);
+
+    // --- 他タブでのLocalStorage変更を自動同期 ---
+
+    useStorageWatcher();
 
     // --- 廃棄リスト計算 ---
 
