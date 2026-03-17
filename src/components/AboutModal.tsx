@@ -55,6 +55,9 @@ export default function AboutModal({ isOpen, onClose }: Props) {
                         <p>
                             入力されたデータが外部サーバーへ送信されることはありません。
                         </p>
+                        <p className="text-amber-700 font-medium">
+                            シークレットモード（プライベートブラウジング）ではブラウザを閉じるとデータが消失します。通常モードでのご利用を推奨します。
+                        </p>
                     </div>
                 </div>
 
