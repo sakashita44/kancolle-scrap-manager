@@ -138,6 +138,7 @@ export default function EquipmentList({
             <div className="relative mb-2">
                 <Search className="w-3 h-3 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-slate-400" />
                 <input
+                    id="equipment-search"
                     type="text"
                     placeholder="装備を検索..."
                     className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded text-xs focus:outline-none focus:border-blue-400"

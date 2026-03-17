@@ -24,7 +24,10 @@ export default function EquipmentForm({
     return (
         <>
             <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label
+                    htmlFor="equipment-name"
+                    className="block text-xs font-medium text-slate-500 mb-1"
+                >
                     装備名 *
                     {watchedName && (
                         <span className="ml-1 text-[10px] text-slate-400">
@@ -33,6 +36,7 @@ export default function EquipmentForm({
                     )}
                 </label>
                 <input
+                    id="equipment-name"
                     {...register('name')}
                     autoComplete="off"
                     className={cn(
@@ -46,10 +50,14 @@ export default function EquipmentForm({
                 <ValidationErrorDisplay error={nameError} />
             </div>
             <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label
+                    htmlFor="equipment-categoryId"
+                    className="block text-xs font-medium text-slate-500 mb-1"
+                >
                     カテゴリ *
                 </label>
                 <select
+                    id="equipment-categoryId"
                     {...register('categoryId')}
                     className={cn(
                         'w-full px-3 py-2 border rounded-lg text-sm',
