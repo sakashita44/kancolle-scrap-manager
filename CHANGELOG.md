@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [2.0.2] - 2026-07-04
+## [2.1.0] - 2026-07-04
 
 ### Added
 
+- 別タブでのLocalStorage変更を自動同期（カテゴリ・装備・任務の追加/編集/削除を全タブへ即時反映） (#10)
 - Wiki側の最新の工廠任務（F136〜F142）をマスタデータに追加
 
 ## [2.0.1] - 2026-03-04
