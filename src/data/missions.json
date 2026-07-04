@@ -1515,6 +1515,169 @@
                     "count": 8
                 }
             ]
+        },
+        {
+            "id": "m_ms_f136",
+            "name": "第三十二駆逐隊「早波」、改装準備！",
+            "period": "OneTime",
+            "order": 90,
+            "reqs": [
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_46",
+                    "count": 5
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_47",
+                    "count": 5
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_226",
+                    "count": 5
+                }
+            ]
+        },
+        {
+            "id": "m_ms_f137",
+            "name": "【工廠任務】量産航空機の改編",
+            "period": "OneTime",
+            "order": 91,
+            "reqs": [
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_19",
+                    "count": 3
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_20",
+                    "count": 3
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_181",
+                    "count": 3
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_176",
+                    "count": 3
+                }
+            ]
+        },
+        {
+            "id": "m_ms_f138",
+            "name": "【工廠任務】試製震電の艦戦型改二への改修",
+            "period": "OneTime",
+            "order": 92,
+            "reqs": [
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_21",
+                    "count": 5
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_55",
+                    "count": 5
+                }
+            ]
+        },
+        {
+            "id": "m_ms_f139",
+            "name": "【工廠任務】新装備運用のための工廠整備【壱】",
+            "period": "OneTime",
+            "order": 93,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_carrier_fighter",
+                    "count": 9
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_carrier_bomber",
+                    "count": 9
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_carrier_attacker",
+                    "count": 9
+                },
+                {
+                    "kind": "categoryGroup",
+                    "id": "m_rcg_depth_charge",
+                    "count": 8
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_anti_air_machine_gun",
+                    "count": 8
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_medium_caliber_main_gun",
+                    "count": 9
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_large_caliber_main_gun",
+                    "count": 7
+                }
+            ]
+        },
+        {
+            "id": "m_ms_f140",
+            "name": "【工廠任務】新装備運用のための工廠整備【弐】",
+            "period": "OneTime",
+            "order": 94,
+            "reqs": [
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_21",
+                    "count": 6
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_201",
+                    "count": 4
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_10",
+                    "count": 8
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_9",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "m_ms_f142",
+            "name": "【工廠任務】水雷戦隊新改装艦、改装準備！",
+            "period": "OneTime",
+            "order": 95,
+            "reqs": [
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_45",
+                    "count": 8
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_47",
+                    "count": 4
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_10",
+                    "count": 8
+                }
+            ]
         }
     ]
 }
