@@ -62,6 +62,7 @@
 {"id": "m_eq_90", "name": "20.3cm(2号)連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 90}
 {"id": "m_eq_162", "name": "203mm/53 連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 162}
 {"id": "m_eq_341", "name": "152mm/55 三連装速射砲改", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 341}
+{"id": "m_eq_555", "name": "18cm/57 三連装主砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 555}
 {"id": "m_eq_50", "name": "20.3cm(3号)連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 50}
 {"id": "m_eq_123", "name": "SKC34 20.3cm連装砲", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 123}
 {"id": "m_eq_356", "name": "8inch三連装砲 Mk.9", "category_id": "m_cat_medium_caliber_main_gun", "encyclopedia_no": 356}
@@ -433,6 +434,7 @@
 {"id": "m_eq_274", "name": "12cm30連装噴進砲改二", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 274}
 {"id": "m_eq_85", "name": "3.7cm FlaK M42", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 85}
 {"id": "m_eq_131", "name": "25mm三連装機銃 集中配備", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 131}
+{"id": "m_eq_575", "name": "25mm連装機銃(熟練機銃員分隊)", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 575}
 {"id": "m_eq_191", "name": "QF 2ポンド8連装ポンポン砲", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 191}
 {"id": "m_eq_173", "name": "Bofors 40mm四連装機関砲", "category_id": "m_cat_anti_air_machine_gun", "encyclopedia_no": 173}
 {"id": "m_eq_120", "name": "91式高射装置", "category_id": "m_cat_anti_air_director", "encyclopedia_no": 120}
@@ -444,6 +446,7 @@
 {"id": "m_eq_378", "name": "対潜短魚雷(試作初期型)", "category_id": "m_cat_depth_charge", "encyclopedia_no": 378}
 {"id": "m_eq_44", "name": "九四式爆雷投射機", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 44}
 {"id": "m_eq_45", "name": "三式爆雷投射機", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 45}
+{"id": "m_eq_569", "name": "三式爆雷投射機改", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 569}
 {"id": "m_eq_287", "name": "三式爆雷投射機 集中配備", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 287}
 {"id": "m_eq_288", "name": "試製15cm9連装対潜噴進砲", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 288}
 {"id": "m_eq_377", "name": "RUR-4A Weapon Alpha改", "category_id": "m_cat_depth_charge_projector", "encyclopedia_no": 377}
@@ -523,6 +526,7 @@
 {"id": "m_eq_484", "name": "四式重爆 飛龍(熟練)＋イ号一型甲 誘導弾", "category_id": "m_cat_land_attacker", "encyclopedia_no": 484}
 {"id": "m_eq_405", "name": "Do 217 E-5＋Hs293初期型", "category_id": "m_cat_land_attacker", "encyclopedia_no": 405}
 {"id": "m_eq_406", "name": "Do 217 K-2＋Fritz-X", "category_id": "m_cat_land_attacker", "encyclopedia_no": 406}
+{"id": "m_eq_562", "name": "Do 217 E-5＋TV誘導型 Hs293D", "category_id": "m_cat_land_attacker", "encyclopedia_no": 562}
 {"id": "m_eq_269", "name": "試製東海", "category_id": "m_cat_land_attacker", "encyclopedia_no": 269}
 {"id": "m_eq_270", "name": "東海(九〇一空)", "category_id": "m_cat_land_attacker", "encyclopedia_no": 270}
 {"id": "m_eq_395", "name": "深山", "category_id": "m_cat_heavy_land_aircraft", "encyclopedia_no": 395}
