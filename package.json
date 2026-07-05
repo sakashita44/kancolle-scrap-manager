@@ -1,18 +1,21 @@
 {
     "name": "kancolle-scrap-manager",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "艦これで複数の廃棄任務を並列で遂行する際に，廃棄すべき装備の必要最小限リスト(最適解)を算出し，無駄な廃棄を防ぐことを目的としたWebアプリケーション",
     "type": "module",
     "scripts": {
         "dev": "vite",
+        "validate:data": "vitest run src/data/__tests__/",
+        "prebuild": "npm run validate:data",
         "build": "vite build",
         "preview": "vite preview",
+        "predeploy": "npm run validate:data",
         "deploy": "node scripts/deploy.js",
         "prepare": "husky",
         "test": "vitest run",
         "test:watch": "vitest",
-        "lint": "eslint \"src/**/*.{ts,tsx}\" && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#dist\"",
-        "format": "prettier --write \"**/*.{ts,tsx,json,md}\" && eslint --fix \"src/**/*.{ts,tsx}\" && markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#dist\""
+        "lint": "eslint \"src/**/*.{ts,tsx}\" && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#dist\" \"#**/.venv\"",
+        "format": "prettier --write \"**/*.{ts,tsx,json,md}\" && eslint --fix \"src/**/*.{ts,tsx}\" && markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#dist\" \"#**/.venv\""
     },
     "dependencies": {
         "@hookform/resolvers": "^5.2.2",

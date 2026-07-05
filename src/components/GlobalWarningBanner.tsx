@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
 import { cn } from '../utils';
+import { type NoticeType } from '../schema';
 
-type BannerType = 'critical' | 'error' | 'warning' | 'info';
+type BannerType = NoticeType;
 
 interface GlobalWarningBannerProps {
     messages: string[];

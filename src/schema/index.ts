@@ -8,6 +8,9 @@ export {
     type RequirementKind,
     SOURCE,
     type Source,
+    NOTICE_TYPE,
+    type NoticeType,
+    NOTICE_TYPE_VALUES,
     ID_PREFIX,
     STORAGE_KEYS,
     LIMITS,
@@ -61,6 +64,14 @@ export {
     type SelectedMissionEntry,
     type SelectedMissions,
 } from './mission';
+
+export {
+    noticeSchema,
+    type Notice,
+    noticesArraySchema,
+    noticesDataSchema,
+    type NoticesData,
+} from './notice';
 
 export {
     equipmentFormSchema,

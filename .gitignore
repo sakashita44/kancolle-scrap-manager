@@ -149,3 +149,6 @@ scripts/output/*.json
 # Python cache files
 __pycache__/
 *.py[cod]
+
+# Python virtual environment (uv)
+scripts/.venv/
