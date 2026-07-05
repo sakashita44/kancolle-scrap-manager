@@ -7,7 +7,7 @@ interface Props {
 }
 
 export default function AboutModal({ isOpen, onClose }: Props) {
-    const version = import.meta.env.VITE_APP_VERSION || '1.0.0';
+    const version = __APP_VERSION__;
     const repoUrl = 'https://github.com/sakashita44/kancolle-scrap-manager';
 
     return (
