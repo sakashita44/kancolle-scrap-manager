@@ -15,6 +15,7 @@ import {
 import { matchesCategoryFilter } from './domain/missionFilter';
 import { type Mission, type MissionFormValues } from './schema';
 import { useStorageWatcher } from './hooks';
+import appNotices from './data/notices.json';
 import {
     Header,
     StickyDashboard,
@@ -327,12 +328,20 @@ export default function App() {
                 <GlobalWarningBanner messages={dataWarnings} type="warning" />
             )}
 
-            <GlobalWarningBanner
-                messages={[
-                    'v2.0: ベース任務の導入により、複数任務の並列遂行がより効率的になりました。同梱のマスタデータは不完全な可能性があります。必要に応じてご自身で追加してください。',
-                ]}
-                type="info"
-            />
+            {(['critical', 'error', 'warning', 'info'] as const).map(
+                (level) => {
+                    const messages = appNotices.notices
+                        .filter((notice) => notice.type === level)
+                        .map((notice) => notice.message);
+                    return messages.length > 0 ? (
+                        <GlobalWarningBanner
+                            key={level}
+                            messages={messages}
+                            type={level}
+                        />
+                    ) : null;
+                },
+            )}
 
             <StickyDashboard
                 scrapList={allScrapList}
