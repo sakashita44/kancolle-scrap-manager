@@ -130,6 +130,16 @@
             "id": "m_cat_combat_ration",
             "name": "戦闘糧食",
             "order": 26
+        },
+        {
+            "id": "m_cat_interceptor",
+            "name": "局地戦闘機",
+            "order": 27
+        },
+        {
+            "id": "m_cat_army_fighter",
+            "name": "陸軍戦闘機",
+            "order": 28
         }
     ]
 }

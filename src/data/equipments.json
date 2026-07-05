@@ -38,6 +38,12 @@
             "order": 301
         },
         {
+            "id": "m_eq_9",
+            "name": "46cm三連装砲",
+            "categoryId": "m_cat_large_caliber_main_gun",
+            "order": 302
+        },
+        {
             "id": "m_eq_10",
             "name": "12.7cm連装高角砲",
             "categoryId": "m_cat_secondary_gun",
@@ -84,6 +90,12 @@
             "name": "零戦52型丙(六〇一空)",
             "categoryId": "m_cat_carrier_fighter",
             "order": 605
+        },
+        {
+            "id": "m_eq_181",
+            "name": "零式艦戦32型",
+            "categoryId": "m_cat_carrier_fighter",
+            "order": 606
         },
         {
             "id": "m_eq_23",
@@ -188,6 +200,12 @@
             "order": 1500
         },
         {
+            "id": "m_eq_45",
+            "name": "三式爆雷投射機",
+            "categoryId": "m_cat_depth_charge_projector",
+            "order": 1501
+        },
+        {
             "id": "m_eq_226",
             "name": "九五式爆雷",
             "categoryId": "m_cat_depth_charge",
@@ -252,6 +270,18 @@
             "name": "戦闘糧食",
             "categoryId": "m_cat_combat_ration",
             "order": 2600
+        },
+        {
+            "id": "m_eq_201",
+            "name": "紫電一一型",
+            "categoryId": "m_cat_interceptor",
+            "order": 2700
+        },
+        {
+            "id": "m_eq_176",
+            "name": "三式戦 飛燕",
+            "categoryId": "m_cat_army_fighter",
+            "order": 2800
         }
     ]
 }
