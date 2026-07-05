@@ -2,12 +2,15 @@
 
 艦これWikiのHTMLページからマスタデータJSON（カテゴリ・装備・任務）を生成するPythonスクリプト群。
 
-4ステップのパイプラインで処理する:
+パイプラインで処理する:
 
+1. **fetch.py**（機械的）: WikiページのHTMLを `input/` に取得（手動保存でも可）
 1. **parse_equipments.py**（機械的）: 全カテゴリ・全装備をJSONLに抽出（種別列 + レジストリ）
 1. **parse_missions.py**（機械的）: 廃棄任務の生テキストをJSONLに抽出
 1. **Claude Code**（AI, 手動実行）: 生テキストから廃棄条件を判断し missions.json を生成
 1. **build_masters.py**（機械的）: missions.json の順序を正規化し、参照IDで最終JSONを生成
+
+`src/data/` へ反映した後は `npm run validate:data` で参照整合性を検証する（任務が未登録の装備・カテゴリを参照していないこと）。
 
 ## 前提条件
 
@@ -21,17 +24,30 @@ cd scripts
 uv sync
 ```
 
-## HTMLファイルの準備
+## Step 0: HTMLファイルの準備
 
-以下のWikiページをブラウザで保存し、`input/` ディレクトリに配置する。
+parse スクリプトが参照する入力HTMLを `input/` に配置する。自動取得か手動保存のどちらでもよい。
 
-### 装備一覧
+### 自動取得
+
+```bash
+cd scripts
+uv run python -X utf8 fetch.py
+```
+
+`input/equipment_list.html` と `input/factory_missions.html` を取得する。
+
+### 手動保存
+
+Wikiの構造変更等で `fetch.py` が失敗する場合はブラウザ保存を使う。
+
+装備一覧:
 
 1. <https://wikiwiki.jp/kancolle/装備一覧(種類別)> をブラウザで開く
 1. `Ctrl+S`（ページを保存）→ 「Webページ、完全」または「Webページ、HTMLのみ」で保存
 1. 保存したHTMLファイルを `input/equipment_list.html` にリネーム・移動
 
-### 工廠任務
+工廠任務:
 
 1. <https://wikiwiki.jp/kancolle/任務/工廠任務> をブラウザで開く
 1. `Ctrl+S`（ページを保存）→ 「Webページ、完全」または「Webページ、HTMLのみ」で保存
@@ -155,9 +171,10 @@ cp scripts/output/missions.json src/data/missions.json
 適用後の確認:
 
 ```bash
-npm run build   # ビルドエラーがないこと
-npm test        # テストがパスすること
-npm run dev     # アプリを起動してデータ表示を確認
+npm run validate:data   # マスタデータの参照整合性・ID一意性を検証
+npm run build           # ビルドエラーがないこと
+npm test                # テストがパスすること
+npm run dev             # アプリを起動してデータ表示を確認
 ```
 
 ## ディレクトリ構成
@@ -173,6 +190,7 @@ scripts/
 │   └── .gitkeep
 ├── output/                # アプリ用最終JSON（.gitignore対象）
 │   └── .gitkeep
+├── fetch.py               # Step 0: WikiページHTML取得
 ├── parse_equipments.py    # Step 1: 装備一覧パーサー
 ├── parse_missions.py      # Step 2: 工廠任務パーサー
 └── build_masters.py       # Step 4: マスタデータビルダー

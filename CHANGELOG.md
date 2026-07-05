@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- 一部の工廠任務（量産航空機の改編／新装備運用のための工廠整備【弐】／水雷戦隊新改装艦、改装準備！）がマスタに未登録の装備を参照しており、選択時に廃棄要求が欠落して誤った廃棄リストになる不具合を修正（46cm三連装砲・三式爆雷投射機・零式艦戦32型・紫電一一型・三式戦 飛燕を追加、局地戦闘機・陸軍戦闘機カテゴリを追加）
+- Aboutモーダルのバージョン表示が実際のアプリバージョンと一致しない問題を修正（`package.json` を単一のソースとして注入）
+
+### Changed
+
+- 常設バナーからバージョン固有の告知を除去し、恒常的なマスタデータ注意書きに整理
+
 ## [2.1.0] - 2026-07-04
 
 ### Added
