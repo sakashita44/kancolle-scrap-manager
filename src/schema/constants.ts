@@ -51,6 +51,24 @@ export const SOURCE = {
 
 export type Source = (typeof SOURCE)[keyof typeof SOURCE];
 
+// --- 告知（バナー）の重要度 ---
+
+export const NOTICE_TYPE = {
+    CRITICAL: 'critical',
+    ERROR: 'error',
+    WARNING: 'warning',
+    INFO: 'info',
+} as const;
+
+export type NoticeType = (typeof NOTICE_TYPE)[keyof typeof NOTICE_TYPE];
+
+export const NOTICE_TYPE_VALUES = [
+    NOTICE_TYPE.CRITICAL,
+    NOTICE_TYPE.ERROR,
+    NOTICE_TYPE.WARNING,
+    NOTICE_TYPE.INFO,
+] as const;
+
 // --- IDプレフィックス ---
 
 export const ID_PREFIX = {

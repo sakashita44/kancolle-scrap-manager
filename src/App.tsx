@@ -13,7 +13,11 @@ import {
     buildCategoryDeletionMessage,
 } from './domain';
 import { matchesCategoryFilter } from './domain/missionFilter';
-import { type Mission, type MissionFormValues } from './schema';
+import {
+    type Mission,
+    type MissionFormValues,
+    NOTICE_TYPE_VALUES,
+} from './schema';
 import { useStorageWatcher } from './hooks';
 import appNotices from './data/notices.json';
 import {
@@ -328,20 +332,18 @@ export default function App() {
                 <GlobalWarningBanner messages={dataWarnings} type="warning" />
             )}
 
-            {(['critical', 'error', 'warning', 'info'] as const).map(
-                (level) => {
-                    const messages = appNotices.notices
-                        .filter((notice) => notice.type === level)
-                        .map((notice) => notice.message);
-                    return messages.length > 0 ? (
-                        <GlobalWarningBanner
-                            key={level}
-                            messages={messages}
-                            type={level}
-                        />
-                    ) : null;
-                },
-            )}
+            {NOTICE_TYPE_VALUES.map((level) => {
+                const messages = appNotices.notices
+                    .filter((notice) => notice.type === level)
+                    .map((notice) => notice.message);
+                return messages.length > 0 ? (
+                    <GlobalWarningBanner
+                        key={level}
+                        messages={messages}
+                        type={level}
+                    />
+                ) : null;
+            })}
 
             <StickyDashboard
                 scrapList={allScrapList}

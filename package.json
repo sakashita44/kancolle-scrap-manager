@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "validate:data": "vitest run src/data/__tests__/integrity.test.ts",
+        "validate:data": "vitest run src/data/__tests__/",
         "prebuild": "npm run validate:data",
         "build": "vite build",
         "preview": "vite preview",
