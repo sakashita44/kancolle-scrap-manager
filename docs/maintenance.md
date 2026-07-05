@@ -86,10 +86,31 @@ npm run build
 
 バージョンアップに伴い追従が必要な箇所は以下に集約されている。リリース時に確認する:
 
-- [ ] アプリバージョン: `package.json` の `version` のみを更新する（About表示・ビルドへ自動注入されるため他ファイルの手修正は不要）
-- [ ] 常設バナー文言: `src/data/notices.json` を確認・更新する（コードにハードコードしない。特定バージョンの機能告知は載せず、恒常的な内容のみとする）
+- [ ] アプリバージョン: `package.json` の `version` のみを更新する（About表示・ビルドへ `__APP_VERSION__` として自動注入されるため他ファイルの手修正は不要）
+- [ ] Aboutモーダル（`src/components/AboutModal.tsx`）に版数固有の文言（機能概要・リリースノート・「v2.0で〜」等）を埋め込まない。表示はバージョン番号（自動注入）と恒常的な説明のみに保つ
+- [ ] 常設バナー文言: `src/data/notices.json` を確認・更新する（コードにハードコードしない。「v2.0:〜」のような特定バージョンの機能告知は載せず、恒常的な内容のみとする）
 - [ ] `CHANGELOG.md` の `[Unreleased]` を確認し、必要ならバージョン見出しへ昇格する
 - [ ] `npm run validate:data` が通ること
+
+> 版数固有の告知（新機能アピール等）は About 本文・バナーに直書きせず、`CHANGELOG.md` と GitHub Release に集約する。About・バナーは版数に依存しない恒常的な内容のみを持たせ、更新漏れによる表示のズレを構造的に防ぐ。
+
+### リリース手順
+
+バージョンを上げる際は以下の順で行う。リリースコミット（`chore: リリースx.y.z`）は作業ブランチ内で作成し、`main` へマージした後にタグを打つ（過去リリースの慣行に一致）。
+
+1. **作業ブランチ内でリリースコミットを作る**
+    - `CHANGELOG.md` の `[Unreleased]` を `## [x.y.z] - YYYY-MM-DD` へ昇格し、新しい空の `[Unreleased]` を先頭に残す
+    - `package.json` の `version` を `x.y.z` へ更新する
+    - このコミットには上記2ファイルのみを含める（コミットメッセージは `chore: リリースx.y.z`）
+1. **PRを作成し `main` へマージする**（マージコミット。squash / rebase は禁止）
+1. **マージ後、`main` のマージコミットにタグを打つ**
+    - `git tag vx.y.z`（タグ名は `v` 接頭辞。既存タグの命名に一致させる）
+    - `git push --follow-tags`
+1. **GitHub Release を作成する**
+    - `gh release create vx.y.z` の notes に `CHANGELOG.md` の当該バージョンセクションを渡す
+    - 版数判定・反映は `/release` スキルで自動化されるが、タグ付けはマージ後に行うためスキル実行時点では手順1までにとどまる
+
+バージョン判定は SemVer に従う（破壊的変更 → major、feat / Added → minor、fix のみ → patch）。
 
 ### 本番環境へのアップロード
 
@@ -142,5 +163,5 @@ LocalStorageに保存されたユーザーデータが破損した場合:
 
 ---
 
-**最終更新**: 2026-07-04
+**最終更新**: 2026-07-06
 **関連ドキュメント**: docs/schema.md, docs/design.md, CLAUDE.md, scripts/README.md
