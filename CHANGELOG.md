@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-08-03
+
 ### Fixed
 
 - ベース任務の達成状況で、補助任務の種別不問要求の余剰が過大に表示される不具合を修正 (#182)
