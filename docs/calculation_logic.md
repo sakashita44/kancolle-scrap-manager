@@ -329,11 +329,27 @@ return {
     - 有効カテゴリIDが1件以上ある場合は,有効分のみで計算継続する
     - 有効カテゴリIDが0件の場合は,その `categoryGroup` 要求自体を除外する
 
-### ケース7: 逆方向包含（base=`category`, auxiliary=`categoryGroup`）
+### ケース7: 補助側の要求範囲がベース側の要求を包含する
+
+`auxiliary` の要求対象が `base` の要求対象を包含する組み合わせ（`base`=`equipment` と `auxiliary`=`category`／`categoryGroup`, `base`=`category` と `auxiliary`=`categoryGroup`）では,両方向を区別して扱う.
 
 - **処理方針**:
-    - `auxiliary` の `categoryGroup` は `base` の `category` を充足しない
-    - 比較結果では `base` 側 `category` は不足のまま, `auxiliary` 側 `categoryGroup` は過剰として表示する
+    - 充足判定: 範囲の広い `auxiliary` の要求は,範囲の狭い `base` の要求を充足しない.`base` 側は不足のまま表示する
+    - 余剰算出: `base` の廃棄は `auxiliary` の要求範囲に入るため,`auxiliary` の要求数から `base` の廃棄数を差し引いた残余を余剰として表示する.残余が0以下の場合は余剰行を出さない
+- **不変条件**: 余剰として表示する数は,全選択任務を統合した廃棄リストが同一対象について示す必要数と一致する
+
+```text
+ベース任務: 22号対水上電探(個別) ×2
+補助任務  : 電探系装備(カテゴリグループ) ×3
+
+統合廃棄リスト:
+  - 22号対水上電探: 2個
+  - 電探系装備    : 1個  ← 3 - 2 = 1
+
+達成状況:
+  - 22号対水上電探: 不足 -2
+  - 電探系装備    : 余剰 +1
+```
 
 ## 計算例
 

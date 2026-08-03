@@ -631,15 +631,26 @@ function calculateDifference(
             return false;
         });
 
-        if (!existsInBase) {
-            comparison.push({
-                ...auxItem,
-                baseCount: 0,
-                auxiliaryCount: auxItem.count,
-                difference: auxItem.count,
-                status: 'excess',
-            });
-        }
+        if (existsInBase) continue;
+
+        // ベース側の廃棄が補助要求の範囲に含まれる場合, その分だけ追加廃棄は不要になる
+        const coveredByBase = countBaseCoveredBy(
+            auxItem,
+            baseReqs,
+            equipmentMap,
+            requirementCategoryGroupMap,
+        );
+        const residual = auxItem.count - coveredByBase;
+        if (residual <= 0) continue;
+
+        comparison.push({
+            ...auxItem,
+            count: residual,
+            baseCount: 0,
+            auxiliaryCount: residual,
+            difference: residual,
+            status: 'excess',
+        });
     }
 
     comparison.sort((a, b) =>
@@ -647,4 +658,50 @@ function calculateDifference(
     );
 
     return comparison;
+}
+
+/**
+ * 補助要求の対象範囲に含まれるベース要求の合計数を求める
+ * ベース側の廃棄リストは包含解決済みのため, 対象が重複して計上されることはない
+ */
+function countBaseCoveredBy(
+    auxItem: ScrapListItem,
+    baseReqs: ScrapListItem[],
+    equipmentMap: Map<string, Equipment>,
+    requirementCategoryGroupMap: Map<string, RequirementCategoryGroup>,
+): number {
+    if (auxItem.targetKind === REQUIREMENT_KIND.EQUIPMENT) return 0;
+
+    if (auxItem.targetKind === REQUIREMENT_KIND.CATEGORY) {
+        let covered = 0;
+        for (const baseReq of baseReqs) {
+            if (baseReq.targetKind !== REQUIREMENT_KIND.EQUIPMENT) continue;
+            const equipment = equipmentMap.get(baseReq.targetId);
+            if (equipment && equipment.categoryId === auxItem.targetId) {
+                covered += baseReq.count;
+            }
+        }
+        return covered;
+    }
+
+    const requirementCategoryGroup = requirementCategoryGroupMap.get(
+        auxItem.targetId,
+    );
+    if (!requirementCategoryGroup) return 0;
+
+    const categoryIdSet = new Set(requirementCategoryGroup.categoryIds);
+    let covered = 0;
+    for (const baseReq of baseReqs) {
+        if (baseReq.targetKind === REQUIREMENT_KIND.EQUIPMENT) {
+            const equipment = equipmentMap.get(baseReq.targetId);
+            if (equipment && categoryIdSet.has(equipment.categoryId)) {
+                covered += baseReq.count;
+            }
+        } else if (baseReq.targetKind === REQUIREMENT_KIND.CATEGORY) {
+            if (categoryIdSet.has(baseReq.targetId)) {
+                covered += baseReq.count;
+            }
+        }
+    }
+    return covered;
 }

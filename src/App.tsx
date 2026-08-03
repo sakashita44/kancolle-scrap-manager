@@ -22,7 +22,7 @@ import { useStorageWatcher } from './hooks';
 import appNotices from './data/notices.json';
 import {
     Header,
-    StickyDashboard,
+    ScrapListPanel,
     SelectedMissionsSummary,
     ControlBar,
     MissionList,
@@ -345,33 +345,39 @@ export default function App() {
                 ) : null;
             })}
 
-            <StickyDashboard
-                scrapList={allScrapList}
-                comparison={comparisonResult.comparison}
-                hasBaseMission={!!baseMission}
-            />
+            {/* 結果パネルと任務リストを別ペインに分け, 選択操作が結果表示に覆われないようにする */}
+            <div className="max-w-7xl mx-auto px-4 pb-20 lg:grid lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-6 lg:items-start lg:pt-4">
+                <aside className="lg:col-start-2 lg:row-start-1 sticky top-0 lg:top-4 z-20 -mx-4 lg:mx-0">
+                    <div className="bg-white/95 backdrop-blur shadow-md border-b border-slate-200 lg:border lg:rounded-xl lg:shadow-sm max-h-[45vh] lg:max-h-[calc(100vh-2rem)] overflow-y-auto">
+                        <ScrapListPanel
+                            scrapList={allScrapList}
+                            comparison={comparisonResult.comparison}
+                            hasBaseMission={!!baseMission}
+                        />
+                        <SelectedMissionsSummary />
+                    </div>
+                </aside>
 
-            <SelectedMissionsSummary />
+                <main className="lg:col-start-1 lg:row-start-1 pt-4 lg:pt-0">
+                    <ControlBar
+                        filterText={filterText}
+                        filterCategory={currentFilterCategory}
+                        filterPeriod={currentFilterPeriod}
+                        onFilterTextChange={setFilterText}
+                        onFilterCategoryChange={handleFilterCategoryChange}
+                        onFilterPeriodChange={handleFilterPeriodChange}
+                        onEquipmentClick={openEquipmentModal}
+                        onMissionClick={() => openMissionModal()}
+                    />
 
-            <div className="max-w-3xl mx-auto p-4">
-                <ControlBar
-                    filterText={filterText}
-                    filterCategory={currentFilterCategory}
-                    filterPeriod={currentFilterPeriod}
-                    onFilterTextChange={setFilterText}
-                    onFilterCategoryChange={handleFilterCategoryChange}
-                    onFilterPeriodChange={handleFilterPeriodChange}
-                    onEquipmentClick={openEquipmentModal}
-                    onMissionClick={() => openMissionModal()}
-                />
-            </div>
-
-            <div className="max-w-3xl mx-auto px-4 pb-20">
-                <MissionList
-                    missions={filteredMissions}
-                    onDelete={requestDeleteMission}
-                    onEdit={handleEditMission}
-                />
+                    <div className="mt-4">
+                        <MissionList
+                            missions={filteredMissions}
+                            onDelete={requestDeleteMission}
+                            onEdit={handleEditMission}
+                        />
+                    </div>
+                </main>
             </div>
 
             <Modal

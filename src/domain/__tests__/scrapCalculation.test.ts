@@ -52,6 +52,14 @@ const eq2: Equipment = {
     source: SOURCE.MASTER,
 };
 
+const eqRadar: Equipment = {
+    id: 'eq_radar_22',
+    name: '22号対水上電探',
+    categoryId: 'cat_small_radar',
+    order: 0,
+    source: SOURCE.MASTER,
+};
+
 const categoryMap = new Map<string, Category>([
     [cat1.id, cat1],
     [catRadarSmall.id, catRadarSmall],
@@ -60,6 +68,7 @@ const categoryMap = new Map<string, Category>([
 const equipmentMap = new Map<string, Equipment>([
     [eq1.id, eq1],
     [eq2.id, eq2],
+    [eqRadar.id, eqRadar],
 ]);
 const requirementCategoryGroup: RequirementCategoryGroup = {
     id: 'm_rcg_gun',
@@ -513,5 +522,170 @@ describe('calculateScrapComparison', () => {
         expect(radarCategory?.auxiliaryCount).toBe(0);
         expect(radarCategory?.status).toBe('insufficient');
         expect(radarGroup?.status).toBe('excess');
+    });
+
+    it('補助categoryGroupの余剰はベースの個別装備で充足される分を差し引く', () => {
+        const baseMission = makeMission('base', [
+            { kind: REQUIREMENT_KIND.EQUIPMENT, id: eqRadar.id, count: 2 },
+        ]);
+        const auxMission = makeMission('aux', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_radar',
+                count: 3,
+            },
+        ]);
+
+        const { comparison } = calculateScrapComparison(
+            {
+                baseMission: { missionId: 'base', count: 1 },
+                auxiliaryMissions: [{ missionId: 'aux', count: 1 }],
+            },
+            [baseMission, auxMission],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const radarGroup = comparison.find(
+            (item) => item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP,
+        );
+        expect(radarGroup?.status).toBe('excess');
+        expect(radarGroup?.difference).toBe(1);
+    });
+
+    it('補助categoryの余剰はベースの個別装備で充足される分を差し引く', () => {
+        const baseMission = makeMission('base', [
+            { kind: REQUIREMENT_KIND.EQUIPMENT, id: eq1.id, count: 2 },
+        ]);
+        const auxMission = makeMission('aux', [
+            { kind: REQUIREMENT_KIND.CATEGORY, id: cat1.id, count: 3 },
+        ]);
+
+        const { comparison } = calculateScrapComparison(
+            {
+                baseMission: { missionId: 'base', count: 1 },
+                auxiliaryMissions: [{ missionId: 'aux', count: 1 }],
+            },
+            [baseMission, auxMission],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const gunCategory = comparison.find(
+            (item) => item.targetKind === REQUIREMENT_KIND.CATEGORY,
+        );
+        expect(gunCategory?.status).toBe('excess');
+        expect(gunCategory?.difference).toBe(1);
+    });
+
+    it('補助categoryGroupの余剰はベースのcategoryで充足される分を差し引く', () => {
+        const baseMission = makeMission('base', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY,
+                id: catRadarSmall.id,
+                count: 2,
+            },
+        ]);
+        const auxMission = makeMission('aux', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_radar',
+                count: 3,
+            },
+        ]);
+
+        const { comparison } = calculateScrapComparison(
+            {
+                baseMission: { missionId: 'base', count: 1 },
+                auxiliaryMissions: [{ missionId: 'aux', count: 1 }],
+            },
+            [baseMission, auxMission],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const radarGroup = comparison.find(
+            (item) => item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP,
+        );
+        expect(radarGroup?.status).toBe('excess');
+        expect(radarGroup?.difference).toBe(1);
+    });
+
+    it('ベースが補助要求を全て充足する場合は余剰行を出さない', () => {
+        const baseMission = makeMission('base', [
+            { kind: REQUIREMENT_KIND.EQUIPMENT, id: eqRadar.id, count: 3 },
+        ]);
+        const auxMission = makeMission('aux', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_radar',
+                count: 3,
+            },
+        ]);
+
+        const { comparison } = calculateScrapComparison(
+            {
+                baseMission: { missionId: 'base', count: 1 },
+                auxiliaryMissions: [{ missionId: 'aux', count: 1 }],
+            },
+            [baseMission, auxMission],
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        expect(
+            comparison.some(
+                (item) => item.targetKind === REQUIREMENT_KIND.CATEGORY_GROUP,
+            ),
+        ).toBe(false);
+    });
+
+    it('余剰行の差分は全選択任務の統合廃棄リストの必要数と一致する', () => {
+        const baseMission = makeMission('base', [
+            { kind: REQUIREMENT_KIND.EQUIPMENT, id: eqRadar.id, count: 2 },
+        ]);
+        const auxMission = makeMission('aux', [
+            {
+                kind: REQUIREMENT_KIND.CATEGORY_GROUP,
+                id: 'm_rcg_radar',
+                count: 3,
+            },
+        ]);
+        const allMissions = [baseMission, auxMission];
+
+        const { comparison } = calculateScrapComparison(
+            {
+                baseMission: { missionId: 'base', count: 1 },
+                auxiliaryMissions: [{ missionId: 'aux', count: 1 }],
+            },
+            allMissions,
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        const { scrapList } = calculateScrapList(
+            [
+                { missionId: 'base', count: 1 },
+                { missionId: 'aux', count: 1 },
+            ],
+            allMissions,
+            equipmentMap,
+            categoryMap,
+            requirementCategoryGroupMap,
+        );
+
+        for (const excess of comparison.filter((c) => c.status === 'excess')) {
+            const combined = scrapList.find(
+                (item) =>
+                    item.targetKind === excess.targetKind &&
+                    item.targetId === excess.targetId,
+            );
+            expect(combined?.count).toBe(excess.difference);
+        }
     });
 });
