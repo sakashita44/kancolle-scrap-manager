@@ -9,5 +9,5 @@ export { default as MissionCard } from './MissionCard';
 export { default as MissionList } from './MissionList';
 export { default as MissionModal } from './MissionModal';
 export { default as SelectedMissionsSummary } from './SelectedMissionsSummary';
-export { default as StickyDashboard } from './StickyDashboard';
+export { default as ScrapListPanel } from './ScrapListPanel';
 export { default as EquipmentManager } from './EquipmentManager';

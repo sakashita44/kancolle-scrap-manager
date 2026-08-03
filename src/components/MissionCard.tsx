@@ -63,18 +63,19 @@ export default function MissionCard({
                         disabled={isDisabled}
                         onChange={() => onToggle(mission.id)}
                     />
-                    {isBaseMission && (
-                        <span title="ベース任務">
-                            <Target className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                        </span>
-                    )}
                 </div>
                 <div className="flex-1">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start gap-2">
                         <span className="font-bold text-slate-700">
+                            {isBaseMission && (
+                                <span className="inline-flex items-center gap-0.5 align-middle mr-1.5 text-[10px] font-bold text-white bg-amber-500 px-1.5 py-0.5 rounded">
+                                    <Target className="w-3 h-3" />
+                                    ベース
+                                </span>
+                            )}
                             {mission.name}
                         </span>
-                        <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">
+                        <span className="flex-none text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">
                             {mission.period}
                         </span>
                     </div>

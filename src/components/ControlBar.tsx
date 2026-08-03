@@ -26,8 +26,8 @@ export default function ControlBar({
     const categories = useStore(selectAllCategories);
 
     return (
-        <div className="bg-white p-3 rounded-xl shadow-sm flex flex-col sm:flex-row gap-3">
-            <div className="relative sm:flex-1">
+        <div className="bg-white p-3 rounded-xl shadow-sm flex flex-wrap gap-3">
+            <div className="relative flex-1 min-w-[10rem]">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
                 <input
                     id="filter-text"
@@ -38,10 +38,10 @@ export default function ControlBar({
                     onChange={(e) => onFilterTextChange(e.target.value)}
                 />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-1 min-w-[16rem]">
                 <select
                     id="filter-period"
-                    className="flex-1 sm:flex-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600 outline-none"
+                    className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600 outline-none"
                     value={filterPeriod}
                     onChange={(e) => onFilterPeriodChange(e.target.value)}
                 >
@@ -55,7 +55,7 @@ export default function ControlBar({
                 </select>
                 <select
                     id="filter-category"
-                    className="flex-1 sm:flex-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600 outline-none"
+                    className="flex-1 min-w-0 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600 outline-none"
                     value={filterCategory}
                     onChange={(e) => onFilterCategoryChange(e.target.value)}
                 >
@@ -67,16 +67,16 @@ export default function ControlBar({
                     ))}
                 </select>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-1 min-w-[14rem]">
                 <button
                     onClick={onEquipmentClick}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-2 bg-teal-50 text-teal-700 rounded-lg hover:bg-teal-100 text-sm font-medium transition-colors whitespace-nowrap"
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-teal-50 text-teal-700 rounded-lg hover:bg-teal-100 text-sm font-medium transition-colors whitespace-nowrap"
                 >
                     <Plus className="w-4 h-4" /> 装備管理
                 </button>
                 <button
                     onClick={onMissionClick}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-sm font-medium transition-colors whitespace-nowrap"
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-sm font-medium transition-colors whitespace-nowrap"
                 >
                     <Plus className="w-4 h-4" /> 任務追加
                 </button>
