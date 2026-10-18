@@ -158,20 +158,20 @@
             "order": 803
         },
         {
-            "id": "m_eq_82",
-            "name": "九七式艦攻(九三一空)",
+            "id": "m_eq_256",
+            "name": "TBF",
             "categoryId": "m_cat_carrier_attacker",
             "order": 804
         },
         {
-            "id": "m_eq_242",
-            "name": "Swordfish",
+            "id": "m_eq_82",
+            "name": "九七式艦攻(九三一空)",
             "categoryId": "m_cat_carrier_attacker",
             "order": 805
         },
         {
-            "id": "m_eq_256",
-            "name": "TBF",
+            "id": "m_eq_242",
+            "name": "Swordfish",
             "categoryId": "m_cat_carrier_attacker",
             "order": 806
         },
@@ -266,20 +266,20 @@
             "order": 2001
         },
         {
-            "id": "m_eq_40",
-            "name": "25mm三連装機銃",
+            "id": "m_eq_49",
+            "name": "25mm単装機銃",
             "categoryId": "m_cat_anti_air_machine_gun",
             "order": 2002
         },
         {
-            "id": "m_eq_49",
-            "name": "25mm単装機銃",
+            "id": "m_eq_51",
+            "name": "12cm30連装噴進砲",
             "categoryId": "m_cat_anti_air_machine_gun",
             "order": 2003
         },
         {
-            "id": "m_eq_51",
-            "name": "12cm30連装噴進砲",
+            "id": "m_eq_40",
+            "name": "25mm三連装機銃",
             "categoryId": "m_cat_anti_air_machine_gun",
             "order": 2004
         },
@@ -314,16 +314,16 @@
             "order": 2600
         },
         {
+            "id": "m_eq_201",
+            "name": "紫電一一型",
+            "categoryId": "m_cat_interceptor",
+            "order": 2700
+        },
+        {
             "id": "m_eq_176",
             "name": "三式戦 飛燕",
             "categoryId": "m_cat_army_fighter",
             "order": 2800
-        },
-        {
-            "id": "m_eq_201",
-            "name": "紫電一一型",
-            "categoryId": "m_cat_interceptor",
-            "order": 2900
         }
     ]
 }

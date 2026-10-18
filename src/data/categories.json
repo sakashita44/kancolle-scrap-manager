@@ -132,8 +132,8 @@
             "order": 26
         },
         {
-            "id": "m_cat_land_attacker",
-            "name": "陸上攻撃機",
+            "id": "m_cat_interceptor",
+            "name": "局地戦闘機",
             "order": 27
         },
         {
@@ -142,8 +142,8 @@
             "order": 28
         },
         {
-            "id": "m_cat_interceptor",
-            "name": "局地戦闘機",
+            "id": "m_cat_land_attacker",
+            "name": "陸上攻撃機",
             "order": 29
         }
     ]

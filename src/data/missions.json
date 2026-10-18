@@ -131,10 +131,33 @@
             ]
         },
         {
+            "id": "m_ms_2610_f1",
+            "name": "【期間限定】Halloweenの南瓜、食べりゅ?",
+            "period": "Monthly",
+            "order": 8,
+            "reqs": [
+                {
+                    "kind": "category",
+                    "id": "m_cat_small_caliber_main_gun",
+                    "count": 9
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_medium_caliber_main_gun",
+                    "count": 9
+                },
+                {
+                    "kind": "category",
+                    "id": "m_cat_seaplane_recon",
+                    "count": 9
+                }
+            ]
+        },
+        {
             "id": "m_ms_fq2",
             "name": "主力「陸攻」の調達",
             "period": "Quarterly",
-            "order": 8,
+            "order": 9,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -147,7 +170,7 @@
             "id": "m_ms_fq3",
             "name": "新型艤装の継続研究",
             "period": "Quarterly",
-            "order": 9,
+            "order": 10,
             "reqs": [
                 {
                     "kind": "category",
@@ -160,7 +183,7 @@
             "id": "m_ms_fq4",
             "name": "運用装備の統合整備",
             "period": "Quarterly",
-            "order": 10,
+            "order": 11,
             "reqs": [
                 {
                     "kind": "category",
@@ -178,7 +201,7 @@
             "id": "m_ms_fq5",
             "name": "主力艦上戦闘機の更新",
             "period": "Quarterly",
-            "order": 11,
+            "order": 12,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -196,7 +219,7 @@
             "id": "m_ms_fq6",
             "name": "対空兵装の整備拡充",
             "period": "Quarterly",
-            "order": 12,
+            "order": 13,
             "reqs": [
                 {
                     "kind": "category",
@@ -214,7 +237,7 @@
             "id": "m_ms_fq7",
             "name": "戦時改修A型高角砲の量産",
             "period": "Quarterly",
-            "order": 13,
+            "order": 14,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -232,7 +255,7 @@
             "id": "m_ms_fq8",
             "name": "航空戦力の強化",
             "period": "Quarterly",
-            "order": 14,
+            "order": 15,
             "reqs": [
                 {
                     "kind": "category",
@@ -260,7 +283,7 @@
             "id": "m_ms_fq9",
             "name": "工廠稼働！次期作戦準備！",
             "period": "Quarterly",
-            "order": 15,
+            "order": 16,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -273,7 +296,7 @@
             "id": "m_ms_fy1",
             "name": "新型兵装開発整備の強化",
             "period": "Yearly",
-            "order": 16,
+            "order": 17,
             "reqs": [
                 {
                     "kind": "category",
@@ -296,7 +319,7 @@
             "id": "m_ms_fy2",
             "name": "精鋭複葉機飛行隊の編成",
             "period": "Yearly",
-            "order": 17,
+            "order": 18,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -314,7 +337,7 @@
             "id": "m_ms_fy3",
             "name": "工廠フル稼働！新兵装を開発せよ！",
             "period": "Yearly",
-            "order": 18,
+            "order": 19,
             "reqs": [
                 {
                     "kind": "category",
@@ -347,7 +370,7 @@
             "id": "m_ms_fy4",
             "name": "航空戦力の再編増強準備",
             "period": "Yearly",
-            "order": 19,
+            "order": 20,
             "reqs": [
                 {
                     "kind": "category",
@@ -365,7 +388,7 @@
             "id": "m_ms_fy5",
             "name": "潜水艦強化兵装の量産",
             "period": "Yearly",
-            "order": 20,
+            "order": 21,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -378,7 +401,7 @@
             "id": "m_ms_fy6",
             "name": "潜水艦電子兵装の量産",
             "period": "Yearly",
-            "order": 21,
+            "order": 22,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -391,7 +414,7 @@
             "id": "m_ms_fy7",
             "name": "夏の格納庫整備＆航空基地整備",
             "period": "Yearly",
-            "order": 22,
+            "order": 23,
             "reqs": [
                 {
                     "kind": "category",
@@ -404,7 +427,7 @@
             "id": "m_ms_fy8",
             "name": "【鋼材輸出】基地航空兵力を増備せよ！",
             "period": "Yearly",
-            "order": 23,
+            "order": 24,
             "reqs": [
                 {
                     "kind": "category",
@@ -422,7 +445,7 @@
             "id": "m_ms_fy9",
             "name": "【機種整理統合】新型戦闘機の量産計画",
             "period": "Yearly",
-            "order": 24,
+            "order": 25,
             "reqs": [
                 {
                     "kind": "category",
@@ -445,7 +468,7 @@
             "id": "m_ms_fy10",
             "name": "改良三座水上偵察機の増備",
             "period": "Yearly",
-            "order": 25,
+            "order": 26,
             "reqs": [
                 {
                     "kind": "equipment",
@@ -458,40 +481,12 @@
             "id": "m_ms_fy11",
             "name": "【高射装置量産】94式高射装置の追加配備",
             "period": "Yearly",
-            "order": 26,
+            "order": 27,
             "reqs": [
                 {
                     "kind": "equipment",
                     "id": "m_eq_120",
                     "count": 4
-                }
-            ]
-        },
-        {
-            "id": "m_ms_2605_f3",
-            "name": "【初夏限定任務】海軍工廠の整理再編2026",
-            "period": "OneTime",
-            "order": 27,
-            "reqs": [
-                {
-                    "kind": "category",
-                    "id": "m_cat_medium_caliber_main_gun",
-                    "count": 20
-                },
-                {
-                    "kind": "category",
-                    "id": "m_cat_large_caliber_main_gun",
-                    "count": 20
-                },
-                {
-                    "kind": "category",
-                    "id": "m_cat_secondary_gun",
-                    "count": 10
-                },
-                {
-                    "kind": "equipment",
-                    "id": "m_eq_25",
-                    "count": 10
                 }
             ]
         },
@@ -1925,6 +1920,29 @@
                     "kind": "equipment",
                     "id": "m_eq_40",
                     "count": 4
+                }
+            ]
+        },
+        {
+            "id": "m_ms_2610_f2",
+            "name": "【限定拡張作戦】対潜装備の整理整頓！2026",
+            "period": "OneTime",
+            "order": 109,
+            "reqs": [
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_44",
+                    "count": 12
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_226",
+                    "count": 8
+                },
+                {
+                    "kind": "equipment",
+                    "id": "m_eq_46",
+                    "count": 6
                 }
             ]
         }
