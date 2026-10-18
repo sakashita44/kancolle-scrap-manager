@@ -50,10 +50,22 @@
             "order": 400
         },
         {
+            "id": "m_eq_66",
+            "name": "8cm高角砲",
+            "categoryId": "m_cat_secondary_gun",
+            "order": 401
+        },
+        {
             "id": "m_eq_13",
             "name": "61cm三連装魚雷",
             "categoryId": "m_cat_torpedo",
             "order": 500
+        },
+        {
+            "id": "m_eq_125",
+            "name": "61cm三連装(酸素)魚雷",
+            "categoryId": "m_cat_torpedo",
+            "order": 501
         },
         {
             "id": "m_eq_19",
@@ -96,6 +108,12 @@
             "name": "零式艦戦32型",
             "categoryId": "m_cat_carrier_fighter",
             "order": 606
+        },
+        {
+            "id": "m_eq_249",
+            "name": "Fulmar",
+            "categoryId": "m_cat_carrier_fighter",
+            "order": 607
         },
         {
             "id": "m_eq_23",
@@ -146,6 +164,18 @@
             "order": 804
         },
         {
+            "id": "m_eq_82",
+            "name": "九七式艦攻(九三一空)",
+            "categoryId": "m_cat_carrier_attacker",
+            "order": 805
+        },
+        {
+            "id": "m_eq_242",
+            "name": "Swordfish",
+            "categoryId": "m_cat_carrier_attacker",
+            "order": 806
+        },
+        {
             "id": "m_eq_54",
             "name": "彩雲",
             "categoryId": "m_cat_carrier_recon",
@@ -174,6 +204,12 @@
             "name": "22号対水上電探",
             "categoryId": "m_cat_small_radar",
             "order": 1201
+        },
+        {
+            "id": "m_eq_106",
+            "name": "13号対空電探改",
+            "categoryId": "m_cat_small_radar",
+            "order": 1202
         },
         {
             "id": "m_eq_30",
@@ -240,6 +276,12 @@
             "name": "12cm30連装噴進砲",
             "categoryId": "m_cat_anti_air_machine_gun",
             "order": 2003
+        },
+        {
+            "id": "m_eq_40",
+            "name": "25mm三連装機銃",
+            "categoryId": "m_cat_anti_air_machine_gun",
+            "order": 2004
         },
         {
             "id": "m_eq_68",
