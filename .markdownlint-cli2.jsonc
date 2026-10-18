@@ -3,5 +3,5 @@
     "config": {
         "extends": ".markdownlint.jsonc"
     },
-    "ignores": ["node_modules/", "dist/"]
+    "ignores": ["node_modules/", "dist/", "CLAUDE.md"]
 }
