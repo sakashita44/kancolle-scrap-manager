@@ -1,5 +1,6 @@
 import { ExternalLink } from 'lucide-react';
 import Modal from './Modal';
+import masterDataMetadata from '../data/masterDataMetadata.json';
 
 interface Props {
     isOpen: boolean;
@@ -38,6 +39,12 @@ export default function AboutModal({ isOpen, onClose }: Props) {
                     <h5 className="font-semibold text-blue-800 mb-2">
                         マスタデータについて
                     </h5>
+                    <p className="text-sm text-blue-700 mb-2">
+                        最終更新日:{' '}
+                        <time dateTime={masterDataMetadata.updatedAt}>
+                            {masterDataMetadata.updatedAt}
+                        </time>
+                    </p>
                     <p className="text-sm text-blue-700 leading-relaxed">
                         本アプリに同梱されている任務・装備データは不完全な可能性があります。必要に応じてご自身で装備・任務を追加してください。
                     </p>

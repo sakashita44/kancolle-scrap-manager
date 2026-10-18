@@ -2,6 +2,11 @@
     "version": "1.0.0",
     "notices": [
         {
+            "id": "master_data_update",
+            "type": "info",
+            "message": "2026-10-18：「【期間限定】Halloweenの南瓜、食べりゅ?」「【限定拡張作戦】対潜装備の整理整頓！2026」ほか12件の工廠任務を追加。"
+        },
+        {
             "id": "master_data_disclaimer",
             "type": "info",
             "message": "同梱のマスタデータは不完全な可能性があります。必要に応じてご自身で装備・任務を追加してください。"
